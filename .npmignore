@@ -1,0 +1,11 @@
+node_modules/
+npm-debug.log
+out/
+coverage/
+paymill.js
+paymill.parse.js
+lib/
+libnode/
+libparse/
+.travis.yml
+Gruntfile.js

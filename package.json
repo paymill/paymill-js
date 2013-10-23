@@ -1,0 +1,62 @@
+{
+  "author": "Emilian Stoilkov <stoilkov@gmail.com>",
+  "name": "paymill-wrapper",
+  "contributors": [
+    {
+      "name": "Vassil Nikolov",
+      "email": "vassil.nikolov@gmail.com"
+    },
+    {
+      "name": "Emilian Stoilkov ",
+      "email": "stoilkov@gmail.com"
+    }
+  ],
+  "description": "PAYMILL REST API Javascrip wrapper. Work with Node, parse.com and is easily extendable for other platforms",
+  "version": "0.0.1",
+  "keywords": [
+    "paymill",
+    "wrapper",
+    "rest",
+    "api",
+    "payment",
+    "gateway"
+  ],
+  "homepage": "https://github.com/paymill/paymill-js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/isaacs/npm.git"
+  },
+  "bugs": {
+    "mail": "support@paymill.com",
+    "url": "https://github.com/paymill/paymill-js"
+  },
+  "license": "MIT",
+  "main": "paymill.node.js",
+  "scripts": {
+    "test": "istanbul cover _mocha -- -R spec",
+    "pretest": "grunt concat",
+    "posttest": "jshint paymill.node.js",
+    "docs": "grunt concat && jsdoc paymill.node.js readme.md",
+    "stest": "grunt concat && mocha"
+  },
+  "jshintConfig": {
+    "node": true,
+    "globals": {
+      "Parse": false
+    }
+  },
+  "dependencies": {
+    "underscore": "~1.5.2",
+    "when": "~2.5.0"
+  },
+  "devDependencies": {
+    "jsdoc": "git://github.com/jsdoc3/jsdoc.git",
+    "jshint": "~2.1.11",
+    "grunt-cli": "~0.1.9",
+    "mocha": "~1.13.0",
+    "istanbul": "~0.1.44",
+    "expect.js": "~0.2.0",
+    "grunt": "~0.4.1",
+    "grunt-contrib-concat": "~0.3.0"
+  }
+}
