@@ -2,7 +2,7 @@
 # PAYMILL-JS (beta)
 
 [![Dependency Status](https://david-dm.org/paymill/paymill-js.png)](https://david-dm.org/paymill/paymill-js)
-[![devDependency Status](https://david-dm.org/paymill/david/paymill-js.png)](https://david-dm.org/paymill/paymill-js#info=devDependencies)
+[![devDependency Status](https://david-dm.org/paymill/paymill-js/dev-status.png)](https://david-dm.org/paymill/paymill-js#info=devDependencies)
 <!--
 [![Build Status](https://travis-ci.org/paymill/paymill-js.png?branch=master)](https://travis-ci.org/paymill/paymill-js)
 [![NPM version](https://badge.fury.io/js/paymill.node.js.png)](http://badge.fury.io/js/paymill-wrapper)
