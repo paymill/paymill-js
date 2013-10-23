@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Index</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Index</h1>
+    
+    
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><p><img alt="PAYMILL icon" src="https://static.paymill.com/r/335f99eb3914d517bf392beb1adaf7cccef786b6/img/logo-download_Light.png"/>
+# PAYMILL-JS</p>
+
+<p>[<img alt="Build Status" src="https://travis-ci.org/paymill/paymill-js.png?branch=master)](https://travis-ci.org/paymill/paymill-js"/> 
+[<img alt="Dependency Status" src="https://www.versioneye.com/user/projects/XXX/badge.png)](https://www.versioneye.com/user/projects/XXX"/>
+[<img alt="NPM version" src="https://badge.fury.io/js/paymill.node.js.png)](http://badge.fury.io/js/paymill.node.js"/></p>
+
+<p>An universal JavaScript API wrapper. Works with <a href="http://nodejs.org/">Node</a>, <a href="http://www.parse.com">Parse</a> and potentially any other javascript-based backend.</p>
+
+<h2>Getting started</h2>
+
+<ul><li>If you are not familiar with PAYMILL, start with the <a href="https://www.paymill.com/en-gb/documentation-3/">documentation</a>.</li><li>Install the latest release.</li><li>Check the tests / samples.</li><li>Check the API <a href="https://www.paymill.com/en-gb/documentation-3/reference/api-reference/">reference</a>.</li><li>Check the full JSdoc <a href="http://paymill.github.io/paymill-js/docs/">documentation</a>.</li></ul>
+
+<h2>Installation</h2>
+
+<h3>Node</h3>
+
+<p>Install the package using npm: <code>npm install paymill.node.js</code>. Use <code>npm install -g paymill.node.js</code> to install globaly.</p>
+
+<p>Use the module with <code>var paymill = require(&quot;paymill.node.js&quot;);</code>.</p>
+
+<h3>Parse</h3>
+
+<p>Copy <code>paymill.parse.js</code> to your your cloud code folder.</p>
+
+<p>Use the module with <code>var paymill = require(&quot;cloud/paymill.parse.js&quot;);</code>.</p>
+
+<h2>Usage</h2>
+
+<h3>Initialization</h3>
+
+<p>Before start using the wrapper you have to initialize, using your private PAYMILL key: <code>paymill.initialize(yourApiKey);</code>.</p>
+
+<h3>Services</h3>
+
+<p>Each endpoint of the PAYMILL <a href="https://www.paymill.com/en-gb/documentation-3/reference/api-reference/">API</a> has a corrseponding service. For example, to access transaction functions you can use <code>paymill.transactions</code>.</p>
+
+<p>Available methods are (depending on the service):</p>
+
+<ul><li><strong>create ( or createXXX )</strong>
+A service may include multiple create methods, depending on the parameters. Accepts arguments. Cannot create an object locally and call create, you always have to supply parameters.</li><li><strong>detail</strong> 
+Accepts an object or an objects id and returns an object. If the parameter is an object, the same object will be updated and returned.</li><li><strong>remove</strong>
+Accepts an object or an objects id and returns an object. If the parameter is an object, the same object will be updated and returned.</li><li><strong>detail</strong>
+Accepts an object or an objects id. If the parameter is an object, acts like a &quot;refresh&quot; and updates it. </li><li><strong>list</strong>
+Accepts count and offset parameters for pagination, as well as order and filter. Returns a List object, which holds the global count in <code>count</code> and an array of the objects in 
+<code>items</code></li></ul>
+
+<h3>Removing, updating and retrieving</h3>
+
+<p>When you use methods like remove, update or detail with an object as argument, the wrapper will use the response from the API to update the <strong>same</strong> object and will return the same object. If you use the id of an object as a string, the wrapper will create a new object and return it.</p>
+
+<p>Example:</p>
+
+<p><code>
+var transaction; // some transaction you created
+paymill.transactions.detail(transaction).then(function(detail){
+	if (detail===transaction) {
+		console.log(&quot;Wrapper works!&quot;);
+	}
+});
+</code>
+### Callbacks and promises</p>
+
+<p>Alle service methods are asynchronous. To receive the result you either have to specify a callback function or you use the returned <a href="http://promises-aplus.github.io/promises-spec/">Promise</a>.
+#### Callbacks
+The last parameter of every service method is a callback. The callback will be executed after the request. The format of the callbacks is platform specific.</p>
+
+<ul><li><strong>Node</strong> 
+In Node, the wrapper expects the callback to be a function in the form <code>function(error,result)</code> .</li><li><strong>Parse</strong>
+In Parse, the wrappe expect the callback to be an object in the form </li></ul>
+
+<p><code>
+var callback= {
+	success: function(result) {…},
+	error: function(error) {..}
+}
+</code>
+#### Promises
+All service methods return an A+ compliant <a href="http://promises-aplus.github.io/promises-spec/">Promise</a>. The promise is resolved with the result or rejected with an error. You can chain promises like this:</p>
+
+<p><code>
+paymill.clients.create().then(function(client) {
+	//client created, lets create a payment
+	return paymill.payments.create(atoken,client);
+}).then(function(payment){
+	//payment created, do something with it
+},function(error) {
+	// an error occured
+});
+</code></p>
+
+<h3>Deserialization</h3>
+
+<p>The Wrapper deserializes all responses from the API. If you need to access the original json, all PAYMILL objects include the <code>originalJson</code> member, which holds the json used for deserialization</p>
+
+<h2>Contributors</h2>
+
+<h3>Getting started:</h3>
+
+<ul><li>Install node.js</li><li>Run <code>npm install</code> to install (dependencies) or <code>sudo npm install -g</code> to install dependecies globally.</li><li>run <code>npm test</code> to run jshint and mocha tests</li><li>run <code>npm run-script docs</code> to generate documentation</li></ul>
+
+<p>(if Error: Cannot find module X, check if $NODE_PATH is correct)</p>
+
+<h3>Adding a new platform</h3>
+
+<p>To add a new platform (XXX), you have to:</p>
+
+<ul><li>Create a folder <code>libXXX</code>. </li><li>Implement an ExternalHandler. </li><li>Make sure <a href="http://underscorejs.org/">underscore.js</a> is available for your platform.</li><li>In Gruntfile.js add </li></ul>
+
+<p><code>
+XXX : {
+	src : [&#39;paymill.js&#39;, &#39;lib/*.js&#39;,&#39;lib/models/*.js&#39;,&#39;lib/services/*.js&#39;,&#39;libXXX/*.js&#39;],
+	dest : &#39;paymill.XXX.js&#39;,
+},
+</code></p>
+
+<h2>License</h2>
+
+<p>Copyright 2013 PAYMILL GmbH.</p>
+
+<p>MIT License (enclosed)</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferInterval.html">OfferInterval</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Oct 23 2013 13:37:47 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
