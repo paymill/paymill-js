@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "jsdoc": "git://github.com/jsdoc3/jsdoc.git",
-    "jshint": "~2.1.11",
+    "jshint": "~2.3.0",
     "grunt-cli": "~0.1.9",
     "mocha": "~1.13.0",
     "istanbul": "~0.1.44",
