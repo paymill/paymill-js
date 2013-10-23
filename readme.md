@@ -1,10 +1,10 @@
 ![PAYMILL icon](https://static.paymill.com/r/335f99eb3914d517bf392beb1adaf7cccef786b6/img/logo-download_Light.png)
 # PAYMILL-JS (beta)
-
+<!--
 [![Build Status](https://travis-ci.org/paymill/paymill-js.png?branch=master)](https://travis-ci.org/paymill/paymill-js) 
 [![Dependency Status](https://www.versioneye.com/user/projects/XXX/badge.png)](https://www.versioneye.com/user/projects/XXX)
 [![NPM version](https://badge.fury.io/js/paymill.node.js.png)](http://badge.fury.io/js/paymill-wrapper)
-
+-->
 An universal JavaScript API wrapper. Works with [Node](http://nodejs.org/), [Parse](http://www.parse.com) and potentially any other javascript-based backend.
 
 **Note:** The wrapper is still in beta. Please open an issue and let us know if you find any bugs, have a feature request or have successfully integrated.
