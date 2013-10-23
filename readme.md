@@ -7,7 +7,7 @@
 -->
 An universal JavaScript API wrapper. Works with [Node](http://nodejs.org/), [Parse](http://www.parse.com) and potentially any other javascript-based backend.
 
-**Note:** The wrapper is still in beta. Please open an issue and let us know if you find any bugs, have a feature request or have successfully integrated.
+**Note:** The wrapper is still in beta. Please open an issue and let us know if you find any bugs, have a feature request or have successfully integrated it into your project.
 
 ## Getting started
 
@@ -21,7 +21,7 @@ An universal JavaScript API wrapper. Works with [Node](http://nodejs.org/), [Par
 ## Installation
 ### Node
 
-Install the package using npm: ``npm install paymill.node.js``. Use ``npm install -g paymill.node.js`` to install globaly.
+Install the package using npm: ``npm install paymill.node.js`` or ``npm install -g paymill.node.js`` to install globaly.
 
 Use the module with ``var paymill = require("paymill-wrapper");``.
 
@@ -34,7 +34,7 @@ Use the module with ``var paymill = require("cloud/paymill.parse.js");``.
 ## Usage
 
 ### Initialization 
-Before start using the wrapper you have to initialize, using your private PAYMILL key: ``paymill.initialize(yourApiKey);``.
+Before using the wrapper you have to initialize it, using your private PAYMILL key: ``paymill.initialize(yourApiKey);``.
 
 ### Services
 
@@ -43,7 +43,7 @@ Each endpoint of the PAYMILL [API](https://www.paymill.com/en-gb/documentation-3
 Available methods are (depending on the service):
 
 - **create ( or createXXX )**
-A service may include multiple create methods, depending on the parameters. Accepts arguments. Cannot create an object locally and call create, you always have to supply parameters.
+A service may include multiple create methods, depending on the parameters. You cannot create an object locally and call create with it, you have to supply the input parameters.
 - **detail** 
 Accepts an object or an objects id and returns an object. If the parameter is an object, the same object will be updated and returned.
 - **remove**
@@ -78,7 +78,7 @@ The last parameter of every service method is a callback. The callback will be e
 - **Node** 
 In Node, the wrapper expects the callback to be a function in the form ``function(error,result)`` .
 - **Parse**
-In Parse, the wrappe expect the callback to be an object in the form 
+In Parse, the wrapper expects the callback to be an object in the form 
 
 ```
 var callback= {
@@ -109,7 +109,7 @@ The Wrapper deserializes all responses from the API. If you need to access the o
 
 - Install node.js
 - Run ``npm install`` to install (dependencies) or ``sudo npm install -g`` to install dependecies globally.
-- run ``npm test`` to run jshint and mocha tests. **Note:** you have to have a valid private kay in a ``PMAPIKEY`` environment variable.
+- run ``npm test`` to run jshint and mocha tests. **Note:** you have to have a valid private key in a ``PMAPIKEY`` environment variable.
 - run ``npm run-script docs`` to generate documentation
 
 (if Error: Cannot find module X, check if $NODE_PATH is correct)
