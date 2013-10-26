@@ -50,7 +50,7 @@
     "when": "~2.5.0"
   },
   "devDependencies": {
-    "jsdoc": "git://github.com/jsdoc3/jsdoc.git",
+    "jsdoc": "~3.2.1",
     "jshint": "~2.3.0",
     "grunt-cli": "~0.1.9",
     "mocha": "~1.13.0",
