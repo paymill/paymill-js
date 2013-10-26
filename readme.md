@@ -3,6 +3,7 @@
 
 [![Dependency Status](https://david-dm.org/paymill/paymill-js.png)](https://david-dm.org/paymill/paymill-js)
 [![devDependency Status](https://david-dm.org/paymill/paymill-js/dev-status.png)](https://david-dm.org/paymill/paymill-js#info=devDependencies)
+[![NPM version](https://badge.fury.io/js/paymill-wrapper.png)](http://badge.fury.io/js/paymill-wrapper)
 <!--
 [![Build Status](https://travis-ci.org/paymill/paymill-js.png?branch=master)](https://travis-ci.org/paymill/paymill-js)
 [![NPM version](https://badge.fury.io/js/paymill.node.js.png)](http://badge.fury.io/js/paymill-wrapper)
@@ -23,7 +24,7 @@ An universal JavaScript API wrapper. Works with [Node](http://nodejs.org/), [Par
 ## Installation
 ### Node
 
-Install the package using npm: ``npm install paymill.node.js`` or ``npm install -g paymill.node.js`` to install globaly.
+Install the package using npm: ``npm install paymill.node.js`` or ``npm install -g paymill.node.js`` to install globaly. You can also add ``paymill-wrapper`` to your ``package.json`` dependecies.
 
 Use the module with ``var paymill = require("paymill-wrapper");``.
 
