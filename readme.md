@@ -24,7 +24,7 @@ An universal JavaScript API wrapper. Works with [Node](http://nodejs.org/), [Par
 ## Installation
 ### Node
 
-Install the package using npm: ``npm install paymill.node.js`` or ``npm install -g paymill.node.js`` to install globaly. You can also add ``paymill-wrapper`` to your ``package.json`` dependecies.
+Install the package using npm: ``npm install paymill-wrapper`` or ``npm install -g paymill-wrapper`` to install globaly. You can also add ``paymill-wrapper`` to your ``package.json`` dependecies.
 
 Use the module with ``var paymill = require("paymill-wrapper");``.
 
@@ -111,7 +111,7 @@ The Wrapper deserializes all responses from the API. If you need to access the o
 ### Getting started:
 
 - Install node.js
-- Run ``npm install`` to install (dependencies) or ``sudo npm install -g`` to install dependecies globally.
+- Run ``npm install`` to install dependencies or ``sudo npm install -g`` to install dependecies globally.
 - run ``npm test`` to run jshint and mocha tests. **Note:** you have to have a valid private key in a ``PMAPIKEY`` environment variable.
 - run ``npm run-script docs`` to generate documentation
 
