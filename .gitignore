@@ -18,3 +18,5 @@ node_modules
 out
 coverage
 dist
+paymill.sublime-project
+paymill.sublime-workspace
