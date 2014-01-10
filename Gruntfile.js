@@ -11,6 +11,11 @@ module.exports = function(grunt) {
 				dest : 'paymill.parse.js',
 
 			},
+			apiomat : {
+                                src : ['paymill.js', 'lib/*.js','lib/models/*.js','lib/services/*.js','libapiomat/*.js'],
+                                dest : 'paymill.apiomat.js',
+
+                        },
 		},
 	});
 	grunt.loadNpmTasks('grunt-contrib-concat');

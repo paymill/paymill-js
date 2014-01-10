@@ -3236,56 +3236,95 @@ WebhookService.prototype.update = function(obj, cb) {
  */
 exports.webhooks = new WebhookService();
 
-function ParseHandler() {
+function ApiomatHandler()
+{
+	
+	this.when = require('when');
 }
 
-ParseHandler.prototype = ExternalHandler.prototype;
-ParseHandler.prototype.constructor = ParseHandler;
-
-ParseHandler.prototype.getDeferedObject = function() {
-	return new Parse.Promise();
+ApiomatHandler.prototype = ExternalHandler.prototype;
+ApiomatHandler.prototype.constructor = ApiomatHandler;
+ApiomatHandler.prototype.getDeferedObject = function() {
+	return this.when.defer();
 };
 
-ParseHandler.prototype.getPromiseObject = function(promise) {
-	return promise;
+ApiomatHandler.prototype.getPromiseObject = function(defer) {
+	return defer.promise;
+
 };
-ParseHandler.prototype.httpRequest = function(httpRequest) {
+ApiomatHandler.prototype.httpRequest = function(httpRequest) {
 	var defer = external.getDeferedObject();
 	var promise = external.getPromiseObject(defer);
-	var reqParam = {
-		url : "https://" + this.apiKey + ":@" + apiHost + apiBaseUrl + httpRequest.path,
-		method : httpRequest.method,
-		httpRequest : httpRequest.requestBody,
-		headers : httpRequest.headers,
-		success : function(httpResponse) {
-			if (httpResponse.status != 200) {
-				defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text));
-			} else {
-				defer.resolve(httpResponse.text);
-			}
-		},
-		error : function(httpResponse) {
-			defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text));
+	
+	var path = "https://" + apiHost + apiBaseUrl + httpRequest.path;
+	var headers =  httpRequest.headers;
+	/* set Auth */
+	headers['Authorization'] = 'Basic ' + AOM.toBase64(this.apiKey + ':');
+	/* remove Content-Length header if 0 (else error occurres */
+	if(headers['Content-Length'] && headers['Content-Length'] == '0.0')
+	{
+		delete headers['Content-Length'];
+	}
+	/* Callback handlers */
+	var successCB = function (msg, code) { 		
+		if(code !== 200)
+		{
+			defer.reject(new PMError(PMError.Type.API, data, "http status code:" + code + "\nheaders:" + headers + "\ndata:" + msg));
+		}
+		else
+		{
+			defer.resolve(msg);
 		}
 	};
-	Parse.Cloud.httpRequest(reqParam);
+	var errorCB = function (msg, code) {
+		AOM.logError(msg);
+		defer.reject(new PMError(PMError.Type.IO, null, msg));		
+	};
+
+	var body = '';
+	if ( typeof httpRequest.requestBody === "string" && httpRequest.requestBody.length > 0) {
+		body = httpRequest.requestBody;
+	}
+
+	/* Send requests */
+	if(httpRequest.method === 'GET')
+	{
+		/* remove Content-Length header if 0 (else error occurres ) */
+		delete headers['Content-Length'];
+		AOM.getRequest( path, headers, successCB, errorCB);
+	}
+	else if(httpRequest.method === 'POST')
+	{		
+		AOM.postRequestEntity( path, body, headers, successCB, errorCB);
+	}
+	else if(httpRequest.method === 'PUT')
+	{	
+		AOM.putRequest( path, params, headers, successCB, errorCB);
+	}
+	else if(httpRequest.method === 'DELETE')
+	{
+		/* remove Content-Length header if 0 (else error occurres ) */
+		delete headers['Content-Length'];
+		AOM.deleteRequest( path, headers, successCB, errorCB);
+	}
+
 	return promise;
 };
-ParseHandler.prototype.includeCallbackInPromise = function(promise,callback) {
+ApiomatHandler.prototype.includeCallbackInPromise = function(promise, callback) {
 	var positive, negative;
 	if (!callback) {
 		return promise;
 	}
-	if (__.isFunction(callback.success)) {
+	if (__.isFunction(callback.onOk)) {
 		positive = function(result) {
-			callback.success(result);
-			return Parse.Promise.as(result);
+			callback.onOk(result);
+			return when.resolve(result);
 		};
 	}
-	if (__.isFunction(callback.error)) {
+	if (__.isFunction(callback.onError)) {
 		negative = function(error) {
-			callback.error(error);
-			return Parse.Promise.error(error);
+			callback.onError(error);
+			return when.reject(error);
 		};
 	}
 	if (positive !== undefined || negative !== undefined) {
@@ -3293,4 +3332,4 @@ ParseHandler.prototype.includeCallbackInPromise = function(promise,callback) {
 	}
 	return promise;
 };
-var external = new ParseHandler();
+var external = new ApiomatHandler();
