@@ -34,6 +34,11 @@ Copy ``paymill.parse.js`` to your your cloud code folder.
 
 Use the module with ``var paymill = require("cloud/paymill.parse.js");``.
 
+### apiOmat
+
+In your [apiOmat](http://www.apiomat.com) dashboard add the Modules 'Paymill' and 'Server Code' to use paymill function in 'Server Code' module.
+See [documentation](http://www.apiomat.com/docs/modules/paymill-module/) of the module for further informations.
+
 ## Usage
 
 ### Initialization 

@@ -1,0 +1,300 @@
+Classes
+-------
+Item
+ - name
+ - amount
+Client (INHERIT FROM User)
+ - emailAddress
+ - description
+ - List<Item> shoppedItems
+
+
+Server Code
+-----------
+
+var key = "83d98127b973dc4920c317a09954925d";
+
+var paymill = require('paymill.apiomat');
+paymill.initialize(key);
+
+/* For more info see http://www.apiomat.com/docs/modules/server-code-module/ */
+function aom_beforePost( obj ) {
+  /* here your may tweak your objects values before saving, like */
+  //obj.counter++;
+}
+
+function aom_afterPost(obj) {
+  /* The following code sends a request to an external api. */
+  var client = undefined;
+  createClient(paymill, obj.userName).then(function(result) {				
+	AOM.log("Client ID: " + result.id);	
+	obj.foreignId = result.id;
+  	obj.save();
+   }).then(function() { 
+   	AOM.log("Saved client");
+   }, function(err) {
+	AOM.log("Error: " + err);
+	});
+}
+
+function createClient(pm, userName)
+{
+	var description = "desc" + randomAmount();
+	var email = userName + '_' + randomAmount() + "@apiomattest.com";
+	return pm.clients.create(email, description);
+}
+
+function createOffer(offer)
+{
+  	return paymill.offers.create(offer.amount+'', 'EUR', offer.interval+ ' MONTH', offer.name+'');
+}
+
+function randomAmount(from, to)
+{
+	if (!from) {
+		return randomAmount(100, to);
+	}
+	if (!to) {
+		return randomAmount(from, 10000);
+	}
+	return from + Math.floor(Math.random() * (to - from));
+};
+
+
+function aom_beforeGet(obj) {   
+  /* Get client details from paymill  */
+  var clientId = obj.foreignId;
+  if(clientId && typeof clientId !== 'undefined')
+  {
+  	/* fetch client infos from paymill */
+  	paymill.clients.detail(''+clientId).then(function(result) {				
+		AOM.log("Fetched Client Mail: " + result.email);
+		obj.emailAddress = result.email;
+   	}).then(function() { 
+   			AOM.log("Fetched client");
+   		}, function(err) {
+			AOM.log("Fetching Error: " + err);
+	});		
+  }
+}
+
+function aom_beforePut( objFromDB, obj ) {
+  /* here your may tweak your objects values before updating; the objFromDB
+   * represents the object before updating, while the obj contains the updated values;
+   * Please note that the following example contains specific attributes temp and maxTemp */
+  // if(obj.temp>objFromDB.maxTemp) {obj.maxTemp=obj.temp;}
+  /* you can return a boolean true here to omit updating the value internally */
+}
+
+function aom_afterPut( obj ) {
+  /* here you can do action after the object was updated */
+}
+
+function aom_beforeDelete(obj) {
+  /* you may want to check if an other object was deleted before:*/
+  //omitDeletion = obj.myReferences.length == 0;
+  //return omitDeletion;
+}
+
+function aom_afterGetAll(objects, query) {
+  var clients = [];
+  var wait = true;
+  /* Implementing this method may slow down your queries, depending on the result size!
+  you may want to manipulate values (objects is an array) here.*/
+  paymill.clients.list().then(function(result) {
+  	AOM.log("Count: " + result.count);  	
+  	for(var i=0;i<result.items.length;i++)
+  	{
+  		var item = result.items[i];
+  		var client = AOM.createObject('Client');
+  		AOM.log("Item: " + item.email);
+  		if(item.email)
+  		{
+	  		client.emailAddress = item.email;
+	  		client.foreignId = item.id;
+	  		client.description = item.description;
+	  		clients.push(client);
+  		}
+  	}
+  	wait = false;
+  }).then(function() { 
+   	AOM.log("Fetched clients list");
+   	wait = false;
+   }, function(err) {
+	AOM.log("Fetching list Error: " + err);
+	wait = false;
+   });
+   
+   /* waiting here for then function */
+   while(wait)
+   {
+   	
+   }
+   
+   return clients;	
+}
+
+/* functions to tweak references */ 
+
+function aom_beforePostRef (obj, referencedObject, referenceName) {
+  /* Let's subscribe offers */
+  if(referenceName === 'subscribedOffers')
+  {  	
+  	var clientId = obj.foreignId;
+  	var offer = referencedObject;
+  	var clientDetail = undefined;
+  	var offerDetail = undefined;
+  	if(clientId)
+  	{
+  		var wait = true;
+  		paymill.clients.detail(''+clientId).then(function (client) {
+  			clientDetail = client;  		
+  			return paymill.offers.detail(''+offer.foreignId);  			
+  		}).then(function(offer) {
+  			AOM.log("Offer " + offer.id);
+  			offerDetail = offer;
+  			/* we assume that client has payment already */
+  			return paymill.payments.create(defaultToken, clientDetail);  			
+  		}).then(function(payment) {
+  			AOM.log("Attach to payment " + payment);
+  			/* subscribe */
+  			return paymill.subscriptions.create(offerDetail, payment, clientDetail);
+  		}).then(function(subscription) {
+			AOM.log("Subscription: " + subscription.id);			
+		}).then(function(result) {
+			AOM.log("Finished subscription");
+			wait = false;
+		}, function(err) {
+			wait = false;
+			AOM.throwException("Error on pay: " + err);
+		});
+		
+	  	while(wait)
+		{
+			
+		}
+  	}
+  	
+  }
+}
+
+function aom_afterPostRef (obj, referencedObject, referenceName) {
+  /* Let's pay the shopped item */
+  if(referenceName === 'shoppedItems')
+  {
+  	var wait = true;
+  	var clientId = obj.foreignId+'';
+  	var clientDetail = undefined;
+  	var item = referencedObject;
+  	var description = "Test Buy for " + item.name;
+  	var amount = item.price/1;
+  	paymill.clients.detail(clientId).then(function(client) {	  		
+  		AOM.log("Client: " + client.id);
+  		clientDetail = client;
+  		/* Load existing payment or create a new one */
+  		if(client.payment.length > 0)
+  		{
+  			return paymill.payments.detail(client.payment[0]);
+  		}
+  		else
+  		{
+  			return paymill.payments.create(defaultToken, client);
+  		}
+  	}).then(function(payment) {
+		/* only use default token */
+		AOM.log("Payment: " + payment.id);
+  		return paymill.transactions.createWithPayment(payment, amount, 'EUR', description, clientDetail);
+	}).then(function(transaction) {				
+		AOM.log('Amount: ' + transaction.origin_amount + ' == ' + amount);
+		AOM.log('Description: ' + transaction.description + ' == ' + description);		
+	}).then(function(result) {
+		AOM.log("Finished transaction");
+		wait = false;
+	}, function(err) {
+		wait = false;
+		AOM.throwException("Error on pay: " + err);
+	});
+	
+	while(wait)
+	{
+		
+	}
+  }
+}
+
+function aom_beforeDeleteRef (obj, referencedObject, referenceName) {
+   /* here you can manipulate both objects before the reference from obj to referencedObject is removed */
+}
+
+function aom_afterDeleteRef (obj, referencedObject, referenceName) {
+  /* here you can do action after the obj reference to another object was removed */
+}
+
+
+-------------------
+
+Variante mit CB
+
+function aom_afterPostRef (obj, referencedObject, referenceName) {
+  /* Let's pay the shopped item */
+  if(referenceName === 'shoppedItems')
+  {
+  	var wait = true;
+  	var clientId = obj.foreignId;
+  	var clientDetail = undefined;
+  	var item = referencedObject;
+  	var description = "Test Buy for " + item.name;
+  	var amount = item.price/1;
+  	
+  	var transCB = {
+  		onOk: function(transaction)	{
+  			AOM.log('Amount: ' + transaction.origin_amount + ' == ' + amount);
+			AOM.log('Description: ' + transaction.description + ' == ' + description);
+			wait = false;
+  		},
+  		onError: function(error) {
+  			AOM.log("Transaction Error: " + error);
+  			wait = false;
+  		}
+  	};
+  		  	
+  	var payCB = {
+  		onOk: function(payment)	{
+  			AOM.log("Payment: " + payment.id);
+  			paymill.transactions.createWithPayment(payment, amount, 'EUR', description, clientDetail, undefined, undefined, transCB);
+  		},
+  		onError: function(error) {
+  			AOM.log("Payment Error: " + error);
+  			wait = false;
+  		}
+  	};
+  	
+  	var cb = {
+  		onOk: function(client)	{
+  			AOM.log("Client in CB: " + client.id);
+	  		clientDetail = client;
+	  		/* Load existing payment or create a new one */
+	  		if(client.payment.length > 0)
+	  		{
+	  			paymill.payments.detail(client.payment[0], payCB);
+	  		}
+	  		else
+	  		{
+	  			paymill.payments.create(defaultToken, client, payCB);
+	  		}
+  		},
+  		onError: function(error) {
+  			AOM.log("Client Detail Error: " + error);
+  			wait = false;
+  		}
+  	};
+
+  	
+	paymill.clients.detail(''+clientId, cb);
+	
+	while(wait)
+	{
+		
+	}
+  }
+}
