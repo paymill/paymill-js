@@ -1024,14 +1024,32 @@ Payment.Filter.prototype.created_at = function(from, to) {
  */
 exports.Payment = Payment;
 
+/**
+ *
+ * Creates a new PaymillList. Used internally.
+ * @class PaymillList
+ * @extends PaymillObject
+ * @classdesc The list object is used to devliver list results. The actual array is contained in the items property, while count holds the total count.
+ */
+
 function PaymillList() {
 
 }
 
+/**
+ * Total count of items. Usefull to control pagination.
+ * @type {number}
+ * @memberof PaymillList.prototype
+ */
 PaymillList.prototype.count = null;
+/**
+ * The actual items.
+ * @type {Array}
+ * @memberof PaymillList.prototype
+ */
 PaymillList.prototype.items = null;
 
-exports.PaymillList=PaymillList;
+exports.PaymillList = PaymillList;
 
 function PaymillObject() {
 
@@ -2226,7 +2244,7 @@ Webhook.Filter.prototype.url = function(url) {
  * @param {(number|Date)} from the start date of the filter, either as Date or Unix-time number.
  * @param {(number|Date)} to the end date of the filter, either as Date or Unix-time number.
  * @returns {Filter} the same filter.
- * @memberof Client.Filter
+ * @memberof Webhook.Filter
  */
 Webhook.Filter.prototype.created_at = function(from, to) {
 	var realFrom = getTimeFromObject(from);
@@ -3343,13 +3361,13 @@ var external = new NodeHandler();
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferInterval.html">OfferInterval</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferInterval.html">OfferInterval</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="PaymillList.html">PaymillList</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Oct 23 2013 13:37:46 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Sat Jan 25 2014 16:35:44 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>
