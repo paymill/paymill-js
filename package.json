@@ -33,7 +33,7 @@
   "license": "MIT",
   "main": "paymill.node.js",
   "scripts": {
-    "test": "istanbul cover _mocha -- -R spec",
+    "test": "istanbul cover _mocha -- -R spec -t 4000",
     "pretest": "grunt concat",
     "posttest": "jshint paymill.node.js",
     "docs": "grunt concat && jsdoc paymill.node.js readme.md",
