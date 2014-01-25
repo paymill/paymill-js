@@ -997,14 +997,32 @@ Payment.Filter.prototype.created_at = function(from, to) {
  */
 exports.Payment = Payment;
 
+/**
+ *
+ * Creates a new PaymillList. Used internally.
+ * @class PaymillList
+ * @extends PaymillObject
+ * @classdesc The list object is used to devliver list results. The actual array is contained in the items property, while count holds the total count.
+ */
+
 function PaymillList() {
 
 }
 
+/**
+ * Total count of items. Usefull to control pagination.
+ * @type {number}
+ * @memberof PaymillList.prototype
+ */
 PaymillList.prototype.count = null;
+/**
+ * The actual items.
+ * @type {Array}
+ * @memberof PaymillList.prototype
+ */
 PaymillList.prototype.items = null;
 
-exports.PaymillList=PaymillList;
+exports.PaymillList = PaymillList;
 
 function PaymillObject() {
 
@@ -3256,7 +3274,6 @@ ParseHandler.prototype.httpRequest = function(httpRequest) {
 		url : "https://" + this.apiKey + ":@" + apiHost + apiBaseUrl + httpRequest.path,
 		method : httpRequest.method,
 		httpRequest : httpRequest.requestBody,
-		headers : httpRequest.headers,
 		success : function(httpResponse) {
 			if (httpResponse.status != 200) {
 				defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text));

@@ -18,7 +18,6 @@ ParseHandler.prototype.httpRequest = function(httpRequest) {
 		url : "https://" + this.apiKey + ":@" + apiHost + apiBaseUrl + httpRequest.path,
 		method : httpRequest.method,
 		httpRequest : httpRequest.requestBody,
-		headers : httpRequest.headers,
 		success : function(httpResponse) {
 			if (httpResponse.status != 200) {
 				defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text));

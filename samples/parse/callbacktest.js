@@ -80,3 +80,43 @@ Parse.Cloud.define("testPMPromiseAndCallback", function(request, response) {
 		}
 	});
 });
+Parse.Cloud.define("testPMGetWithParams", function(request, response) {
+	var withPromise;
+	var withCallback = true;
+	var results = [];
+	pm.clients.list(10,10,null,pm.Client.Order.created_at().asc()).then(function(result) {
+		results.push("Client promise result is OK:" + JSON.stringify(result));
+		withPromise = true;
+		if (withPromise && withCallback) {
+			var res = results.join("\n");
+			response.success(res);
+		}
+	}, function(e) {
+		results.push("Promise result is NOT ok:" + e);
+		withPromise = true;
+		if (withPromise && withCallback) {
+			var res = results.join("\n");
+			response.success(res);
+		}
+	});
+});
+Parse.Cloud.define("testPMPostWithParams", function(request, response) {
+	var withPromise;
+	var withCallback = true;
+	var results = [];
+	pm.clients.create("test@mail.com","lovely client").then(function(result) {
+		results.push("Client promise result is OK:" + JSON.stringify(result));
+		withPromise = true;
+		if (withPromise && withCallback) {
+			var res = results.join("\n");
+			response.success(res);
+		}
+	}, function(e) {
+		results.push("Promise result is NOT ok:" + e);
+		withPromise = true;
+		if (withPromise && withCallback) {
+			var res = results.join("\n");
+			response.success(res);
+		}
+	});
+});
