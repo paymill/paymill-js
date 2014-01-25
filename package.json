@@ -37,24 +37,24 @@
     "pretest": "grunt concat",
     "posttest": "jshint paymill.node.js",
     "docs": "grunt concat && jsdoc paymill.node.js readme.md",
-    "stest": "grunt concat && mocha"
+    "stest": "grunt concat && mocha --timeout 4000"
   },
   "jshintConfig": {
     "node": true,
     "globals": {
       "Parse": false
     }
-  },
+  },  
   "dependencies": {
     "underscore": "~1.5.2",
-    "when": "~2.5.0"
+    "when": "~2.7.1"
   },
   "devDependencies": {
-    "jsdoc": "~3.2.1",
-    "jshint": "~2.3.0",
+    "jsdoc": "~3.2.2",
+    "jshint": "~2.4.2",
     "grunt-cli": "~0.1.9",
-    "mocha": "~1.13.0",
-    "istanbul": "~0.1.44",
+    "mocha": "~1.17.1",
+    "istanbul": "~0.2.4",
     "expect.js": "~0.2.0",
     "grunt": "~0.4.1",
     "grunt-contrib-concat": "~0.3.0"
