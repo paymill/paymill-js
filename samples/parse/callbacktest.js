@@ -84,7 +84,7 @@ Parse.Cloud.define("testPMGetWithParams", function(request, response) {
 	var withPromise;
 	var withCallback = true;
 	var results = [];
-	pm.clients.list(10,10,null,pm.Client.Order.created_at().asc()).then(function(result) {
+	pm.clients.list(10, 10, null, pm.Client.Order.created_at().asc()).then(function(result) {
 		results.push("Client promise result is OK:" + JSON.stringify(result));
 		withPromise = true;
 		if (withPromise && withCallback) {
@@ -104,7 +104,7 @@ Parse.Cloud.define("testPMPostWithParams", function(request, response) {
 	var withPromise;
 	var withCallback = true;
 	var results = [];
-	pm.clients.create("test@mail.com","lovely client").then(function(result) {
+	pm.clients.create("test@mail.com", "lovely client").then(function(result) {
 		results.push("Client promise result is OK:" + JSON.stringify(result));
 		withPromise = true;
 		if (withPromise && withCallback) {
@@ -120,3 +120,11 @@ Parse.Cloud.define("testPMPostWithParams", function(request, response) {
 		}
 	});
 });
+
+Parse.Cloud.define("testCreatePayment", function(request, response) {
+	pm.payments.create("098f6bcd4621d373cade4e832627b4f6").then(function(payment) {
+		response.success("Payment created successfully");
+	}, function(error) {
+		response.error("Problem creating payment: " + error.message);
+	});
+}); 

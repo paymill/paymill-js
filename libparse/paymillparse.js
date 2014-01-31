@@ -17,7 +17,6 @@ ParseHandler.prototype.httpRequest = function(httpRequest) {
 	var reqParam = {
 		url : "https://" + this.apiKey + ":@" + apiHost + apiBaseUrl + httpRequest.path,
 		method : httpRequest.method,
-		httpRequest : httpRequest.requestBody,
 		success : function(httpResponse) {
 			if (httpResponse.status != 200) {
 				defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text));
@@ -29,6 +28,9 @@ ParseHandler.prototype.httpRequest = function(httpRequest) {
 			defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text));
 		}
 	};
+	if (httpRequest.method=="POST" || httpRequest.method=="PUT") {
+		reqParam.body=httpRequest.params;
+	}
 	Parse.Cloud.httpRequest(reqParam);
 	return promise;
 };

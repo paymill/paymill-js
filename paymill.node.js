@@ -47,6 +47,7 @@ ExternalHandler.prototype.includeCallbackInPromise = function(httpRequest) {
 function HttpRequest(path, method, params) {
 	this.path = path;
 	this.method = method;
+	this.params = params;
 	this.requestBody = null;
 	this.headers = {};
 	if (method == "GET" || method == "DELETE") {
