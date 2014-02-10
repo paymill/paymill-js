@@ -16,9 +16,9 @@ An universal JavaScript API wrapper. Works with [Node](http://nodejs.org/), [Par
 
 - If you are not familiar with PAYMILL, start with the [documentation](https://www.paymill.com/en-gb/documentation-3/).
 - Install the latest release.
-- Check the tests / samples.
-- Check the API [reference](https://www.paymill.com/en-gb/documentation-3/reference/api-reference/).
+- Check the API [reference](https://www.paymill.com/en-gb/documentation-3/reference/api-reference/). For code snippets select "JS".
 - Check the full JSdoc [documentation](http://paymill.github.io/paymill-js/docs/).
+- Check the tests / samples.
 
 
 ## Installation
@@ -52,8 +52,8 @@ Available methods are (depending on the service):
 
 - **create ( or createXXX )**
 A service may include multiple create methods, depending on the parameters. You cannot create an object locally and call create with it, you have to supply the input parameters.
-- **detail** 
-Accepts an object or an objects id and returns an object. If the parameter is an object, the same object will be updated and returned.
+- **update** 
+Accepts an object. The same object will be updated and returned.
 - **remove**
 Accepts an object or an objects id and returns an object. If the parameter is an object, the same object will be updated and returned.
 - **detail**
@@ -79,7 +79,7 @@ paymill.transactions.detail(transaction).then(function(detail){
 ```
 ### Callbacks and promises
 
-Alle service methods are asynchronous. To receive the result you either have to specify a callback function or you use the returned [Promise](http://promises-aplus.github.io/promises-spec/).
+All service methods are asynchronous. To receive the result you either have to specify a callback function or you use the returned [Promise](http://promises-aplus.github.io/promises-spec/).
 #### Callbacks
 The last parameter of every service method is a callback. The callback will be executed after the request. The format of the callbacks is platform specific.
 
