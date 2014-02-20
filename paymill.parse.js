@@ -445,6 +445,28 @@ Fee.prototype.payment = null;
 Fee.prototype.amount = null;
 
 /**
+ * ISO 4217 formatted currency code.
+ * @type {string}
+ * @memberof Fee.prototype
+ */
+Fee.prototype.currency = null;
+/**
+ * Unix-Timestamp for the billing date.
+ * @type {Date}
+ * @memberof Fee.prototype
+ */
+Fee.prototype.billed_at = null;
+
+/*
+ * special fields
+ */
+Fee.prototype.getFieldDefinitions = function() {
+	return {
+		billed_at : deserializeDate,
+	};
+};
+
+/**
  * Type of a Fee.
  * @memberof Fee
  * @property {string} APPLICATION
@@ -2925,7 +2947,7 @@ SubscriptionService.prototype.detail = function(obj, cb) {
  * @param {Subscription} obj a Subscription object.
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError.
- * @memberOf TransactionService
+ * @memberOf SubscriptionService
  */
 SubscriptionService.prototype.update = function(obj, cb) {
 	return this._update(obj, cb);
@@ -2954,7 +2976,7 @@ TransactionService.prototype.getEndpointPath = function() {
 	return "/transactions";
 };
 
-TransactionService.prototype._createTransaction = function(map, amount, currency, description, client, fee_amount, fee_payment, cb) {
+TransactionService.prototype._createTransaction = function(map, amount, currency, description, client, fee_amount, fee_payment, fee_currency, cb) {
 	if (!(__.isString(amount) || __.isNumber(amount))) {
 		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "amount must be a string or integer"));
 	}
@@ -2977,6 +2999,9 @@ TransactionService.prototype._createTransaction = function(map, amount, currency
 	if (fee_payment) {
 		map.fee_payment = fee_payment;
 	}
+	if (fee_currency) {
+		map.fee_currency = fee_currency;
+	}
 	return this._create(map, Transaction, cb);
 };
 
@@ -2989,11 +3014,12 @@ TransactionService.prototype._createTransaction = function(map, amount, currency
  * @param {(string|Client)} [client] the identifier of a client or a client.
  * @param {(number|string)} fee_amount Fee included in the transaction amount (set by a connected app). Mandatory if fee_payment is set.
  * @param {string} fee_payment the identifier of the payment from which the fee will be charged (creditcard-object or directdebit-object). Mandatory if fee_amount is set.
+ * @param {string} fee_currency ISO 4217 formatted currency code. If not set, the currency of the transaction is used.
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError.
  * @memberOf TransactionService
  */
-TransactionService.prototype.createWithToken = function(token, amount, currency, description, client, fee_amount, fee_payment, cb) {
+TransactionService.prototype.createWithToken = function(token, amount, currency, description, client, fee_amount, fee_payment, fee_currency, cb) {
 	try {
 		if (!__.isString(token)) {
 			return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "token must be a string"));
@@ -3001,7 +3027,7 @@ TransactionService.prototype.createWithToken = function(token, amount, currency,
 		var map = {
 			"token" : token,
 		};
-		return this._createTransaction(map, amount, currency, description, client, fee_amount, fee_payment, cb);
+		return this._createTransaction(map, amount, currency, description, client, fee_amount, fee_payment, fee_currency, cb);
 	} catch(e) {
 		return this._reject(e);
 	}
@@ -3015,11 +3041,12 @@ TransactionService.prototype.createWithToken = function(token, amount, currency,
  * @param {(string|Client)} [client] the identifier of a client or a client. When this parameter is used, you have also to specify a payment method which is not assigned to a client yet. If you attempt to use this parameter when creating a transaction and when specifying a token or preauthorization, the specified client will be ignored.
  * @param {(number|string)} fee_amount Fee included in the transaction amount (set by a connected app). Mandatory if fee_payment is set.
  * @param {string} fee_payment the identifier of the payment from which the fee will be charged (creditcard-object or directdebit-object). Mandatory if fee_amount is set.
+ * @param {string} fee_currency ISO 4217 formatted currency code. If not set, the currency of the transaction is used.
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError.
  * @memberOf TransactionService
  */
-TransactionService.prototype.createWithPayment = function(payment, amount, currency, description, client, fee_amount, fee_payment, cb) {
+TransactionService.prototype.createWithPayment = function(payment, amount, currency, description, client, fee_amount, fee_payment, fee_currency, cb) {
 	try {
 		var id = getIdFromObject(payment, Payment);
 		var map = {
@@ -3039,11 +3066,12 @@ TransactionService.prototype.createWithPayment = function(payment, amount, curre
  * @param {(string|Client)} [client] the identifier of a client or a client. When this parameter is used, you have also to specify a payment method which is not assigned to a client yet. If you attempt to use this parameter when creating a transaction and when specifying a token or preauthorization, the specified client will be ignored.
  * @param {(number|string)} fee_amount Fee included in the transaction amount (set by a connected app). Mandatory if fee_payment is set.
  * @param {string} fee_payment the identifier of the payment from which the fee will be charged (creditcard-object or directdebit-object). Mandatory if fee_amount is set.
+ * @param {string} fee_currency ISO 4217 formatted currency code. If not set, the currency of the transaction is used.
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError.
  * @memberOf TransactionService
  */
-TransactionService.prototype.createWithPreauthorization = function(preauthroization, amount, currency, description, client, fee_amount, fee_payment, cb) {
+TransactionService.prototype.createWithPreauthorization = function(preauthroization, amount, currency, description, client, fee_amount, fee_payment, fee_currency, cb) {
 	try {
 		var id = getIdFromObject(preauthroization, Preauthorization);
 		var map = {
@@ -3244,7 +3272,7 @@ WebhookService.prototype.detail = function(obj, cb) {
  * @param {Webhook} obj a Webhook object.
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError.
- * @memberOf TransactionService
+ * @memberOf WebhookService
  */
 WebhookService.prototype.update = function(obj, cb) {
 	return this._update(obj, cb);

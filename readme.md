@@ -10,7 +10,7 @@
 -->
 An universal JavaScript API wrapper. Works with [Node](http://nodejs.org/), [Parse](http://www.parse.com) and potentially any other javascript-based backend.
 
-**Note:** The wrapper is still in beta. Please open an issue and let us know if you find any bugs, have a feature request or have successfully integrated it into your project.
+Please open an issue and let us know if you find any bugs, have a feature request or have successfully integrated it into your project.
 
 ## Getting started
 
