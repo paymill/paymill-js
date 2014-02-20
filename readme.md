@@ -8,7 +8,7 @@
 [![Build Status](https://travis-ci.org/paymill/paymill-js.png?branch=master)](https://travis-ci.org/paymill/paymill-js)
 [![NPM version](https://badge.fury.io/js/paymill.node.js.png)](http://badge.fury.io/js/paymill-wrapper)
 -->
-An universal JavaScript API wrapper. Works with [Node](http://nodejs.org/), [Parse](http://www.parse.com) and potentially any other javascript-based backend.
+An universal JavaScript API wrapper. Works with [Node](http://nodejs.org/), [Parse](http://www.parse.com), [apiOmat](http://www.apiomat.com) and potentially any other javascript-based backend.
 
 Please open an issue and let us know if you find any bugs, have a feature request or have successfully integrated it into your project.
 
