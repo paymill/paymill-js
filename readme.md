@@ -137,6 +137,11 @@ XXX : {
 },
 ```
 
+## Changelog
+
+### 1.0.0
+* Stable release
+
 ## License
 
 Copyright 2013 PAYMILL GmbH.
