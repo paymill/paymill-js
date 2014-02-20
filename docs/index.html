@@ -41,129 +41,112 @@
 
 
     <section>
-        <article><p><img alt="PAYMILL icon" src="https://static.paymill.com/r/335f99eb3914d517bf392beb1adaf7cccef786b6/img/logo-download_Light.png"/></p>
-
-<p>
+        <article><p><img src="https://static.paymill.com/r/335f99eb3914d517bf392beb1adaf7cccef786b6/img/logo-download_Light.png" alt="PAYMILL icon"></p>
+<h1>PAYMILL-JS (beta)</h1>
+<p><a href="https://david-dm.org/paymill/paymill-js"><img src="https://david-dm.org/paymill/paymill-js.png" alt="Dependency Status"></a>
+<a href="https://david-dm.org/paymill/paymill-js#info=devDependencies"><img src="https://david-dm.org/paymill/paymill-js/dev-status.png" alt="devDependency Status"></a>
+<a href="http://badge.fury.io/js/paymill-wrapper"><img src="https://badge.fury.io/js/paymill-wrapper.png" alt="NPM version"></a>
+<!--
+[![Build Status](https://travis-ci.org/paymill/paymill-js.png?branch=master)](https://travis-ci.org/paymill/paymill-js)
+[![NPM version](https://badge.fury.io/js/paymill.node.js.png)](http://badge.fury.io/js/paymill-wrapper)
+-->
 An universal JavaScript API wrapper. Works with <a href="http://nodejs.org/">Node</a>, <a href="http://www.parse.com">Parse</a> and potentially any other javascript-based backend.</p>
-
-<p><strong>Note:</strong> The wrapper is still in beta. Please open an issue and let us know if you find any bugs, have a feature request or have successfully integrated it into your project.</p>
-
+<p>Please open an issue and let us know if you find any bugs, have a feature request or have successfully integrated it into your project.</p>
 <h2>Getting started</h2>
-
-<ul><li>If you are not familiar with PAYMILL, start with the <a href="https://www.paymill.com/en-gb/documentation-3/">documentation</a>.</li><li>Install the latest release.</li><li>Check the tests / samples.</li><li>Check the API <a href="https://www.paymill.com/en-gb/documentation-3/reference/api-reference/">reference</a>.</li><li>Check the full JSdoc <a href="http://paymill.github.io/paymill-js/docs/">documentation</a>.</li></ul>
-
+<ul>
+<li>If you are not familiar with PAYMILL, start with the <a href="https://www.paymill.com/en-gb/documentation-3/">documentation</a>.</li>
+<li>Install the latest release.</li>
+<li>Check the API <a href="https://www.paymill.com/en-gb/documentation-3/reference/api-reference/">reference</a>. For code snippets select &quot;JS&quot;.</li>
+<li>Check the full JSdoc <a href="http://paymill.github.io/paymill-js/docs/">documentation</a>.</li>
+<li>Check the tests / samples.</li>
+</ul>
 <h2>Installation</h2>
-
 <h3>Node</h3>
-
 <p>Install the package using npm: <code>npm install paymill-wrapper</code> or <code>npm install -g paymill-wrapper</code> to install globaly. You can also add <code>paymill-wrapper</code> to your <code>package.json</code> dependecies.</p>
-
 <p>Use the module with <code>var paymill = require(&quot;paymill-wrapper&quot;);</code>.</p>
-
 <h3>Parse</h3>
-
 <p>Copy <code>paymill.parse.js</code> to your your cloud code folder.</p>
-
 <p>Use the module with <code>var paymill = require(&quot;cloud/paymill.parse.js&quot;);</code>.</p>
-
 <h3>apiOmat</h3>
-
-<p>In your <a href="http://www.apiomat.com">apiOmat</a> dashboard add the Modules &#39;Paymill&#39; and &#39;Server Code&#39; to use paymill function in &#39;Server Code&#39; module.
+<p>In your <a href="http://www.apiomat.com">apiOmat</a> dashboard add the Modules 'Paymill' and 'Server Code' to use paymill function in 'Server Code' module.
 See <a href="http://www.apiomat.com/docs/modules/paymill-module/">documentation</a> of the module for further informations.</p>
-
 <h2>Usage</h2>
-
 <h3>Initialization</h3>
-
 <p>Before using the wrapper you have to initialize it, using your private PAYMILL key: <code>paymill.initialize(yourApiKey);</code>.</p>
-
 <h3>Services</h3>
-
 <p>Each endpoint of the PAYMILL <a href="https://www.paymill.com/en-gb/documentation-3/reference/api-reference/">API</a> has a corrseponding service. For example, to access transaction functions you can use <code>paymill.transactions</code>.</p>
-
 <p>Available methods are (depending on the service):</p>
-
-<ul><li><strong>create ( or createXXX )</strong>
-A service may include multiple create methods, depending on the parameters. You cannot create an object locally and call create with it, you have to supply the input parameters.</li><li><strong>detail</strong> 
-Accepts an object or an objects id and returns an object. If the parameter is an object, the same object will be updated and returned.</li><li><strong>remove</strong>
-Accepts an object or an objects id and returns an object. If the parameter is an object, the same object will be updated and returned.</li><li><strong>detail</strong>
-Accepts an object or an objects id. If the parameter is an object, acts like a &quot;refresh&quot; and updates it. </li><li><strong>list</strong>
+<ul>
+<li><strong>create ( or createXXX )</strong>
+A service may include multiple create methods, depending on the parameters. You cannot create an object locally and call create with it, you have to supply the input parameters.</li>
+<li><strong>update</strong> 
+Accepts an object. The same object will be updated and returned.</li>
+<li><strong>remove</strong>
+Accepts an object or an objects id and returns an object. If the parameter is an object, the same object will be updated and returned.</li>
+<li><strong>detail</strong>
+Accepts an object or an objects id. If the parameter is an object, acts like a &quot;refresh&quot; and updates it. </li>
+<li><strong>list</strong>
 Accepts count and offset parameters for pagination, as well as order and filter. Returns a List object, which holds the global count in <code>count</code> and an array of the objects in 
-<code>items</code></li></ul>
-
+<code>items</code></li>
+</ul>
 <h3>Removing, updating and retrieving</h3>
-
 <p>When you use methods like remove, update or detail with an object as argument, the wrapper will use the response from the API to update the <strong>same</strong> object and will return the same object. If you use the id of an object as a string, the wrapper will create a new object and return it.</p>
-
 <p>Example:</p>
-
-<p><code>
-var transaction; // some transaction you created
+<pre><code>var transaction; // some transaction you created
 paymill.transactions.detail(transaction).then(function(detail){
-	if (detail===transaction) {
-		console.log(&quot;Wrapper works!&quot;);
-	}
-});
-</code>
-### Callbacks and promises</p>
-
-<p>Alle service methods are asynchronous. To receive the result you either have to specify a callback function or you use the returned <a href="http://promises-aplus.github.io/promises-spec/">Promise</a>.
-#### Callbacks
-The last parameter of every service method is a callback. The callback will be executed after the request. The format of the callbacks is platform specific.</p>
-
-<ul><li><strong>Node</strong> 
-In Node, the wrapper expects the callback to be a function in the form <code>function(error,result)</code> .</li><li><strong>Parse</strong>
-In Parse, the wrapper expects the callback to be an object in the form </li></ul>
-
-<p><code>
-var callback= {
-	success: function(result) {…},
-	error: function(error) {..}
-}
-</code>
-#### Promises
-All service methods return an A+ compliant <a href="http://promises-aplus.github.io/promises-spec/">Promise</a>. The promise is resolved with the result or rejected with an error. You can chain promises like this:</p>
-
-<p><code>
-paymill.clients.create().then(function(client) {
-	//client created, lets create a payment
-	return paymill.payments.create(atoken,client);
+    if (detail===transaction) {
+        console.log(&quot;Wrapper works!&quot;);
+    }
+});</code></pre>
+<h3>Callbacks and promises</h3>
+<p>All service methods are asynchronous. To receive the result you either have to specify a callback function or you use the returned <a href="http://promises-aplus.github.io/promises-spec/">Promise</a>.</p>
+<h4>Callbacks</h4>
+<p>The last parameter of every service method is a callback. The callback will be executed after the request. The format of the callbacks is platform specific.</p>
+<ul>
+<li><strong>Node</strong> 
+In Node, the wrapper expects the callback to be a function in the form <code>function(error,result)</code> .</li>
+<li><strong>Parse</strong>
+In Parse, the wrapper expects the callback to be an object in the form </li>
+</ul>
+<pre><code>var callback= {
+    success: function(result) {…},
+    error: function(error) {..}
+}</code></pre>
+<h4>Promises</h4>
+<p>All service methods return an A+ compliant <a href="http://promises-aplus.github.io/promises-spec/">Promise</a>. The promise is resolved with the result or rejected with an error. You can chain promises like this:</p>
+<pre><code>paymill.clients.create().then(function(client) {
+    //client created, lets create a payment
+    return paymill.payments.create(atoken,client);
 }).then(function(payment){
-	//payment created, do something with it
+    //payment created, do something with it
 },function(error) {
-	// an error occured
-});
-</code></p>
-
+    // an error occured
+});</code></pre>
 <h3>Deserialization</h3>
-
 <p>The Wrapper deserializes all responses from the API. If you need to access the original json, all PAYMILL objects include the <code>originalJson</code> member, which holds the json used for deserialization</p>
-
 <h2>Contributors</h2>
-
 <h3>Getting started:</h3>
-
-<ul><li>Install node.js</li><li>Run <code>npm install</code> to install dependencies or <code>sudo npm install -g</code> to install dependecies globally.</li><li>run <code>npm test</code> to run jshint and mocha tests. <strong>Note:</strong> you have to have a valid private key in a <code>PMAPIKEY</code> environment variable.</li><li>run <code>npm run-script docs</code> to generate documentation</li></ul>
-
+<ul>
+<li>Install node.js</li>
+<li>Run <code>npm install</code> to install dependencies or <code>sudo npm install -g</code> to install dependecies globally.</li>
+<li>run <code>npm test</code> to run jshint and mocha tests. <strong>Note:</strong> you have to have a valid private key in a <code>PMAPIKEY</code> environment variable.</li>
+<li>run <code>npm run-script docs</code> to generate documentation</li>
+</ul>
 <p>(if Error: Cannot find module X, check if $NODE_PATH is correct)</p>
-
 <h3>Adding a new platform</h3>
-
 <p>To add a new platform (XXX), you have to:</p>
-
-<ul><li>Create a folder <code>libXXX</code>. </li><li>Implement an ExternalHandler. </li><li>Make sure <a href="http://underscorejs.org/">underscore.js</a> is available for your platform.</li><li>In Gruntfile.js add </li></ul>
-
-<p><code>
-XXX : {
-	src : [&#39;paymill.js&#39;, &#39;lib/*.js&#39;,&#39;lib/models/*.js&#39;,&#39;lib/services/*.js&#39;,&#39;libXXX/*.js&#39;],
-	dest : &#39;paymill.XXX.js&#39;,
-},
-</code></p>
-
+<ul>
+<li>Create a folder <code>libXXX</code>. </li>
+<li>Implement an ExternalHandler. </li>
+<li>Make sure <a href="http://underscorejs.org/">underscore.js</a> is available for your platform.</li>
+<li>In Gruntfile.js add </li>
+</ul>
+<pre><code>XXX : {
+    src : ['paymill.js', 'lib/*.js','lib/models/*.js','lib/services/*.js','libXXX/*.js'],
+    dest : 'paymill.XXX.js',
+},</code></pre>
 <h2>License</h2>
-
 <p>Copyright 2013 PAYMILL GmbH.</p>
-
 <p>MIT License (enclosed)</p></article>
     </section>
 
@@ -181,7 +164,7 @@ XXX : {
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Sat Jan 25 2014 16:35:44 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Feb 20 2014 17:47:36 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
