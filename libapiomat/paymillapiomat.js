@@ -94,4 +94,9 @@ ApiomatHandler.prototype.includeCallbackInPromise = function(promise, callback) 
 	}
 	return promise;
 };
+
+ApiomatHandler.prototype.getHandlerIdentifier = function() {
+	return "apiomat";
+};
+
 var external = new ApiomatHandler();

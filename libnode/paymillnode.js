@@ -67,4 +67,9 @@ NodeHandler.prototype.includeCallbackInPromise = function(promise, callback) {
 	}
 	return promise;
 };
+
+NodeHandler.prototype.getHandlerIdentifier = function() {
+	return "node";
+};
+
 var external = new NodeHandler();

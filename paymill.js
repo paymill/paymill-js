@@ -5,6 +5,9 @@ var __ = require("underscore");
 var apiHost = "api.paymill.com";
 var apiBaseUrl = "/v2";
 var apiEncoding = "utf8";
+/* note, we have to edit this manually, as the package.json is available only in node*/
+var version = "1.0.1";
+var sourcePrefix = "paymill-js";
 
 function ExternalHandler() {
 
@@ -37,6 +40,23 @@ ExternalHandler.prototype.includeCallbackInPromise = function(httpRequest) {
 	throw new PMError(PMError.Type.INTERNAL, "ExternalHandler.includeCallbackInPromise() is abstract! Did you initialze?");
 };
 
+/*
+ * Identifis the handler type.
+ * @abstract
+ * @return {string} the identifier of this handler, e.g. "node","parse"
+ */
+ExternalHandler.prototype.getHandlerIdentifier = function() {
+	throw new PMError(PMError.Type.INTERNAL, "ExternalHandler.getSourceIdentifier() is abstract! Did you initialze?");
+};
+
+/*
+ * Identify the wrapper version against the REST API.
+ * @abstract
+ * @return {string} the source parameter for transactions and preauthorizations. handler, e.g. "paymill-js-node-1.0.1"
+ */
+function getSourceIdentifier() {
+	return sourcePrefix + "-" + external.getSourceIdentifier + "-" + version;
+}
 /**
  * Callback for HttpClient requests.
  * @callback HttpClient~requestCallback
@@ -53,8 +73,8 @@ function HttpRequest(path, method, params) {
 	if (method == "GET" || method == "DELETE") {
 		this.path = this.path + urlEncode(params, true);
 		this.headers = {
-				"Content-Length" : 0
-			};
+			"Content-Length" : 0
+		};
 	} else {
 		if (params !== null) {
 			this.requestBody = urlEncode(params, false);

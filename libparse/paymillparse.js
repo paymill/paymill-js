@@ -56,4 +56,9 @@ ParseHandler.prototype.includeCallbackInPromise = function(promise,callback) {
 	}
 	return promise;
 };
+
+ParseHandler.prototype.getHandlerIdentifier = function() {
+	return "parse";
+};
+
 var external = new ParseHandler();
