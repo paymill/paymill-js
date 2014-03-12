@@ -139,6 +139,9 @@ XXX : {
 
 ## Changelog
 
+### 1.0.1
++ Added support for source identifier
+
 ### 1.0.0
 * Stable release
 
