@@ -6,7 +6,7 @@ var apiHost = "api.paymill.com";
 var apiBaseUrl = "/v2";
 var apiEncoding = "utf8";
 /* note, we have to edit this manually, as the package.json is available only in node*/
-var version = "1.0.1";
+var version = "1.1.0";
 var sourcePrefix = "paymill-js";
 
 function ExternalHandler() {

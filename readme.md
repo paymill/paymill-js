@@ -139,6 +139,10 @@ XXX : {
 
 ## Changelog
 
+### 1.1.0
++ Added support for preauthorization description [#8](https://github.com/paymill/paymill-js/issues/8)
+* updated project dependencies
+
 ### 1.0.1
 + Added support for source identifier
 

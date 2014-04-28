@@ -24,6 +24,28 @@ describe('PreauthorizationService', function() {
 		});
 	});
 
+    describe('#createWithTokenAndDescription()', function() {
+        it('should create a preauth with random amount and description', function(done) {
+            var amount = shared.randomAmount();
+            pm.preauthorizations.createWithToken(shared.token, amount, shared.currency,"test1234").then(function(result) {
+                expect(result).to.be.a(pm.Transaction);
+                expect(result.origin_amount).to.be(amount);
+                expect(result.currency).to.be(shared.currency);
+                expect(result.description).to.be("test1234");
+                expect(result.client).to.be.a(pm.Client);
+                expect(result.payment).to.be.a(pm.Payment);
+                expect(result.preauthorization).to.be.a(pm.Preauthorization);
+                expect(result.preauthorization.amount).to.be(shared.toStrinAmount(amount));
+                expect(result.preauthorization.currency).to.be(shared.currency);
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+            ;
+        });
+    });
+
 	describe('#createWithPayment()', function() {
 		it('should create a preauth with random amount and payment', function(done) {
 			var amount = shared.randomAmount();
