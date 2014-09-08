@@ -5,7 +5,7 @@ var expect = require("expect.js");
 
 describe('TransactionService', function() {
 	
-	describe('#createWithToken()', function() {
+	describe.only('#createWithToken()', function() {
 		it('should create a transaction with random amount', function(done) {
 			var amount = shared.randomAmount();
 			pmc.transactions.createWithToken(shared.token, amount, shared.currency, "test1234").then(function(result) {
@@ -16,6 +16,7 @@ describe('TransactionService', function() {
 				expect(result.client).to.be.a(pm.Client);
 				expect(result.payment).to.be.a(pm.Payment);
 				expect(result.preauthorization).to.be(null);
+                expect(result.getResponseCodeDetail()).to.be.a.String;
 			}).then(function() {
 				done();
 			}, function(err) {
