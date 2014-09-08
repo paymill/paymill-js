@@ -103,7 +103,19 @@ function isDataPresent(data) {
         return false;
     }
 }
+/**
+ * PaymillContecxt loads the context of PAYMILL for a single account, by providing a merchants private key<br />
+ * It creates 8 services, which represents the PAYMILL API:
+ * @param apiKey
+ * @constructor
+ */
 
+/**
+ *
+ * A PaymillContext represents one client of the PAYMILL API. It holds the API key and exposes the 8 services,
+ * which correspond to the API endpoints.
+ * @class PaymillContext
+ */
 function PaymillContext(apiKey) {
     // initalize services
     this.handler = handlerConstructor(apiKey);
@@ -132,14 +144,34 @@ PaymillContext.prototype.setApiKey = function(apiKey) {
     this.handler.setApiKey(apiKey);
 };
 
+/**
+ * The {@link ClientService} service.
+ */
 PaymillContext.prototype.clients = null;
+/**
+ * The {@link OfferService} service.
+ */
 PaymillContext.prototype.offers = null;
+/**
+ * The {@link PaymentService} service.
+ */
 PaymillContext.prototype.payments = null;
+/**
+ * The {@link PreauthorizationService} service.
+ */
 PaymillContext.prototype.preauthorizations = null;
+/**
+ * The {@link RefundService} service.
+ */
 PaymillContext.prototype.refunds = null;
+/**
+ * The {@link TransactionService} service.
+ */
 PaymillContext.prototype.transactions = null;
+/**
+ * The {@link SubscriptionService} service.
+ */
 PaymillContext.prototype.subscriptions = null;
-PaymillContext.prototype.webhooks = null;
 /**
  * The {@link WebhookService} service.
  */
