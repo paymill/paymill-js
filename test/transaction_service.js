@@ -5,7 +5,7 @@ var expect = require("expect.js");
 
 describe('TransactionService', function() {
 	
-	describe.only('#createWithToken()', function() {
+	describe('#createWithToken()', function() {
 		it('should create a transaction with random amount', function(done) {
 			var amount = shared.randomAmount();
 			pmc.transactions.createWithToken(shared.token, amount, shared.currency, "test1234").then(function(result) {
