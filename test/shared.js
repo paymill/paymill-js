@@ -5,7 +5,7 @@ var expect = require("expect.js");
 var defaultCurrency = "EUR";
 var defaultToken = "098f6bcd4621d373cade4e832627b4f6";
 var webhookEvent = pm.Webhook.EventType.TRANSACTION_SUCCEDED;
-var webhookEventArray = [pm.Webhook.EventType.TRANSACTION_SUCCEDED];
+var webhookEventArray = [pm.Webhook.EventType.TRANSACTION_SUCCEDED,pm.Webhook.EventType.TRANSACTION_FAILED];
 
 if (!process.env.PMAPIKEY) {
 	throw new Error("you have to have a valid private kay in a PMAPIKEY environment variable.");
@@ -148,7 +148,8 @@ function createUrlWebhook() {
 	var url = "http://test" + randomAmount() + ".test.com";
 	return pm.webhooks.createUrl(url, webhookEventArray).then(function(webhook) {
 		expect(webhook.url).to.be(url);
-		expect(webhook.event_types[0]).to.be(webhookEventArray[0]);
+        expect(webhook.event_types[0]).to.be(webhookEventArray[0]);
+        expect(webhook.event_types[1]).to.be(webhookEventArray[1]);
 		return when.resolve(webhook);
 	}).then(function(result) {
 		return when.resolve(result);
