@@ -14,8 +14,8 @@ NodeHandler.prototype.getPromiseObject = function(defer) {
 
 };
 NodeHandler.prototype.httpRequest = function(httpRequest) {
-	var defer = external.getDeferedObject();
-	var promise = external.getPromiseObject(defer);
+	var defer = this.getDeferedObject();
+	var promise = this.getPromiseObject(defer);
 	var options = {
 		hostname : apiHost,
 		port : 443,
@@ -72,4 +72,9 @@ NodeHandler.prototype.getHandlerIdentifier = function() {
 	return "node";
 };
 
-var external = new NodeHandler();
+var handlerConstructor = function(apiKey) {
+    var handler=new NodeHandler();
+    handler.setApiKey(apiKey);
+    return handler;
+};
+var platformIdentifier = 'node';

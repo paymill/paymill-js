@@ -61,4 +61,10 @@ ParseHandler.prototype.getHandlerIdentifier = function() {
 	return "parse";
 };
 
-var external = new ParseHandler();
+
+var handlerConstructor = function(apiKey) {
+    var handler=new ParseHandler();
+    handler.setApiKey(apiKey);
+    return handler;
+};
+var platformIdentifier = 'parse';

@@ -98,4 +98,9 @@ ApiomatHandler.prototype.getHandlerIdentifier = function() {
 	return "apiomat";
 };
 
-var external = new ApiomatHandler();
+var handlerConstructor = function(apiKey) {
+    var handler=new ApiomatHandler();
+    handler.setApiKey(apiKey);
+    return handler;
+};
+var platformIdentifier = 'apiomat';

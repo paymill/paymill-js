@@ -1,12 +1,13 @@
 var shared = require("../test/shared.js");
 var pm = shared.pm;
+var pmc = shared.pmc;
 var expect = require("expect.js");
 
 describe('PreauthorizationService', function() {
 	describe('#createWithToken()', function() {
 		it('should create a preauth with random amount', function(done) {
 			var amount = shared.randomAmount();
-			pm.preauthorizations.createWithToken(shared.token, amount, shared.currency).then(function(result) {
+			pmc.preauthorizations.createWithToken(shared.token, amount, shared.currency).then(function(result) {
 				expect(result).to.be.a(pm.Transaction);
 				expect(result.origin_amount).to.be(amount);
 				expect(result.currency).to.be(shared.currency);
@@ -27,7 +28,7 @@ describe('PreauthorizationService', function() {
     describe('#createWithTokenAndDescription()', function() {
         it('should create a preauth with random amount and description', function(done) {
             var amount = shared.randomAmount();
-            pm.preauthorizations.createWithToken(shared.token, amount, shared.currency,"test1234").then(function(result) {
+            pmc.preauthorizations.createWithToken(shared.token, amount, shared.currency,"test1234").then(function(result) {
                 expect(result).to.be.a(pm.Transaction);
                 expect(result.origin_amount).to.be(amount);
                 expect(result.currency).to.be(shared.currency);
@@ -50,9 +51,9 @@ describe('PreauthorizationService', function() {
 		it('should create a preauth with random amount and payment', function(done) {
 			var amount = shared.randomAmount();
 			var payment;
-			pm.payments.create(shared.token).then(function(payresult) {
+			pmc.payments.create(shared.token).then(function(payresult) {
 				payment = payresult;
-				return pm.preauthorizations.createWithPayment(payment, amount, shared.currency, "test1234");
+				return pmc.preauthorizations.createWithPayment(payment, amount, shared.currency, "test1234");
 			}).then(function(result) {
 				expect(result).to.be.a(pm.Transaction);
 				expect(result.origin_amount).to.be(amount);
@@ -73,7 +74,7 @@ describe('PreauthorizationService', function() {
 	});
 describe('#list()', function() {
 		it('list should work with no params', function(done) {
-			pm.preauthorizations.list().then(function(result) {
+			pmc.preauthorizations.list().then(function(result) {
 				expect(result).to.be.a(pm.PaymillList);
 			}).then(function() {
 				done();
@@ -82,7 +83,7 @@ describe('#list()', function() {
 			});
 		});
 		it('list should work with offset and count', function(done) {
-			shared.verifyListCountOffset(pm.preauthorizations).then(function() {
+			shared.verifyListCountOffset(pmc.preauthorizations).then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -90,7 +91,7 @@ describe('#list()', function() {
 		});
 		it('list should work  with order', function(done) {
 			var firstId;
-			shared.verifyListOrderChanged(pm.preauthorizations, pm.Preauthorization.Order.created_at().asc(), pm.Preauthorization.Order.created_at().desc()).then(function() {
+			shared.verifyListOrderChanged(pmc.preauthorizations, pm.Preauthorization.Order.created_at().asc(), pm.Preauthorization.Order.created_at().desc()).then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -98,7 +99,7 @@ describe('#list()', function() {
 		});
 
 		it('list should work with filter', function(done) {
-			shared.verifyListFilter(createPreauth, pm.preauthorizations, (new pm.Preauthorization.Filter()), "amount").then(function() {
+			shared.verifyListFilter(createPreauth, pmc.preauthorizations, (new pm.Preauthorization.Filter()), "amount").then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -111,7 +112,7 @@ describe('#list()', function() {
 			var preauth;
 			createPreauth().then(function(result) {
 				preauth = result.preauthorization;
-				return pm.preauthorizations.detail(preauth);
+				return pmc.preauthorizations.detail(preauth);
 			}).then(function(result) {
 				expect(result).to.be.a(pm.Preauthorization);
 				expect(result).to.be(preauth);
@@ -127,7 +128,7 @@ describe('#list()', function() {
 
 });
 function createPreauth() {
-	return pm.preauthorizations.createWithToken(shared.token, shared.randomAmount(), shared.currency);
+	return pmc.preauthorizations.createWithToken(shared.token, shared.randomAmount(), shared.currency);
 }
 
 function checkPreauthFields(trans) {

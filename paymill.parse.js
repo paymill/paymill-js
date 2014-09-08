@@ -6,7 +6,7 @@ var apiHost = "api.paymill.com";
 var apiBaseUrl = "/v2";
 var apiEncoding = "utf8";
 /* note, we have to edit this manually, as the package.json is available only in node*/
-var version = "1.0.1";
+var version = "1.1.0";
 var sourcePrefix = "paymill-js";
 
 function ExternalHandler() {
@@ -55,7 +55,7 @@ ExternalHandler.prototype.getHandlerIdentifier = function() {
  * @return {string} the source parameter for transactions and preauthorizations. handler, e.g. "paymill-js-node-1.0.1"
  */
 function getSourceIdentifier() {
-	return sourcePrefix + "-" + external.getSourceIdentifier + "-" + version;
+	return sourcePrefix + "-" + platformIdentifier + "-" + version;
 }
 /**
  * Callback for HttpClient requests.
@@ -87,13 +87,68 @@ function HttpRequest(path, method, params) {
 }
 
 /**
- * Initialize the wrapper with your private API key.
- * @param {string} apiKey your private PAYMILL API key.
- *
+ * Checks if an http text response contains json and a data field.
+ * @param data the http response as string
+ * @returns {boolean} true if json and data is present, else otherwise (e.g. error)
  */
-exports.initialize = function(apiKey) {
-	external.setApiKey(apiKey);
+function isDataPresent(data) {
+    try {
+        var parsedData = JSON.parse(data);
+        if (parsedData.data !== undefined && parsedData.data !== null) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (e) {
+        return false;
+    }
+}
+
+function PaymillContext(apiKey) {
+    // initalize services
+    this.handler = handlerConstructor(apiKey);
+    this.clients = new ClientService();
+    this.clients.setHandler(this.handler);
+    this.offers = new OfferService();
+    this.offers.setHandler(this.handler);
+    this.payments = new PaymentService();
+    this.payments.setHandler(this.handler);
+    this.preauthorizations = new PreauthorizationService();
+    this.preauthorizations.setHandler(this.handler);
+    this.refunds = new RefundService();
+    this.refunds.setHandler(this.handler);
+    this.subscriptions = new SubscriptionService();
+    this.subscriptions.setHandler(this.handler);
+    this.transactions = new TransactionService();
+    this.transactions.setHandler(this.handler);
+    this.webhooks = new WebhookService();
+    this.webhooks.setHandler(this.handler);
+}
+
+PaymillContext.prototype.constructor = PaymillContext;
+PaymillContext.prototype.handler = null;
+PaymillContext.prototype.apiKey = null;
+PaymillContext.prototype.setApiKey = function(apiKey) {
+    this.handler.setApiKey(apiKey);
 };
+
+PaymillContext.prototype.clients = null;
+PaymillContext.prototype.offers = null;
+PaymillContext.prototype.payments = null;
+PaymillContext.prototype.preauthorizations = null;
+PaymillContext.prototype.refunds = null;
+PaymillContext.prototype.transactions = null;
+PaymillContext.prototype.subscriptions = null;
+PaymillContext.prototype.webhooks = null;
+/**
+ * The {@link WebhookService} service.
+ */
+PaymillContext.prototype.webhooks = null;
+
+exports.PaymillContext = PaymillContext;
+exports.getContext= function(apiKey) {
+    return new PaymillContext(apiKey);
+}
 
 function PMError(type, message, detailMessage) {
 	if (message && message.length > 0) {
@@ -2286,11 +2341,15 @@ function PaymillService() {
 
 }
 
+PaymillService.prototype.handler = null;
 PaymillService.prototype.getPaymillObject = function() {
 	throw new PMError(PMError.Type._, "PaymillService.getPaymillObject() is abstract! Did you initialze?");
 };
 PaymillService.prototype.getEndpointPath = function() {
 	throw new PMError(PMError.Type._, "PaymillService.getEndpointPath() is abstract! Did you initialze?");
+};
+PaymillService.prototype.setHandler = function(handler) {
+    this.handler = handler;
 };
 
 PaymillService.prototype._create = function(paramMap, type, cb) {
@@ -2398,10 +2457,10 @@ PaymillService.prototype._remove = function(obj, cb) {
 };
 
 PaymillService.prototype._request = function(httpRequest, httpDataHandler, cb) {
-	var defer = external.getDeferedObject();
-	var promise = external.getPromiseObject(defer);
-	promise = external.includeCallbackInPromise(promise, cb);
-	external.httpRequest(httpRequest).then(function(httpData) {
+	var defer = this.handler.getDeferedObject();
+	var promise = this.handler.getPromiseObject(defer);
+	promise = this.handler.includeCallbackInPromise(promise, cb);
+    this.handler.httpRequest(httpRequest).then(function(httpData) {
 		try {
 			var result = httpDataHandler(httpData);
 			defer.resolve(result);
@@ -2414,9 +2473,9 @@ PaymillService.prototype._request = function(httpRequest, httpDataHandler, cb) {
 	return promise;
 };
 PaymillService.prototype._reject = function(error, cb) {
-	var defer = external.getDeferedObject();
-	var promise = external.getPromiseObject(defer);
-	promise = external.includeCallbackInPromise(promise, cb);
+	var defer = this.handler.getDeferedObject();
+	var promise = this.handler.getPromiseObject(defer);
+	promise = this.handler.includeCallbackInPromise(promise, cb);
 	defer.reject(error);
 	return promise;
 };
@@ -2515,11 +2574,6 @@ ClientService.prototype.detail = function(obj, cb) {
 ClientService.prototype.update = function(obj, cb) {
 	return this._update(obj, cb);
 };
-/**
- * The {@link ClientService} service.
- */
-exports.clients = new ClientService();
-
 /**
  *
  * Creates a new OfferService. Generally you should never create a PAYMILL service on your own. Instead use the exported "offers".
@@ -2628,11 +2682,6 @@ OfferService.prototype.update = function(obj, cb) {
 };
 
 /**
- * The {@link OfferService} service.
- */
-exports.offers = new OfferService();
-
-/**
  *
  * Creates a new PaymentService. Generally you should never create a PAYMILL service on your own. Instead use the exported "payments".
  * @class PaymentService
@@ -2711,10 +2760,6 @@ PaymentService.prototype.detail = function(obj, cb) {
 	return this._detail(obj, cb);
 };
 
-/**
- * The {@link PaymentService} service.
- */
-exports.payments = new PaymentService();
 
 /**
  *
@@ -2830,11 +2875,6 @@ PreauthorizationService.prototype.detail = function(obj, cb) {
 };
 
 /**
- * The {@link PreauthorizationService} service.
- */
-exports.preauthorizations = new PreauthorizationService();
-
-/**
  *
  * Creates a new RefundService. Generally you should never create a PAYMILL service on your own. Instead use the exported "refunds". To refund transactions, use the transaction service.
  * @class RefundService
@@ -2876,12 +2916,6 @@ RefundService.prototype.list = function(count, offset, filter, order, cb) {
 RefundService.prototype.detail = function(obj, cb) {
 	return this._detail(obj, cb);
 };
-
-/**
- * The {@link RefundService} service.
- */
-exports.refunds = new RefundService();
-
 /**
  *
  * Creates a new SubscriptionService. Generally you should never create a PAYMILL service on your own. Instead use the exported "subscriptions".
@@ -2983,11 +3017,6 @@ SubscriptionService.prototype.detail = function(obj, cb) {
 SubscriptionService.prototype.update = function(obj, cb) {
 	return this._update(obj, cb);
 };
-
-/**
- * The {@link SubscriptionService} service.
- */
-exports.subscriptions = new SubscriptionService();
 
 /**
  *
@@ -3194,10 +3223,6 @@ TransactionService.prototype.detail = function(obj, cb) {
 	return this._detail(obj, cb);
 };
 
-/**
- * The {@link TransactionService} service.
- */
-exports.transactions = new TransactionService();
 
 /**
  *
@@ -3310,11 +3335,6 @@ WebhookService.prototype.update = function(obj, cb) {
 	return this._update(obj, cb);
 };
 
-/**
- * The {@link WebhookService} service.
- */
-exports.webhooks = new WebhookService();
-
 function ParseHandler() {
 }
 
@@ -3335,7 +3355,7 @@ ParseHandler.prototype.httpRequest = function(httpRequest) {
 		url : "https://" + this.apiKey + ":@" + apiHost + apiBaseUrl + httpRequest.path,
 		method : httpRequest.method,
 		success : function(httpResponse) {
-			if (httpResponse.status != 200) {
+            if (!isDataPresent(httpResponse.text)) {
 				defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text));
 			} else {
 				defer.resolve(httpResponse.text);
@@ -3378,4 +3398,10 @@ ParseHandler.prototype.getHandlerIdentifier = function() {
 	return "parse";
 };
 
-var external = new ParseHandler();
+
+var handlerConstructor = function(apiKey) {
+    var handler=new ParseHandler();
+    handler.setApiKey(apiKey);
+    return handler;
+};
+var platformIdentifier = 'parse';

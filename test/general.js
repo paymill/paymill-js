@@ -1,11 +1,12 @@
 var shared = require("../test/shared.js");
 var pm = shared.pm;
+var pmc = shared.pmc;
 var expect = require("expect.js");
 
 describe('Node promise', function() {
 
 	it('should work with callback', function(done) {
-		pm.payments.create(shared.token, null, function(err, result) {
+		pmc.payments.create(shared.token, null, function(err, result) {
 			expect(result).to.be.a(pm.Payment);
 			done();
 		});
@@ -13,7 +14,7 @@ describe('Node promise', function() {
 	it('should work with callback and promise', function(done) {
 		var doneincb = false;
 		var doneinpr = false;
-		pm.payments.create(shared.token, null, function(err, result) {
+		pmc.payments.create(shared.token, null, function(err, result) {
 			if (err) {
 				done(err);
 			}

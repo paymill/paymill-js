@@ -55,7 +55,7 @@ ExternalHandler.prototype.getHandlerIdentifier = function() {
  * @return {string} the source parameter for transactions and preauthorizations. handler, e.g. "paymill-js-node-1.0.1"
  */
 function getSourceIdentifier() {
-	return sourcePrefix + "-" + external.getSourceIdentifier + "-" + version;
+	return sourcePrefix + "-" + platformIdentifier + "-" + version;
 }
 /**
  * Callback for HttpClient requests.
@@ -104,11 +104,48 @@ function isDataPresent(data) {
     }
 }
 
+function PaymillContext(apiKey) {
+    // initalize services
+    this.handler = handlerConstructor(apiKey);
+    this.clients = new ClientService();
+    this.clients.setHandler(this.handler);
+    this.offers = new OfferService();
+    this.offers.setHandler(this.handler);
+    this.payments = new PaymentService();
+    this.payments.setHandler(this.handler);
+    this.preauthorizations = new PreauthorizationService();
+    this.preauthorizations.setHandler(this.handler);
+    this.refunds = new RefundService();
+    this.refunds.setHandler(this.handler);
+    this.subscriptions = new SubscriptionService();
+    this.subscriptions.setHandler(this.handler);
+    this.transactions = new TransactionService();
+    this.transactions.setHandler(this.handler);
+    this.webhooks = new WebhookService();
+    this.webhooks.setHandler(this.handler);
+}
+
+PaymillContext.prototype.constructor = PaymillContext;
+PaymillContext.prototype.handler = null;
+PaymillContext.prototype.apiKey = null;
+PaymillContext.prototype.setApiKey = function(apiKey) {
+    this.handler.setApiKey(apiKey);
+};
+
+PaymillContext.prototype.clients = null;
+PaymillContext.prototype.offers = null;
+PaymillContext.prototype.payments = null;
+PaymillContext.prototype.preauthorizations = null;
+PaymillContext.prototype.refunds = null;
+PaymillContext.prototype.transactions = null;
+PaymillContext.prototype.subscriptions = null;
+PaymillContext.prototype.webhooks = null;
 /**
- * Initialize the wrapper with your private API key.
- * @param {string} apiKey your private PAYMILL API key.
- *
+ * The {@link WebhookService} service.
  */
-exports.initialize = function(apiKey) {
-	external.setApiKey(apiKey);
+PaymillContext.prototype.webhooks = null;
+
+exports.PaymillContext = PaymillContext;
+exports.getContext = function(apiKey) {
+    return new PaymillContext(apiKey);
 };

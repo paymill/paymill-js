@@ -1,5 +1,6 @@
 var shared = require("../test/shared.js");
 var pm = shared.pm;
+var pmc = shared.pmc;
 var expect = require("expect.js");
 
 describe('TransactionService', function() {
@@ -7,7 +8,7 @@ describe('TransactionService', function() {
 	describe('#createWithToken()', function() {
 		it('should create a transaction with random amount', function(done) {
 			var amount = shared.randomAmount();
-			pm.transactions.createWithToken(shared.token, amount, shared.currency, "test1234").then(function(result) {
+			pmc.transactions.createWithToken(shared.token, amount, shared.currency, "test1234").then(function(result) {
 				expect(result).to.be.a(pm.Transaction);
 				expect(result.origin_amount).to.be(amount);
 				expect(result.description).to.be("test1234");
@@ -27,9 +28,9 @@ describe('TransactionService', function() {
 		it('should create a transaction with random amount and payment', function(done) {
 			var amount = shared.randomAmount();
 			var payment;
-			pm.payments.create(shared.token).then(function(payresult) {
+			pmc.payments.create(shared.token).then(function(payresult) {
 				payment = payresult;
-				return pm.transactions.createWithPayment(payresult, amount, shared.currency, "test1234");
+				return pmc.transactions.createWithPayment(payresult, amount, shared.currency, "test1234");
 			}).then(function(result) {
 				expect(result).to.be.a(pm.Transaction);
 				someTransaction = result;
@@ -53,11 +54,11 @@ describe('TransactionService', function() {
 		it('should create a transaction with random amount and preauthorization', function(done) {
 			var amount = shared.randomAmount();
 			var preauthorization;
-			pm.preauthorizations.createWithToken(shared.token, amount, shared.currency).then(function(pretrans) {
+			pmc.preauthorizations.createWithToken(shared.token, amount, shared.currency).then(function(pretrans) {
 				//preauth created
 				expect(pretrans).to.be.ok();
 				preauthorization = pretrans.preauthorization;
-				return pm.transactions.createWithPreauthorization(preauthorization, amount, shared.currency, "test1234");
+				return pmc.transactions.createWithPreauthorization(preauthorization, amount, shared.currency, "test1234");
 			}).then(function(transaction) {
 				expect(transaction).to.be.a(pm.Transaction);
 				expect(transaction.origin_amount).to.be(amount);
@@ -82,7 +83,7 @@ describe('TransactionService', function() {
 		it('should refund a transaction', function(done) {
 			var amount = shared.randomAmount();
 			var transaction;
-			pm.transactions.createWithToken(shared.token, amount, shared.currency, "test1234").then(function(result) {
+			pmc.transactions.createWithToken(shared.token, amount, shared.currency, "test1234").then(function(result) {
 				transaction=result;
 				expect(result).to.be.a(pm.Transaction);
 				expect(result.origin_amount).to.be(amount);
@@ -91,7 +92,7 @@ describe('TransactionService', function() {
 				expect(result.client).to.be.a(pm.Client);
 				expect(result.payment).to.be.a(pm.Payment);
 				expect(result.preauthorization).to.be(null);
-				return pm.transactions.refund(result,100,"testrefund");
+				return pmc.transactions.refund(result,100,"testrefund");
 			}).then(function(refund) {
 				expect(refund).to.be.a(pm.Refund);
 				expect(refund.amount).to.be("100");
@@ -108,7 +109,7 @@ describe('TransactionService', function() {
 	
 	describe('#list()', function() {
 		it('list should work with no params', function(done) {
-			pm.transactions.list().then(function(result) {
+			pmc.transactions.list().then(function(result) {
 				expect(result).to.be.a(pm.PaymillList);
 			}).then(function() {
 				done();
@@ -117,7 +118,7 @@ describe('TransactionService', function() {
 			});
 		});
 		it('list should work with offset and count', function(done) {
-			shared.verifyListCountOffset(pm.transactions).then(function() {
+			shared.verifyListCountOffset(pmc.transactions).then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -125,7 +126,7 @@ describe('TransactionService', function() {
 		});
 		it('list should work  with order', function(done) {
 			var firstId;
-			shared.verifyListOrderChanged(pm.transactions, pm.Transaction.Order.created_at().asc(), pm.Transaction.Order.created_at().desc()).then(function() {
+			shared.verifyListOrderChanged(pmc.transactions, pm.Transaction.Order.created_at().asc(), pm.Transaction.Order.created_at().desc()).then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -133,7 +134,7 @@ describe('TransactionService', function() {
 		});
 
 		it('list should work with filter', function(done) {
-			shared.verifyListFilter(shared.createTransaction, pm.transactions, (new pm.Transaction.Filter()), "amount").then(function() {
+			shared.verifyListFilter(shared.createTransaction, pmc.transactions, (new pm.Transaction.Filter()), "amount").then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -145,7 +146,7 @@ describe('TransactionService', function() {
 	
 	describe('#update()', function() {
 		it('update and detail', function(done) {
-			shared.verifyUpdate(shared.createTransaction, pm.transactions, "description", "newdesc" + shared.randomAmount()).then(function() {
+			shared.verifyUpdate(shared.createTransaction, pmc.transactions, "description", "newdesc" + shared.randomAmount()).then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -154,7 +155,7 @@ describe('TransactionService', function() {
 	});
 	describe('#detail()', function() {
 		it('detail with id', function(done) {
-			pm.transactions.detail(someTransaction).then(function(result) {
+			pmc.transactions.detail(someTransaction).then(function(result) {
 				expect(result).to.be.a(pm.Transaction);
 				expect(someTransaction).to.be(result);
 				checkTransactionFields(result);
@@ -168,7 +169,7 @@ describe('TransactionService', function() {
 
 		it('detail with node callback', function(done) {
 			var id = someTransaction.id;
-			pm.transactions.detail(id, function(err, result) {
+			pmc.transactions.detail(id, function(err, result) {
 				expect(err).to.not.be.ok();
 				expect(result.id).to.equal(id);
 				done();
@@ -176,7 +177,7 @@ describe('TransactionService', function() {
 		});
 		it('detail with negative node callback', function(done) {
 			var id = "1234";
-			pm.transactions.detail(id, function(err, result) {
+			pmc.transactions.detail(id, function(err, result) {
 				expect(err).to.be.ok();
 				expect(result).to.not.be.ok();
 				done();
