@@ -46,17 +46,17 @@
     }
   },  
   "dependencies": {
-    "underscore": "~1.6.0",
-    "when": "~3.1.0"
+    "underscore": "~1.7.0",
+    "when": "~3.4.5"
   },
   "devDependencies": {
     "jsdoc": "~3.2.2",
     "jshint": "~2.5.0",
     "grunt-cli": "~0.1.9",
-    "mocha": "~1.18.2",
-    "istanbul": "~0.2.4",
+    "mocha": "~1.21.4",
+    "istanbul": "~0.3.2",
     "expect.js": "~0.3.1",
     "grunt": "~0.4.1",
-    "grunt-contrib-concat": "~0.4.0"
+    "grunt-contrib-concat": "~0.5.0"
   }
 }
