@@ -33,7 +33,7 @@ NodeHandler.prototype.httpRequest = function(httpRequest) {
 			data = data + d;
 		});
 		res.on("end", function() {
-			if (status != 200) {
+            if (!isDataPresent(data)) {
 				defer.reject(new PMError(PMError.Type.API, data, "http status code:" + status + "\nheaders:" + headers + "\ndata:" + data));
 			} else {
 				defer.resolve(data);

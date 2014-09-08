@@ -28,9 +28,8 @@ ApiomatHandler.prototype.httpRequest = function(httpRequest) {
 		delete headers['Content-Length'];
 	}
 	/* Callback handlers */
-	var successCB = function (msg, code) { 		
-		if(code !== 200)
-		{
+	var successCB = function (msg, code) {
+        if (!isDataPresent(msg)) {
 			defer.reject(new PMError(PMError.Type.API, data, "http status code:" + code + "\nheaders:" + headers + "\ndata:" + msg));
 		}
 		else

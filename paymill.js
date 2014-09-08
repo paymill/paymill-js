@@ -87,6 +87,24 @@ function HttpRequest(path, method, params) {
 }
 
 /**
+ * Checks if an http text response contains json and a data field.
+ * @param data the http response as string
+ * @returns {boolean} true if json and data is present, else otherwise (e.g. error)
+ */
+function isDataPresent(data) {
+    try {
+        var parsedData = JSON.parse(data);
+        if (parsedData.data !== undefined && parsedData.data !== null) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (e) {
+        return false;
+    }
+}
+
+/**
  * Initialize the wrapper with your private API key.
  * @param {string} apiKey your private PAYMILL API key.
  *
