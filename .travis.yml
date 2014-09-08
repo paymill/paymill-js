@@ -4,3 +4,9 @@ env:
 language: node_js
 node_js:
   - "0.10"
+after_script:
+  - cat coverage/lcov.info | codeclimate
+addons:
+  code_climate:
+    repo_token:
+      secure: "kN7pnVC5Mbq5LmTfXbnjAfCoGdU2ykUj0DF/FUUXO3/bnUXEA0ResH/XfY471xhNlCq3oMyPYQnDmYB55B9V1oFql4i/dQ5FW49kPZzDfLxhiz9meLBtITx1kB17hLUXAKS1ThtQaE8urHLcE2Lk+Rf3I1ILcm5Q88oSAZ/553g=" 
