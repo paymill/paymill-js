@@ -114,7 +114,7 @@ function createOffer(trialStart) {
 	var amount = randomAmount();
 	var currency = defaultCurrency;
 	var name = "offer" + randomAmount();
-	var interval = new pm.OfferInterval(2, pm.OfferInterval.Period.WEEK);
+	var interval = new pm.Interval(2, pm.Interval.Unit.WEEK);
 	return pmc.offers.create(amount, currency, interval, name, trialStart).then(function(offer) {
 		expect(offer).to.be.a(pm.Offer);
 		checkOfferFields(offer);
@@ -122,8 +122,8 @@ function createOffer(trialStart) {
 		expect(offer.name).to.be(name);
 		expect(offer.currency).to.be(currency);
 		expect(offer.interval.toString()).to.be(interval.toString());
-		expect(offer.interval.number).to.be(interval.number);
-		expect(offer.interval.period).to.be(interval.period);
+		expect(offer.interval.length).to.be(interval.length);
+		expect(offer.interval.unit).to.be(interval.unit);
 		return when.resolve(offer);
 	}).then(function(result) {
 		return when.resolve(result);
