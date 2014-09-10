@@ -3,8 +3,8 @@ var pm = shared.pm;
 var pmc = shared.pmc;
 var expect = require("expect.js");
 
-describe.only('SubscriptionService', function() {
-	this.timeout(5000);
+describe('SubscriptionService', function() {
+	this.timeout(10000);
     var today = new Date();
     var inAweek = new Date(today.getTime() + (86400 * 7 * 1000));
 
@@ -154,6 +154,30 @@ describe.only('SubscriptionService', function() {
                 expect(detailed.interval.unit).to.be(newInterval.unit);
                 expect(detailed.interval.chargeday).to.be(newInterval.chargeday);
                 expect(detailed.interval.toString()).to.be(newInterval.toString());
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+    });
+    describe.only('#pause() and #unpause()', function() {
+        it('should pause and unpause', function(done) {
+            var subId = null;
+            shared.createSubscription().then(function(sub) {
+                subId = sub.id;
+                return pmc.subscriptions.pause(sub);
+            }).then(function(paused) {
+                expect(paused.status).to.be(pm.Subscription.Status.INACTIVE);
+                return pmc.subscriptions.detail(subId);
+            }).then(function(pausedRefresh) {
+                expect(pausedRefresh.status).to.be(pm.Subscription.Status.INACTIVE);
+                return pmc.subscriptions.unpause(pausedRefresh);
+            }).then(function(unpaused) {
+                expect(unpaused.status).to.be(pm.Subscription.Status.INACTIVE);
+                return pmc.subscriptions.detail(subId);
+            }).then(function(unpausedRefresh) {
+                expect(unpausedRefresh.status).to.be(pm.Subscription.Status.INACTIVE);
             }).then(function() {
                 done();
             }, function(err) {

@@ -2646,21 +2646,25 @@ PaymillService.prototype._detail = function(obj, cb) {
 	}
 };
 PaymillService.prototype._update = function(obj, cb) {
+    return this._updateWithMap(obj,obj.getUpdateMap(),cb);
+};
+PaymillService.prototype._updateWithMap = function(obj,map,cb) {
 
-	try {
-		if (!obj instanceof        this.getPaymillObject()) {
-			this._reject(new PMError(PMError.Type.WRONG_PARAMS, "Incorrect object type."));
-			return promise;
-		}
-		var httpRequest = new HttpRequest(this.getEndpointPath() + "/" + obj.id, "PUT", obj.getUpdateMap());
-		return this._request(httpRequest, function(httpData) {
-			var allData = JSON.parse(httpData);
-			obj.fromJson(allData.data);
-			return obj;
-		}, cb);
-	} catch(e) {
-		return this._reject(e, cb);
-	}
+    try {
+        if (!obj instanceof        this.getPaymillObject()) {
+            this._reject(new PMError(PMError.Type.WRONG_PARAMS, "Incorrect object type."));
+            return promise;
+        }
+        var httpRequest = new HttpRequest(this.getEndpointPath() + "/" + obj.id, "PUT", map);
+
+        return this._request(httpRequest, function(httpData) {
+            var allData = JSON.parse(httpData);
+            obj.fromJson(allData.data);
+            return obj;
+        }, cb);
+    } catch(e) {
+        return this._reject(e, cb);
+    }
 };
 PaymillService.prototype._list = function(count, offset, filter, order, cb) {
 	try {
@@ -3299,6 +3303,38 @@ SubscriptionService.prototype.remove = function(obj, cb) {
 };
 
 /**
+ * Temporary pauses a subscription. <br />
+ * <strong>NOTE</strong><br />
+ * Pausing is permitted until one day (24 hours) before the next charge date.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.pause = function(obj, cb) {
+    var map = { "pause" : true };
+	return this._updateWithMap(obj, map, cb);
+};
+
+/**
+ * Unpauses a subscription. Next charge will occur according to the defined interval.<br />
+ * <strong>NOTE</strong><br />
+ * if the nextCaptureAt is the date of reactivation: a charge will happen<br />
+ * if the next_capture_at is in the past: it will be set to: reactivationdate + interval <br/>
+ * <br />
+ * <strong>IMPORTANT</strong><br />
+ * An inactive subscription can reactivated within 13 month from the date of pausing. After this period, the subscription will
+ * expire and cannot be re-activated.<br />
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.unpause = function(obj, cb) {
+    var map = { "pause" : true };
+    return this._updateWithMap(obj, map, cb);
+};
+/**
  * Get a Subscription.
  * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
  * @param {Object} [cb] a callback.
@@ -3306,7 +3342,7 @@ SubscriptionService.prototype.remove = function(obj, cb) {
  * @memberOf SubscriptionService
  */
 SubscriptionService.prototype.detail = function(obj, cb) {
-	return this._detail(obj, cb);
+    return this._detail(obj, cb);
 };
 /**
  * Updates a subscription.Following fields will be updated:<br />
