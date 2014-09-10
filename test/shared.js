@@ -88,7 +88,7 @@ function createPayment(client) {
 		}
 		return pmc.payments.create(defaultToken, client).then(function(payment) {
 			expect(payment).to.be.a(pm.Payment);
-			expect(payment.client).to.be(id);
+			expect(payment.client.id).to.be(id);
 			checkPaymentFields(payment);
 			return when.resolve(payment);
 		}).then(function(result) {
@@ -174,7 +174,7 @@ function createSubscription() {
 		return createOffer();
 	}).then(function(res) {
 		offer = res;
-		return pmc.subscriptions.create(offer, payment, client);
+		return pmc.subscriptions.createWithAll(payment, client, offer );
 	}).then(function(sub) {
 		checkSubscriptionFields(sub);
 		expect(sub.payment.id).to.be(payment.id);

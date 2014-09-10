@@ -3,7 +3,7 @@
 var __ = require("underscore");
 
 var apiHost = "api.paymill.com";
-var apiBaseUrl = "/v2";
+var apiBaseUrl = "/v2.1";
 var apiEncoding = "utf8";
 /* note, we have to edit this manually, as the package.json is available only in node*/
 var version = "1.1.0";
@@ -232,7 +232,7 @@ function deserializeDate(unixTime) {
 	if (!__.isNumber(unixTime)) {
 		return unixTime;
 	}
-	return new Date(unixTime);
+	return new Date(unixTime*1000);
 }
 
 function urlEncode(params, appendQuestion) {
@@ -604,6 +604,98 @@ Filter.EQUALITY = {
 };
 /**
  *
+ * Creates a new Interval.
+ * @class Interval
+ * @param {number} length length of the interval (in units)
+ * @param {string|Interval.Unit} Unit for the interval
+ * @param {string|Interval.Weekday} weekday on which a charge should occur
+ * @extends PaymillObject
+ * @classdesc Defining an interval for an offer.
+ */
+function Interval(length, unit, weekday) {
+	this.length = length;
+	this.unit = unit;
+    this.chargeday = weekday;
+}
+
+Interval.prototype = new PaymillObject();
+Interval.prototype.constructor = Interval;
+/**
+ * Length of the interval (in units)
+ * @type {number}
+ * @memberof Interval.prototype
+ */
+Interval.prototype.length = null;
+/**
+ * Unit for the interval
+ * @type {Interval.Unit}
+ * @memberof Interval.prototype
+ */
+Interval.prototype.unit = null;
+/**
+ * Charge day in the week
+ * @type {Interval.Weekday}
+ * @memberof Interval.prototype
+ */
+Interval.prototype.chargeday = null;
+
+
+Interval.prototype.fromJson = function(jsonObj) {
+    var weekdayParts = jsonObj.split(',');
+    if (weekdayParts.length > 1) {
+        this.chargeday = weekdayParts[1];
+    }
+	var split = weekdayParts[0].split(" ");
+	this.length = parseInt(split[0],10);
+	this.unit = split[1];
+	this.originalJson = jsonObj;
+};
+Interval.prototype.toString = function() {
+    var chargedayPart = (__.isEmpty(this.chargeday)) ? '': ',' + this.chargeday;
+	return "" + this.length + " " + this.unit + chargedayPart;
+};
+
+Interval.prototype.getUpdateIdentifier = function() {
+    return this.toString();
+};
+/**
+ * Units for an Interval.
+ * @memberof Interval
+ * @property {string} DAY
+ * @property {string} WEEK
+ * @property {string} MONTH
+ * @property {string} YEAR
+ */
+Interval.Unit = {
+	"DAY" : "DAY",
+	"WEEK" : "WEEK",
+	"MONTH" : "MONTH",
+	"YEAR" : "YEAR"
+};
+
+/**
+ * Weekdays for an Interval.
+ * @memberof Interval
+ * @property {string} MONDAY
+ * @property {string} TUESDAY
+ * @property {string} WEDNESDAY
+ * @property {string} THURSDAY
+ * @property {string} FRIDAY
+ * @property {string} SATURDAY
+ * @property {string} SUNDAY
+ */
+Interval.Weekday = {
+    MONDAY : "MONDAY",
+    TUESDAY : "TUESDAY",
+    WEDNESDAY : "WEDNESDAY",
+    THURSDAY : "THURSDAY",
+    FRIDAY : "FRIDAY",
+    SATURDAY : "SATURDAY",
+    SUNDAY : "SUNDAY"
+};
+exports.Interval=Interval;
+/**
+ *
  * Creates a new Offer. Generally you should never create a PAYMILL object on your own.
  * @class Offer
  * @extends PaymillObject
@@ -645,7 +737,7 @@ Offer.prototype.currency = null;
 
 /**
  * Defining how often the client should be charged.
- * @type {OfferInterval}
+ * @type {Interval}
  * @memberof Offer.prototype
  */
 Offer.prototype.interval = null;
@@ -692,7 +784,7 @@ Offer.prototype.getFieldDefinitions = function() {
 		created_at : deserializeDate,
 		updated_at : deserializeDate,
 		interval : function(json) {
-			return deserializePaymillObject(json, OfferInterval);
+			return deserializePaymillObject(json, Interval);
 		},
 		subscription_count : function(json) {
 			return deserializePaymillObject(json, SubscriptionCount);
@@ -833,60 +925,6 @@ Offer.Filter.prototype.updated_at = function(from, to) {
  */
 exports.Offer = Offer;
 
-/**
- *
- * Creates a new OfferInterval.
- * @class OfferInterval
- * @param {number} number for the interval
- * @param {string|OfferInterval.Period} period for the interval
- * @extends PaymillObject
- * @classdesc Defining an interval for an offer.
- */
-function OfferInterval(number, period) {
-	this.number = number;
-	this.period = period;
-}
-
-OfferInterval.prototype = new PaymillObject();
-OfferInterval.prototype.constructor = OfferInterval;
-/**
- * Number for the interval
- * @type {number}
- * @memberof OfferInterval.prototype
- */
-OfferInterval.prototype.number = null;
-/**
- * Period for the interval
- * @type {OfferInterval.Period}
- * @memberof OfferInterval.prototype
- */
-OfferInterval.prototype.period = null;
-
-
-OfferInterval.prototype.fromJson = function(jsonObj) {
-	var split=jsonObj.split(" ");
-	this.number=parseInt(split[0],10);
-	this.period=split[1];
-	this.originalJson = jsonObj;
-};
-OfferInterval.prototype.toString = function() {
-	return ""+this.number+" "+this.period;
-};
-/**
- * Period for an OfferInterval.
- * @memberof OfferInterval
- * @property {string} DAY
- * @property {string} WEEK
- * @property {string} MONTH
- * @property {string} YEAR
- */
-OfferInterval.Period = {
-	"DAY" : "DAY",
-	"WEEK" : "WEEK",
-	"MONTH" : "MONTH",
-	"YEAR" : "YEAR"
-}; 
-exports.OfferInterval=OfferInterval;
 /**
  *
  * Creates a new Order. Use factories of implementing classes.
@@ -1167,21 +1205,28 @@ PaymillObject.prototype.getFieldDefinitions = function() {
 	return {};
 };
 PaymillObject.prototype.fromJson = function(jsonObj) {
+    // if we only have a string, it's just the id
+    if ( __.isString(jsonObj) ) {
+        this.id = jsonObj;
+        this.originalJson = jsonObj;
+    } else {
+    // if we have a complex object, deserialize
+        var fieldDefs = this.getFieldDefinitions();
+        for (var key in jsonObj) {
+            if (jsonObj.hasOwnProperty(key)) {
+                var value = jsonObj[key];
+                if (fieldDefs[key] !== undefined) {
+                    this[key] = fieldDefs[key](value);
+                } else {
+                    if (this[key] !== undefined) {
+                        this[key] = value;
+                    }
+                }
+            }
+        }
+        this.originalJson = jsonObj;
+    }
 
-	var fieldDefs = this.getFieldDefinitions();
-	for (var key in jsonObj) {
-		if (jsonObj.hasOwnProperty(key)) {
-			var value = jsonObj[key];
-			if (fieldDefs[key] !== undefined) {
-				this[key] = fieldDefs[key](value);
-			} else {
-				if (this[key] !== undefined) {
-					this[key] = value;
-				}
-			}
-		}
-	}
-	this.originalJson = jsonObj;
 };
 PaymillObject.prototype.getUpdateMap = function() {
 
@@ -1189,18 +1234,22 @@ PaymillObject.prototype.getUpdateMap = function() {
 	var result = {};
 	for (var i = 0; i < updateFields.length; i++) {
 		var key = updateFields[i];
-		if (this[key]) {
-			result[key] = getValueOrId(this[key]);
+		if (this[key] !== undefined && this[key] !== null)  {
+			result[key] = getUpdateValueOrId(this[key]);
 		}
 	}
 	return result;
 };
+
+PaymillObject.prototype.getUpdateIdentifier = function() {
+    return this.id;
+};
 /*
  * use by updatemap to extract paymillobject ids for updates
  */
-function getValueOrId(value) {
-	if ( value instanceof PaymillObject) {
-		return value.id;
+function getUpdateValueOrId(value) {
+	if ( value instanceof PaymillObject ) {
+		return value.getUpdateIdentifier();
 	} else {
 		return value.toString();
 	}
@@ -1667,6 +1716,7 @@ Subscription.prototype.id = null;
  * @memberof Subscription.prototype
  */
 Subscription.prototype.offer = null;
+
 /**
  * Whether this subscription was issued while being in live mode or not.
  * @type {boolean}
@@ -1675,11 +1725,39 @@ Subscription.prototype.offer = null;
 Subscription.prototype.livemode = null;
 
 /**
- * Cancel this subscription immediately or at the end of the current period?
- * @type {boolean}
+ * The amount of the subscription in cents
+ * @type {number}
  * @memberof Subscription.prototype
  */
-Subscription.prototype.cancel_at_period_end = null;
+Subscription.prototype.amount = null;
+
+/**
+ * A one-time amount in cents, will charge once only
+ * @type {number}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.temp_amount = null;
+
+/**
+ * ISO 4217 formatted currency code
+ * @type {string}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.currency = null;
+
+/**
+ * Name of the subscription
+ * @type {string}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.name = null;
+
+/**
+ * Defining how often the client should be charged
+ * @type {string|Interval}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.interval = null;
 
 /**
  * Unix-Timestamp for the trial period start
@@ -1687,12 +1765,28 @@ Subscription.prototype.cancel_at_period_end = null;
  * @memberof Subscription.prototype
  */
 Subscription.prototype.trial_start = null;
+
 /**
  * Unix-Timestamp for the trial period end.
  * @type {Date}
  * @memberof Subscription.prototype
  */
 Subscription.prototype.trial_end = null;
+
+/**
+ * Limit the validity of the subscription.
+ * @type {string|Interval}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.period_of_validity = null;
+
+/**
+ * Expiring date of the subscription.
+ * @type {string|Interval}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.end_of_period = null;
+
 /**
  * Unix-Timestamp for the next charge.
  * @type {Date}
@@ -1739,6 +1833,41 @@ Subscription.prototype.client = null;
  */
 Subscription.prototype.app_id = null;
 
+/**
+ * Subscription is marked as canceled or not.
+ * @type {boolean}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.is_canceled = null;
+
+/**
+ * Subscription is marked as deleted or not.
+ * @type {boolean}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.is_deleted = null;
+
+/**
+ * Shows, if subscription is “active”, “inactive”, “expired” or “failed”
+ * @type {string|Transaction.Status} status of the subscription
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.status = null;
+
+/**
+ * Status of a subscription.
+ * @memberof Subscription
+ * @property {string} ACTIVE
+ * @property {string} INACTIVE
+ * @property {string} EXPIRED
+ * @property {string} FAILED
+ */
+Subscription.Status = {
+    ACTIVE : "active" ,
+    INACTIVE : "inactive",
+    EXPIRED : "expired" ,
+    FAILED : "failed"
+};
 /*
  * special fields
  */
@@ -1748,6 +1877,7 @@ Subscription.prototype.getFieldDefinitions = function() {
 		updated_at : deserializeDate,
 		trial_start : deserializeDate,
 		trial_end : deserializeDate,
+        end_of_period : deserializeDate,
 		next_capture_at : deserializeDate,
 		canceled_at : deserializeDate,
 		offer : function(json) {
@@ -1758,12 +1888,18 @@ Subscription.prototype.getFieldDefinitions = function() {
 		},
 		client : function(json) {
 			return deserializePaymillObject(json, Client);
-		}
+		},
+        interval : function(json) {
+            return deserializePaymillObject(json, Interval);
+        },
+        period_of_validity : function(json) {
+            return deserializePaymillObject(json, Interval);
+        }
 	};
 };
 
 Subscription.prototype.getUpdateableFields = function() {
-	return ["cancel_at_period_end", "offer", "payment"];
+	return [ 'currency', 'name', 'interval' ];
 };
 
 /**
@@ -2349,6 +2485,10 @@ Webhook.EventType = {
 	SUBSCRIPTION_DELETED : "subscription.deleted",
 	SUBSCRIPTION_SUCCEEDED : "subscription.succeeded",
 	SUBCRIPTION_FAILED : "subscription.failed",
+    SUBSCRIPTION_EXPIRING : "subscription.expiring",
+    SUBSCRIPTION_DEACTIVATED : "subscription.deactivated",
+    SUBSCRIPTION_ACTIVATED : "subscription.activated",
+    SUBSCRIPTION_CANCELED : "subscription.canceled",
 	REFUND_CREATED : "refund.created",
 	REFUND_SUCCEEDED : "refund.succeeded",
 	REFUND_FAILED : "refund.failed",
@@ -2513,7 +2653,6 @@ PaymillService.prototype._update = function(obj, cb) {
 			return promise;
 		}
 		var httpRequest = new HttpRequest(this.getEndpointPath() + "/" + obj.id, "PUT", obj.getUpdateMap());
-
 		return this._request(httpRequest, function(httpData) {
 			var allData = JSON.parse(httpData);
 			obj.fromJson(allData.data);
@@ -2715,7 +2854,7 @@ OfferService.prototype.getEndpointPath = function() {
  * This function creates a Offer object.
  * @param {string|number} amount Amount (in cents).
  * @param {string} currency ISO 4217 formatted currency code
- * @param {string|OfferInterval} interval Defining how often the client should be charged. Format: number DAY|WEEK|MONTH|YEAR Example: 2 DAY
+ * @param {string|Interval} interval Defining how often the client should be charged. Format: number DAY|WEEK|MONTH|YEAR Example: 2 DAY
  * @param {string} name Your name for this offer
  * @param {number} [trial_period_days] Give it a try or charge directly? Default is 0
  * @return {Promise} a promise, which will be fulfilled with a Offer or rejected with a PMError.
@@ -2740,14 +2879,14 @@ OfferService.prototype.create = function(amount, currency, interval, name, trial
 	var map = {
 		amount : amount,
 		currency : currency,
-		interval : interval,
+		interval : interval.toString(),
 		name : name
 	};
 	if (trial_period_days) {
 		if (__.isNumber(trial_period_days) || !__.isString(amount)) {
 			map.trial_period_days = trial_period_days;
 		} else {
-			return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "interval is mandatory"));
+			return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "trial period must be a number"));
 		}
 	}
 	return this._create(map, Offer, cb);
@@ -3054,37 +3193,80 @@ SubscriptionService.prototype.getEndpointPath = function() {
 };
 
 /**
- * This function creates a subscription between a client and an offer. A client can have several subscriptions to different offers, but only one subscription to the same offer. The clients is charged for each billing interval entered.
+ * Create a subscription with payment and offer. Chain further values by calling with..() functions and finish by calling create().
+ *
  * @param {(string|Offer)} offer an offer object or its id.
- * @param {(string|Payment)} payment an offer object or its id.
+ * @param {(string|Payment)} payment a payment object or its id.
+ * @return {SubscriptionService.Creator} a creator. when configured please call create()
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.fromOffer = function(payment,offer) {
+    var creator = new SubscriptionService.Creator(this);
+    creator.payment = payment;
+    creator.offer = offer;
+    return creator;
+};
+
+SubscriptionService.prototype.fromParams = function(payment, amount, currency, interval) {
+    var creator = new SubscriptionService.Creator(this);
+    creator.payment = payment;
+    creator.amount = amount;
+    creator.currency = currency;
+    creator.interval = interval;
+    return creator;
+};
+
+/**
+ * This function creates a Subscription between a Client and an Offer. A Client can have several Subscriptions to different Offers, but only one Subscription to the same Offer. The Clients is charged for each billing interval entered.
+ * <strong>NOTE</strong>As the Subscription create method has a lot of options, we recommend you to use a Subscription.Creator.
+ * @param {(string|Offer)} offer an offer object or its id.
+ * @param {(string|Payment)} payment a payment object or its id.
  * @param {(string|Client)} client the identifier of a client or a client. If not provided the client from the payment is being used.
- * @param {(string|number|Date)} start_at Unix-Timestamp for the trial period start
+ * @param {(string|number|Date)} start_at Unix-Timestamp for the subscription start date, if trial_end > start_at, the trial_end will be set to start_at
+ * @param {(string|number)} amount the amount of the subscription in cents
+ * @param {(string)} currency ISO 4217 formatted currency code startAt
+ * @param {(string|Interval)} interval define how often the client should be charged.
+ * @param {(string|Interval)} periodOfValidity limits the validity of the subscription
+ * @param {(string)} name name of the subscription
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
  * @memberOf SubscriptionService
  */
-SubscriptionService.prototype.create = function(offer, payment, client, start_at, cb) {
+SubscriptionService.prototype.createWithAll = function(payment, client, offer, amount, currency, interval, startAt,
+    name,periodOfValidity, cb) {
 	try {
 		var map = {};
-		var offerId = getIdFromObject(offer, Offer);
-		map.offer = offerId;
-		var paymentId = getIdFromObject(payment, Payment);
-		map.payment = paymentId;
-		try {
-			var clientId = getIdFromObject(client, Client);
-			map.client = clientId;
-		} catch (e) {
-			// no client
-		}
-		if (start_at) {
-			if ( start_at instanceof Date) {
-				map.start_at = start_at.getTime();
-			} else if (__.isNumber(start_at) || __.isString(start_at)) {
-				map.start_at = start_at;
-			} else {
-				return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "start_at must be a Date, number or string"));
-			}
-		}
+        map.payment = getIdFromObject(payment, Payment);
+        if (!__.isEmpty(client)) {
+            map.client = getIdFromObject(client, Client);
+        }
+        if (!__.isEmpty(offer)) {
+            map.offer = getIdFromObject(offer, Offer);
+        }
+        if (__.isNumber(amount)) {
+            map.amount = amount;
+        }
+        if (!__.isEmpty(currency)) {
+            map.currency = currency;
+        }
+        if (!__.isEmpty(interval)) {
+            map.interval = interval.toString();
+        }
+        if (startAt) {
+            if ( startAt instanceof Date) {
+                map.start_at = Math.floor((startAt.getTime())/1000);
+            } else if (__.isNumber(startAt) || __.isString(startAt)) {
+                map.start_at = startAt;
+            } else {
+                return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "start_at must be a Date, number or string"));
+            }
+        }
+        if (!__.isEmpty(name)) {
+            map.name = name;
+        }
+        if (!__.isEmpty(periodOfValidity)) {
+            map.period_of_validity = periodOfValidity.toString();
+        }
 		return this._create(map, Subscription, cb);
 	} catch (e) {
 		return this._reject(e);
@@ -3127,14 +3309,100 @@ SubscriptionService.prototype.detail = function(obj, cb) {
 	return this._detail(obj, cb);
 };
 /**
- * Update a Subscription.
+ * Updates a subscription.Following fields will be updated:<br />
+ * <p>
+ * <ul>
+ * <li>interval (note, that nextCaptureAt will not change.)
+ * <li>currency
+ * <li>name
+ * <ul>
+ * <p>
+ * To update further properties of a subscription use following methods:<br />
+ * <p>
+ * <ul>
+ * <li>cancel() to cancel.
+ * <li>changeAmount() to change the amount.
+ * <li>changeOfferChangeCaptureDateAndRefund() to change the offer.
+ * <li>changeOfferKeepCaptureDateAndRefund() to change the offer.
+ * <li>changeOfferKeepCaptureDateNoRefund() to change the offer.
+ * <li>endTrial() to end the trial
+ * <li>limitValidity() to change the validity.
+ * <li>pause() to pause
+ * <li>unlimitValidity() to change the validity.
+ * <li>unpause() to unpause.
+ * <ul>
+ * <p>
  * @param {Subscription} obj a Subscription object.
  * @param {Object} [cb] a callback.
- * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
  * @memberOf SubscriptionService
  */
 SubscriptionService.prototype.update = function(obj, cb) {
 	return this._update(obj, cb);
+};
+
+/**
+ * A helper for the complex creation method
+ * @class SubscriptionService.Creator
+ * @memberof SubscriptionService
+ */
+SubscriptionService.Creator = function(service) {
+    this.service = service;
+};
+
+SubscriptionService.Creator.prototype.service = null;
+SubscriptionService.Creator.prototype.payment = null;
+SubscriptionService.Creator.prototype.client = null;
+SubscriptionService.Creator.prototype.offer = null;
+SubscriptionService.Creator.prototype.amount = null;
+SubscriptionService.Creator.prototype.currency = null;
+SubscriptionService.Creator.prototype.interval = null;
+SubscriptionService.Creator.prototype.startAt = null;
+SubscriptionService.Creator.prototype.name = null;
+SubscriptionService.Creator.prototype.periodOfValidity = null;
+
+SubscriptionService.Creator.prototype.create = function(cb) {
+ return this.service.createWithAll(this.payment,this.client,this.offer,this.amount,this.currency,this.interval,this.startAt,this.name,this.periodOfValidity,cb);
+};
+
+SubscriptionService.Creator.prototype.withAmount = function(amount) {
+    this.amount = amount;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withClient = function(client) {
+    this.client = client;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withCurrency = function(currency) {
+    this.currency = currency;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withInterval = function(interval) {
+    this.interval = interval;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withName = function(name) {
+    this.name = name;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withOffer = function(offer) {
+    this.offer = offer;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withPeriodOfValidity = function(periodOfValidity) {
+    this.periodOfValidity = periodOfValidity;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withStartDate = function(startAt) {
+    this.startAt = startAt;
+    return this;
 };
 
 /**
