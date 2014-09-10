@@ -3334,6 +3334,52 @@ SubscriptionService.prototype.unpause = function(obj, cb) {
     var map = { "pause" : true };
     return this._updateWithMap(obj, map, cb);
 };
+
+/**
+ * Changes the amount of a subscription. The new amount is valid until the end of the subscription. If you want to set a
+ * temporary one-time amount use changeAmountTemporary().
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|number)} amount the new amount.
+ * @param {(string)} [currency] optionally, a new currency.
+ * @param {(string|Interval)} [interval] optionally, a new interval.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.changeAmount = function(obj, amount, currency, interval, cb) {
+    return this._changeAmount(obj, amount, 1, currency, interval, cb);
+};
+
+/**
+ * Changes the amount of a subscription. The new amount is valid one-time only after which the original subscription amount will
+ * be charged again. If you want to permanently change the amount use changeAmount()
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|number)} amount the new amount.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.changeAmountTemporary = function(obj, amount, cb) {
+    return this._changeAmount(obj, amount, 0, false, false, cb);
+};
+
+SubscriptionService.prototype._changeAmount = function(obj, amount, type, currency, interval, cb) {
+    var map = {
+        "amount_change_type" : type
+    };
+    if (!(__.isString(amount) || __.isNumber(amount))) {
+        return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "amount must be a string or integer"));
+    }
+    map.amount = amount;
+    if (currency) {
+        map.currency = currency;
+    }
+    if (interval) {
+        map.interval = interval.toString();
+    }
+    return this._updateWithMap(obj, map, cb);
+};
+
 /**
  * Get a Subscription.
  * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
@@ -3344,6 +3390,7 @@ SubscriptionService.prototype.unpause = function(obj, cb) {
 SubscriptionService.prototype.detail = function(obj, cb) {
     return this._detail(obj, cb);
 };
+
 /**
  * Updates a subscription.Following fields will be updated:<br />
  * <p>

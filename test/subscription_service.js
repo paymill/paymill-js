@@ -161,7 +161,7 @@ describe('SubscriptionService', function() {
             });
         });
     });
-    describe.only('#pause() and #unpause()', function() {
+    describe('#pause() and #unpause()', function() {
         it('should pause and unpause', function(done) {
             var subId = null;
             shared.createSubscription().then(function(sub) {
@@ -178,6 +178,50 @@ describe('SubscriptionService', function() {
                 return pmc.subscriptions.detail(subId);
             }).then(function(unpausedRefresh) {
                 expect(unpausedRefresh.status).to.be(pm.Subscription.Status.INACTIVE);
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+    });
+    describe('#changeAmount()', function() {
+        it('should change the amount', function(done) {
+            var newAmount = shared.randomAmount();
+            var subId = null;
+            shared.createSubscription().then(function(sub) {
+                subId = sub.id;
+                return pmc.subscriptions.changeAmount(sub, newAmount);
+            }).then(function(changed) {
+                expect(changed.amount.toString()).to.be(newAmount.toString());
+                expect(changed.temp_amount).to.be(null);
+                return pmc.subscriptions.detail(subId);
+            }).then(function(changedRefresh) {
+                expect(changedRefresh.amount.toString()).to.be(newAmount.toString());
+                expect(changedRefresh.temp_amount).to.be(null);
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+    });
+    describe.only('#changeAmountTemporary()', function() {
+        it('should change the amount temporary', function(done) {
+            var newAmount = shared.randomAmount();
+            var originalAmount = null;
+            var subId = null;
+            shared.createSubscription().then(function(sub) {
+                subId = sub.id;
+                originalAmount = sub.amount;
+                return pmc.subscriptions.changeAmountTemporary(sub, newAmount);
+            }).then(function(changed) {
+                expect(changed.amount.toString()).to.be(originalAmount.toString());
+                expect(changed.temp_amount.toString()).to.be(newAmount.toString());
+                return pmc.subscriptions.detail(subId);
+            }).then(function(changedRefresh) {
+                expect(changedRefresh.amount.toString()).to.be(originalAmount.toString());
+                expect(changedRefresh.temp_amount.toString()).to.be(newAmount.toString());
             }).then(function() {
                 done();
             }, function(err) {
