@@ -290,6 +290,20 @@ function getIdFromObject(obj, objectType) {
 	}
 	throw new PMError(PMError.Type.WRONG_PARAMS, obj + "must be either a string or " + objectType + " with a valid id.");
 }
+function getRefreshObject(obj,type) {
+    if ( obj instanceof type ) {
+        if (!__.isEmpty(obj.id)) {
+            return obj;
+        } else {
+            throw new PMError(PMError.Type.WRONG_PARAMS, obj + " is of correct type ( " + objectType + " ), but has no valid id.");
+        }
+    } else {
+        var id = getIdFromObject(obj, type);
+        var result = new type.prototype.constructor();
+        result.id=id;
+        return result;
+    }
+}
 /**
  *
  * Creates a new Client. Generally you should never create a PAYMILL object on your own.
@@ -2627,15 +2641,8 @@ PaymillService.prototype._create = function(paramMap, type, cb) {
 
 PaymillService.prototype._detail = function(obj, cb) {
 	try {
-		var pmType = this.getPaymillObject();
-		var id = getIdFromObject(obj, pmType);
-		var result;
-		if ( obj instanceof pmType) {
-			result = obj;
-		} else {
-			result = new pmType.prototype.constructor();
-		}
-		var httpRequest = new HttpRequest(this.getEndpointPath() + "/" + id, "GET");
+        var result = getRefreshObject(obj,this.getPaymillObject());
+		var httpRequest = new HttpRequest(this.getEndpointPath() + "/" + result.id, "GET");
 		return this._request(httpRequest, function(httpData) {
 			var allData = JSON.parse(httpData);
 			result.fromJson(allData.data);
@@ -2646,26 +2653,26 @@ PaymillService.prototype._detail = function(obj, cb) {
 	}
 };
 PaymillService.prototype._update = function(obj, cb) {
+    if (! (obj instanceof this.getPaymillObject())) {
+        return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "Incorrect object type for update(), must be " + this.getPaymillObject()));
+    }
     return this._updateWithMap(obj,obj.getUpdateMap(),cb);
 };
 PaymillService.prototype._updateWithMap = function(obj,map,cb) {
 
     try {
-        if (!obj instanceof        this.getPaymillObject()) {
-            this._reject(new PMError(PMError.Type.WRONG_PARAMS, "Incorrect object type."));
-            return promise;
-        }
-        var httpRequest = new HttpRequest(this.getEndpointPath() + "/" + obj.id, "PUT", map);
-
+        var result = getRefreshObject(obj,this.getPaymillObject());
+        var httpRequest = new HttpRequest(this.getEndpointPath() + "/" + result.id, "PUT", map);
         return this._request(httpRequest, function(httpData) {
             var allData = JSON.parse(httpData);
-            obj.fromJson(allData.data);
-            return obj;
+            result.fromJson(allData.data);
+            return result;
         }, cb);
     } catch(e) {
         return this._reject(e, cb);
     }
 };
+
 PaymillService.prototype._list = function(count, offset, filter, order, cb) {
 	try {
 		var pmType = this.getPaymillObject();
@@ -3379,7 +3386,67 @@ SubscriptionService.prototype._changeAmount = function(obj, amount, type, curren
     }
     return this._updateWithMap(obj, map, cb);
 };
+/**
+ * Change the offer of a subscription. <br />
+ * The plan will be changed immediately. The next_capture_at will change to the current date (immediately). A refund will be
+ * given if due. <br />
+ * If the new amount is higher than the old one, a pro-rata charge will occur. The next charge date is immediate i.e. the
+ * current date. If the new amount is less then the old one, a pro-rata refund will occur. The next charge date is immediate
+ * i.e. the current date. <br />
+ * <strong>IMPORTANT</strong><br />
+ * Permitted up only until one day (24 hours) before the next charge date. <br />
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|Offer)} offer a new offer or its id.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.changeOfferChangeCaptureDateAndRefund = function(obj, offer, cb) {
+    return this._changeOffer(obj, offer, 2);
+};
 
+/**
+ * Change the offer of a subscription. <br />
+ * The plan will be changed immediately. The next_capture_at will change to the current date (immediately). A refund will be
+ * given if due. <br />
+ * If the new amount is higher than the old one, a pro-rata charge will occur. The next charge date is immediate i.e. the
+ * current date. If the new amount is less then the old one, a pro-rata refund will occur. The next charge date is immediate
+ * i.e. the current date. <br />
+ * <strong>IMPORTANT</strong><br />
+ * Permitted up only until one day (24 hours) before the next charge date. <br />
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|Offer)} offer a new offer or its id.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.changeOfferKeepCaptureDateAndRefund = function(obj, offer, cb) {
+    return this._changeOffer(obj, offer, 1);
+};
+
+/**
+ * Change the offer of a subscription. <br />
+ * the plan will be changed immediately. The next_capture_at date will remain unchanged. No refund will be given <br />
+ * <strong>IMPORTANT</strong><br />
+ * Permitted up only until one day (24 hours) before the next charge date. <br />
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|Offer)} offer a new offer or its id.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.changeOfferKeepCaptureDateNoRefund = function(obj, offer, cb) {
+    return this._changeOffer(obj, offer, 0);
+};
+
+
+SubscriptionService.prototype._changeOffer = function(obj, offer, type, cb) {
+    var map = {
+        "offer_change_type" : type
+    };
+    map.offer = getIdFromObject(offer, Offer);
+    return this._updateWithMap(obj, map, cb);
+};
 /**
  * Get a Subscription.
  * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.

@@ -206,7 +206,7 @@ describe('SubscriptionService', function() {
             });
         });
     });
-    describe.only('#changeAmountTemporary()', function() {
+    describe('#changeAmountTemporary()', function() {
         it('should change the amount temporary', function(done) {
             var newAmount = shared.randomAmount();
             var originalAmount = null;
@@ -229,6 +229,82 @@ describe('SubscriptionService', function() {
             });
         });
     });
+
+    describe('#changeOfferKeepCaptureDateAndRefund()', function() {
+        it('should change the offer and not the next_capture_at', function(done) {
+            var newOffer = null;
+            var originalOffer = null;
+            var originalNextCapture = null;
+            var subId = null;
+            shared.createSubscription().then(function(sub) {
+                subId = sub.id;
+                originalOffer = sub.offer.id;
+                originalNextCapture = sub.next_capture_at;
+                return shared.createOffer();
+            }).then(function(offer) {
+                newOffer = offer;
+                return pmc.subscriptions.changeOfferKeepCaptureDateAndRefund(subId, newOffer);
+            }).then(function(updatedSub) {
+                expect(updatedSub.offer.id).to.be(newOffer.id);
+                expect(updatedSub.next_capture_at.getTime()).to.be(originalNextCapture.getTime());
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+    });
+
+    describe.only('#changeOfferKeepCaptureDateNoRefund()', function() {
+        it('should change the offer and not the next_capture_at', function(done) {
+            var newOffer = null;
+            var originalOffer = null;
+            var originalNextCapture = null;
+            var subId = null;
+            shared.createSubscription().then(function(sub) {
+                subId = sub.id;
+                originalOffer = sub.offer.id;
+                originalNextCapture = sub.next_capture_at;
+                return shared.createOffer();
+            }).then(function(offer) {
+                newOffer = offer;
+                return pmc.subscriptions.changeOfferKeepCaptureDateNoRefund(subId, newOffer);
+            }).then(function(updatedSub) {
+                expect(updatedSub.offer.id).to.be(newOffer.id);
+                expect(updatedSub.next_capture_at.getTime()).to.be(originalNextCapture.getTime());
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+    });
+
+    describe.only('#changeOfferChangeCaptureDateAndRefund()', function() {
+        it('should change the offer and the next_capture_at', function(done) {
+            var newOffer = null;
+            var originalOffer = null;
+            var originalNextCapture = null;
+            var subId = null;
+            shared.createSubscription().then(function(sub) {
+                subId = sub.id;
+                originalOffer = sub.offer.id;
+                originalNextCapture = sub.next_capture_at;
+                return shared.createOffer();
+            }).then(function(offer) {
+                newOffer = offer;
+                return pmc.subscriptions.changeOfferChangeCaptureDateAndRefund(subId, newOffer);
+            }).then(function(updatedSub) {
+                expect(updatedSub.offer.id).to.be(newOffer.id);
+                expect(updatedSub.next_capture_at.getTime()).not.to.be(originalNextCapture.getTime());
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+    });
+
 	describe('#list()', function() {
 		it('list should work with no params', function(done) {
 			pmc.subscriptions.list().then(function(result) {

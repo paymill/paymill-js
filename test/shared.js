@@ -110,11 +110,13 @@ function createPayment(client) {
 }
 
 exports.createOffer = createOffer;
-function createOffer(trialStart) {
+function createOffer(trialStart, interval) {
 	var amount = randomAmount();
 	var currency = defaultCurrency;
 	var name = "offer" + randomAmount();
-	var interval = new pm.Interval(2, pm.Interval.Unit.WEEK);
+    if (!interval) {
+	    interval = new pm.Interval(2, pm.Interval.Unit.WEEK);
+    }
 	return pmc.offers.create(amount, currency, interval, name, trialStart).then(function(offer) {
 		expect(offer).to.be.a(pm.Offer);
 		checkOfferFields(offer);
