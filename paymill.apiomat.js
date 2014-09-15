@@ -304,6 +304,15 @@ function getRefreshObject(obj,type) {
         return result;
     }
 }
+function getUnixTimeFromParam(param, paramName) {
+    if ( param instanceof Date) {
+        return Math.floor((param.getTime())/1000);
+    } else if (__.isNumber(param) || __.isString(param)) {
+        return param;
+    } else {
+        throw new PMError(PMError.Type.WRONG_PARAMS, "parameter " + paramName + " must be a Date, number or string");
+    }
+}
 /**
  *
  * Creates a new Client. Generally you should never create a PAYMILL object on your own.
@@ -3264,13 +3273,7 @@ SubscriptionService.prototype.createWithAll = function(payment, client, offer, a
             map.interval = interval.toString();
         }
         if (startAt) {
-            if ( startAt instanceof Date) {
-                map.start_at = Math.floor((startAt.getTime())/1000);
-            } else if (__.isNumber(startAt) || __.isString(startAt)) {
-                map.start_at = startAt;
-            } else {
-                return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "start_at must be a Date, number or string"));
-            }
+            map.start_at = getUnixTimeFromParam(startAt,"startAt");
         }
         if (!__.isEmpty(name)) {
             map.name = name;
@@ -3447,6 +3450,40 @@ SubscriptionService.prototype._changeOffer = function(obj, offer, type, cb) {
     map.offer = getIdFromObject(offer, Offer);
     return this._updateWithMap(obj, map, cb);
 };
+
+/**
+ * Stop the trial period of a subscription and charge immediately.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.endTrial = function(obj, cb) {
+    var map = {
+        "trial_end" : false
+    };
+    return this._updateWithMap(obj, map, cb);
+};
+
+/**
+ * Stop the trial period of a subscription on a specific date.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|number|Date)} date the date, on which the subscription should end.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.endTrialAt = function(obj, date, cb) {
+    var map = {};
+    try {
+        map.trial_end = getUnixTimeFromParam(date,"date");
+        return this._updateWithMap(obj, map, cb);
+    } catch (e) {
+        return this._reject(e);
+    }
+
+};
+
 /**
  * Get a Subscription.
  * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.

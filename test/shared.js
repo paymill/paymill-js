@@ -300,6 +300,16 @@ function verifyUpdate(factory, service, property, newvalue) {
 	});
 };
 
+
+exports.datesAroundTheSame = datesAroundTheSame;
+function datesAroundTheSame(firstDate,secondDate,minutes) {
+    if (!minutes) {
+        minutes = 60;
+    }
+    var timespan = minutes * 60 * 1000;
+    return Math.abs( firstDate.getTime() - secondDate.getTime() ) < timespan;
+
+};
 function checkOfferFields(target) {
 	expect(target.id).to.be.ok();
 	expect(target.amount).to.be.ok();

@@ -7,6 +7,7 @@ describe('SubscriptionService', function() {
 	this.timeout(10000);
     var today = new Date();
     var inAweek = new Date(today.getTime() + (86400 * 7 * 1000));
+    var inTwoWeeks = new Date(today.getTime() + 2*(86400 * 7 * 1000));
 
 	describe('#create() with all ', function() {
         it('should create an subscription with payment and offer', function(done) {
@@ -280,7 +281,7 @@ describe('SubscriptionService', function() {
         });
     });
 
-    describe.only('#changeOfferChangeCaptureDateAndRefund()', function() {
+    describe('#changeOfferChangeCaptureDateAndRefund()', function() {
         it('should change the offer and the next_capture_at', function(done) {
             var newOffer = null;
             var originalOffer = null;
@@ -297,6 +298,47 @@ describe('SubscriptionService', function() {
             }).then(function(updatedSub) {
                 expect(updatedSub.offer.id).to.be(newOffer.id);
                 expect(updatedSub.next_capture_at.getTime()).not.to.be(originalNextCapture.getTime());
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+    });
+
+    describe('#endTrial()', function() {
+        it('should end the trial immediately', function(done) {
+            var subId = null;
+            shared.createSubscription().then(function(sub) {
+                subId = sub.id;
+                return pmc.subscriptions.endTrial(subId);
+            }).then(function(updatedSub) {
+                expect(updatedSub.trial_end).to.be(null);
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+    });
+
+    describe.only('#endTrialAt()', function() {
+        it('should end the trial at the specified date', function(done) {
+            var payment;
+            var client;
+            var amount = shared.randomAmount();
+            var name = shared.randomDescription();
+            return pmc.clients.create().then(function(res) {
+                client = res;
+                return shared.createPayment(client);
+            }).then(function(res) {
+                payment = res;
+                return pmc.subscriptions.fromParams(payment, amount, "EUR", "2 MONTH,friday").withStartDate( inAweek ).create();
+            }).then(function(sub) {
+                expect(shared.datesAroundTheSame(sub.trial_end,inAweek)).to.be(true);
+                return pmc.subscriptions.endTrialAt(sub, inTwoWeeks );
+            }).then(function(updatedSub) {
+                expect(shared.datesAroundTheSame(updatedSub.trial_end,inTwoWeeks)).to.be(true);
             }).then(function() {
                 done();
             }, function(err) {
