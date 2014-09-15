@@ -3485,6 +3485,42 @@ SubscriptionService.prototype.endTrialAt = function(obj, date, cb) {
 };
 
 /**
+ * Change the period of validity for a subscription.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|Interval)} newValidity the new validity.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.limitValidity = function(obj, newValidity, cb) {
+    var map = {};
+    try {
+        if (__.isEmpty(newValidity)) {
+            throw new PMError(PMError.Type.WRONG_PARAMS, "newValidity must be a an interval");
+        }
+        map.period_of_validity = newValidity.toString();
+        return this._updateWithMap(obj, map, cb);
+    } catch (e) {
+        return this._reject(e);
+    }
+
+};
+
+/**
+ * Change the validity of a subscription to unlimited
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.unlimitValidity = function(obj, cb) {
+    var map = {
+        "period_of_validity" : "remove"
+    };
+    return this._updateWithMap(obj, map, cb);
+};
+
+/**
  * Get a Subscription.
  * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
  * @param {Object} [cb] a callback.

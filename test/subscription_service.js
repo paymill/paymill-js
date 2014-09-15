@@ -322,7 +322,7 @@ describe('SubscriptionService', function() {
         });
     });
 
-    describe.only('#endTrialAt()', function() {
+    describe('#endTrialAt()', function() {
         it('should end the trial at the specified date', function(done) {
             var payment;
             var client;
@@ -347,7 +347,35 @@ describe('SubscriptionService', function() {
         });
     });
 
-	describe('#list()', function() {
+    describe.only('#limitValidity() and #unlimitValidity()', function() {
+        it('should change the validity', function(done) {
+            var payment;
+            var client;
+            var amount = shared.randomAmount();
+            var name = shared.randomDescription();
+            return pmc.clients.create().then(function(res) {
+                client = res;
+                return shared.createPayment(client);
+            }).then(function(res) {
+                payment = res;
+                return pmc.subscriptions.fromParams(payment, amount, "EUR", "2 MONTH,friday").withPeriodOfValidity( "1 YEAR" ).create();
+            }).then(function(sub) {
+                expect(sub.period_of_validity.toString()).to.be("1 YEAR");
+                return pmc.subscriptions.limitValidity(sub, "2 MONTH" );
+            }).then(function(sub) {
+                expect(sub.period_of_validity.toString()).to.be("2 MONTH");
+                return pmc.subscriptions.unlimitValidity(sub);
+            }).then(function(sub) {
+                expect(sub.period_of_validity).to.be(null);
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+    });
+
+    describe('#list()', function() {
 		it('list should work with no params', function(done) {
 			pmc.subscriptions.list().then(function(result) {
 				expect(result).to.be.a(pm.PaymillList);
