@@ -1351,6 +1351,13 @@ Preauthorization.prototype.payment = null;
 Preauthorization.prototype.client = null;
 
 /**
+ * Corresponding Transaction object.
+ * @type {Transaction}
+ * @memberof Preauthorization.prototype
+ */
+Preauthorization.prototype.transaction = null;
+
+/**
  * Unix-Timestamp for the creation date.
  * @type {Date}
  * @memberof Preauthorization.prototype
@@ -3080,7 +3087,7 @@ PreauthorizationService.prototype._createPreauthorization = function(map, amount
     map.currency = currency;
     map.description = description;
 	map.source = getSourceIdentifier();
-	return this._create(map, Transaction, cb);
+	return this._create(map, Preauthorization, cb);
 };
 
 /**
@@ -3090,7 +3097,7 @@ PreauthorizationService.prototype._createPreauthorization = function(map, amount
  * @param {string} currency ISO 4217 formatted currency code.
  * @param {string} description  A short description for the preauthorization.
  * @param {Object} [cb] a callback.
- * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError. The actual preauthorization is in the transaction member "preauthorization".
+ * @return {Promise} a promise, which will be fulfilled with a Preauthorization or rejected with a PMError. The actual preauthorization is in the transaction member "preauthorization".
  * @memberOf PreauthorizationService
  */
 PreauthorizationService.prototype.createWithToken = function(token, amount, currency, description, cb) {
@@ -3113,7 +3120,7 @@ PreauthorizationService.prototype.createWithToken = function(token, amount, curr
  * @param {string} currency ISO 4217 formatted currency code.
  * @param {string} description  A short description for the preauthorization.
  * @param {Object} [cb] a callback.
- * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError. The actual preauthorization is in the transaction member "preauthorization".
+ * @return {Promise} a promise, which will be fulfilled with a Preauthorization or rejected with a PMError. The actual preauthorization is in the transaction member "preauthorization".
  * @memberOf PreauthorizationService
  */
 PreauthorizationService.prototype.createWithPayment = function(payment, amount, currency, description, cb) {

@@ -3,19 +3,16 @@ var pm = shared.pm;
 var pmc = shared.pmc;
 var expect = require("expect.js");
 
-describe('PreauthorizationService', function() {
+describe.only('PreauthorizationService', function() {
 	describe('#createWithToken()', function() {
 		it('should create a preauth with random amount', function(done) {
 			var amount = shared.randomAmount();
 			pmc.preauthorizations.createWithToken(shared.token, amount, shared.currency).then(function(result) {
-				expect(result).to.be.a(pm.Transaction);
-				expect(result.origin_amount).to.be(amount);
+				expect(result).to.be.a(pm.Preauthorization);
+				expect(result.amount).to.be(amount.toString());
 				expect(result.currency).to.be(shared.currency);
 				expect(result.client).to.be.a(pm.Client);
 				expect(result.payment).to.be.a(pm.Payment);
-				expect(result.preauthorization).to.be.a(pm.Preauthorization);
-				expect(result.preauthorization.amount).to.be(shared.toStrinAmount(amount));
-				expect(result.preauthorization.currency).to.be(shared.currency);
 			}).then(function() {
 				done();
 			}, function(err) {
@@ -29,15 +26,12 @@ describe('PreauthorizationService', function() {
         it('should create a preauth with random amount and description', function(done) {
             var amount = shared.randomAmount();
             pmc.preauthorizations.createWithToken(shared.token, amount, shared.currency,"test1234").then(function(result) {
-                expect(result).to.be.a(pm.Transaction);
-                expect(result.origin_amount).to.be(amount);
+                expect(result).to.be.a(pm.Preauthorization);
+                expect(result.amount).to.be(amount.toString());
                 expect(result.currency).to.be(shared.currency);
                 expect(result.description).to.be("test1234");
                 expect(result.client).to.be.a(pm.Client);
                 expect(result.payment).to.be.a(pm.Payment);
-                expect(result.preauthorization).to.be.a(pm.Preauthorization);
-                expect(result.preauthorization.amount).to.be(shared.toStrinAmount(amount));
-                expect(result.preauthorization.currency).to.be(shared.currency);
             }).then(function() {
                 done();
             }, function(err) {
@@ -55,15 +49,12 @@ describe('PreauthorizationService', function() {
 				payment = payresult;
 				return pmc.preauthorizations.createWithPayment(payment, amount, shared.currency, "test1234");
 			}).then(function(result) {
-				expect(result).to.be.a(pm.Transaction);
-				expect(result.origin_amount).to.be(amount);
+				expect(result).to.be.a(pm.Preauthorization);
+                expect(result.amount).to.be(amount.toString());
 				expect(result.currency).to.be(shared.currency);
+                expect(result.payment.id).to.be(payment.id);
 				expect(result.client).to.be.a(pm.Client);
 				expect(result.payment).to.be.a(pm.Payment);
-				expect(result.preauthorization).to.be.a(pm.Preauthorization);
-				expect(result.preauthorization.amount).to.be(shared.toStrinAmount(amount));
-				expect(result.preauthorization.currency).to.be(shared.currency);
-				expect(result.preauthorization.payment.id).to.be(payment.id);
 			}).then(function() {
 				done();
 			}, function(err) {
@@ -111,7 +102,7 @@ describe('#list()', function() {
 		it('detail with id', function(done) {
 			var preauth;
 			createPreauth().then(function(result) {
-				preauth = result.preauthorization;
+				preauth = result;
 				return pmc.preauthorizations.detail(preauth);
 			}).then(function(result) {
 				expect(result).to.be.a(pm.Preauthorization);
