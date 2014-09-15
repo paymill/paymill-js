@@ -60,13 +60,43 @@ describe('OfferService', function() {
 
 	});
 	describe('#remove()', function() {
-		it('with id', function(done) {
-			shared.verifyRemoveWithDetail(shared.createOffer, pmc.offers, pm.Offer).then(function() {
-				done();
-			}, function(err) {
-				done(err);
-			});
-		});
+        it('should remove an offer without the subscriptions', function(done) {
+            shared.createOffer().then(function(offer) {
+                return pmc.offers.remove(offer, false);
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+        it('should remove an offer and all subscriptions', function(done) {
+            this.timeout(10000);
+            var payment;
+            var client;
+            var sub;
+            var offer;
+            return pmc.clients.create().then(function(res) {
+                client = res;
+                return shared.createPayment(client);
+            }).then(function(res) {
+                payment = res;
+                return shared.createOffer();
+            }).then(function(createdOffer) {
+                   offer = createdOffer;
+                return pmc.subscriptions.fromOffer(payment, offer).create();
+            }).then(function(createdSub) {
+                sub = createdSub;
+                return pmc.offers.remove(offer,true);
+            }).then(function(offer) {
+                return pmc.subscriptions.detail(sub.id);
+            }).then(function(subDetail) {
+                expect(subDetail.is_deleted).to.be(true);
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
 	});
 
 	describe('#update()', function() {

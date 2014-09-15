@@ -4,7 +4,7 @@ var pmc = shared.pmc;
 var expect = require("expect.js");
 
 describe('SubscriptionService', function() {
-	this.timeout(10000);
+    this.timeout(12000);
     var today = new Date();
     var inAweek = new Date(today.getTime() + (86400 * 7 * 1000));
     var inTwoWeeks = new Date(today.getTime() + 2*(86400 * 7 * 1000));
@@ -256,7 +256,7 @@ describe('SubscriptionService', function() {
         });
     });
 
-    describe.only('#changeOfferKeepCaptureDateNoRefund()', function() {
+    describe('#changeOfferKeepCaptureDateNoRefund()', function() {
         it('should change the offer and not the next_capture_at', function(done) {
             var newOffer = null;
             var originalOffer = null;
@@ -391,7 +391,7 @@ describe('SubscriptionService', function() {
         });
     });
 
-    describe.only('#cancel()', function() {
+    describe('#cancel()', function() {
         it('should cancel the subscription', function(done) {
             var subId = null;
             shared.createSubscription().then(function(sub) {
