@@ -347,7 +347,7 @@ describe('SubscriptionService', function() {
         });
     });
 
-    describe.only('#limitValidity() and #unlimitValidity()', function() {
+    describe('#limitValidity() and #unlimitValidity()', function() {
         it('should change the validity', function(done) {
             var payment;
             var client;
@@ -367,6 +367,38 @@ describe('SubscriptionService', function() {
                 return pmc.subscriptions.unlimitValidity(sub);
             }).then(function(sub) {
                 expect(sub.period_of_validity).to.be(null);
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+    });
+
+    describe('#delete()', function() {
+        it('should delete the subscription', function(done) {
+            var subId = null;
+            shared.createSubscription().then(function(sub) {
+                subId = sub.id;
+                return pmc.subscriptions.delete(subId);
+            }).then(function(updatedSub) {
+                expect(updatedSub.is_deleted).to.be(true);
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+        });
+    });
+
+    describe.only('#cancel()', function() {
+        it('should cancel the subscription', function(done) {
+            var subId = null;
+            shared.createSubscription().then(function(sub) {
+                subId = sub.id;
+                return pmc.subscriptions.cancel(subId);
+            }).then(function(updatedSub) {
+                expect(updatedSub.is_canceled).to.be(true);
             }).then(function() {
                 done();
             }, function(err) {

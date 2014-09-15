@@ -2713,25 +2713,29 @@ PaymillService.prototype._list = function(count, offset, filter, order, cb) {
 };
 
 PaymillService.prototype._remove = function(obj, cb) {
-	try {
-		var pmType = this.getPaymillObject();
-		var path = this.getEndpointPath();
-		var id = getIdFromObject(obj, pmType);
-		var result;
-		if ( obj instanceof pmType) {
-			result = obj;
-		} else {
-			result = new pmType.prototype.constructor();
-		}
-		var httpRequest = new HttpRequest(path + "/" + id, "DELETE");
-		return this._request(httpRequest, function(httpData) {
-			var allData = JSON.parse(httpData);
-			result.fromJson(allData.data);
-			return result;
-		}, cb);
-	} catch(e) {
-		return this._reject(e, cb);
-	}
+    return this._removeWithMap(obj,null,cb);
+};
+
+PaymillService.prototype._removeWithMap = function(obj, params, cb) {
+    try {
+        var pmType = this.getPaymillObject();
+        var path = this.getEndpointPath();
+        var id = getIdFromObject(obj, pmType);
+        var result;
+        if ( obj instanceof pmType) {
+            result = obj;
+        } else {
+            result = new pmType.prototype.constructor();
+        }
+        var httpRequest = new HttpRequest(path + "/" + id, "DELETE", params);
+        return this._request(httpRequest, function(httpData) {
+            var allData = JSON.parse(httpData);
+            result.fromJson(allData.data);
+            return result;
+        }, cb);
+    } catch(e) {
+        return this._reject(e, cb);
+    }
 };
 
 PaymillService.prototype._request = function(httpRequest, httpDataHandler, cb) {
@@ -3519,6 +3523,34 @@ SubscriptionService.prototype.unlimitValidity = function(obj, cb) {
     };
     return this._updateWithMap(obj, map, cb);
 };
+
+
+/**
+ * This function removes an existing subscription. The subscription will be deleted and no pending transactions will be charged.
+ * Deleted subscriptions will not be displayed.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.delete = function(obj, cb) {
+    var map = { "remove" : true };
+    return this._removeWithMap(obj, map, cb);
+};
+
+/**
+ * This function cancels an existing subscription. The subscription will be directly terminated and no pending transactions will
+ * be charged.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.cancel = function(obj, cb) {
+    var map = { "remove" : false };
+    return this._removeWithMap(obj, map, cb);
+};
+
 
 /**
  * Get a Subscription.
