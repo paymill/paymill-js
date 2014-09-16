@@ -1902,7 +1902,7 @@ Subscription.prototype.is_deleted = null;
 
 /**
  * Shows, if subscription is "active", "inactive", "expired" or "failed"
- * @type {string|Transaction.Status} status of the subscription
+ * @type {string|Subscription.Status}
  * @memberof Subscription.prototype
  */
 Subscription.prototype.status = null;
