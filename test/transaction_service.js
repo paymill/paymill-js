@@ -55,10 +55,10 @@ describe('TransactionService', function() {
 		it('should create a transaction with random amount and preauthorization', function(done) {
 			var amount = shared.randomAmount();
 			var preauthorization;
-			pmc.preauthorizations.createWithToken(shared.token, amount, shared.currency).then(function(pretrans) {
+			pmc.preauthorizations.createWithToken(shared.token, amount, shared.currency).then(function(preauth) {
 				//preauth created
-				expect(pretrans).to.be.ok();
-				preauthorization = pretrans.preauthorization;
+				expect(preauth).to.be.ok();
+				preauthorization = preauth;
 				return pmc.transactions.createWithPreauthorization(preauthorization, amount, shared.currency, "test1234");
 			}).then(function(transaction) {
 				expect(transaction).to.be.a(pm.Transaction);
@@ -96,7 +96,7 @@ describe('TransactionService', function() {
 				return pmc.transactions.refund(result,100,"testrefund");
 			}).then(function(refund) {
 				expect(refund).to.be.a(pm.Refund);
-				expect(refund.amount).to.be("100");
+				expect(refund.amount.toString()).to.be("100");
 				expect(refund.description).to.be("testrefund");
 				expect(refund.transaction.id).to.be(transaction.id);
 			}).then(function() {

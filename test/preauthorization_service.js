@@ -3,7 +3,7 @@ var pm = shared.pm;
 var pmc = shared.pmc;
 var expect = require("expect.js");
 
-describe.only('PreauthorizationService', function() {
+describe('PreauthorizationService', function() {
 	describe('#createWithToken()', function() {
 		it('should create a preauth with random amount', function(done) {
 			var amount = shared.randomAmount();

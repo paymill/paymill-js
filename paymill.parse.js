@@ -1526,7 +1526,7 @@ Refund.prototype.transaction = null;
 
 /**
  * The refunded amount.
- * @type {string}
+ * @type {number}
  * @memberof Refund.prototype
  */
 Refund.prototype.amount = null;
@@ -2951,7 +2951,7 @@ OfferService.prototype.remove = function(obj, removeWithSubscriptions, cb) {
     }
     var map =  {
         "remove_with_subscriptions": removeWithSubscriptions
-    }
+    };
     return this._removeWithMap(obj, map, cb);
 };
 

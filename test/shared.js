@@ -63,10 +63,10 @@ function createRefund() {
 	return createTransaction().then(function(result) {
 		transaction = result;
 		expect(result).to.be.a(pm.Transaction);
-		return pmc.transactions.refund(result, 50, "testrefund");
+		return pmc.transactions.refund(result, 150, "testrefund");
 	}).then(function(refund) {
 		expect(refund).to.be.a(pm.Refund);
-		expect(refund.amount).to.be("050");
+		expect(refund.amount.toString()).to.be("150");
 		expect(refund.description).to.be("testrefund");
 		expect(refund.transaction.id).to.be(transaction.id);
 		return when.resolve(refund);
