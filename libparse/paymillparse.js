@@ -12,8 +12,8 @@ ParseHandler.prototype.getPromiseObject = function(promise) {
 	return promise;
 };
 ParseHandler.prototype.httpRequest = function(httpRequest) {
-	var defer = external.getDeferedObject();
-	var promise = external.getPromiseObject(defer);
+	var defer = this.getDeferedObject();
+	var promise = this.getPromiseObject(defer);
 	var reqParam = {
 		url : "https://" + this.apiKey + ":@" + apiHost + apiBaseUrl + httpRequest.path,
 		method : httpRequest.method,

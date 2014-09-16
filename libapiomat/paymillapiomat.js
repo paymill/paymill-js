@@ -15,8 +15,8 @@ ApiomatHandler.prototype.getPromiseObject = function(defer) {
 
 };
 ApiomatHandler.prototype.httpRequest = function(httpRequest) {
-	var defer = external.getDeferedObject();
-	var promise = external.getPromiseObject(defer);
+	var defer = this.getDeferedObject();
+	var promise = this.getPromiseObject(defer);
 	
 	var path = "https://" + apiHost + apiBaseUrl + httpRequest.path;
 	var headers =  httpRequest.headers;

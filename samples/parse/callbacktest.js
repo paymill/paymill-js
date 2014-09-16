@@ -1,5 +1,6 @@
-var pm = require("cloud/paymill.parse.js");
-pm.initialize("ENTER_YOUR_PAYMILL_API_KEY_HERE");
+var pmc = require("cloud/paymill.parse.js");
+var pm = pmc.getContext("ENTER_YOUR_PAYMILL_API_KEY_HERE");
+
 Parse.Cloud.define("testPMPromise", function(request, response) {
 	var withPromise;
 	var withCallback = true;
