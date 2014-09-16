@@ -1,9 +1,14 @@
 ![PAYMILL icon](https://static.paymill.com/r/335f99eb3914d517bf392beb1adaf7cccef786b6/img/logo-download_Light.png)
 # PAYMILL-JS (beta)
 
+
+[![NPM version](https://badge.fury.io/js/paymill-wrapper.png)](http://badge.fury.io/js/paymill-wrapper)
+[![Build Status](https://travis-ci.org/paymill/paymill-js.svg?branch=master)](https://travis-ci.org/paymill/paymill-js)
+[![Code Climate](https://codeclimate.com/github/paymill/paymill-js/badges/gpa.svg)](https://codeclimate.com/github/paymill/paymill-js)
+[![Test Coverage](https://codeclimate.com/github/paymill/paymill-js/badges/coverage.svg)](https://codeclimate.com/github/paymill/paymill-js)
+<br/>
 [![Dependency Status](https://david-dm.org/paymill/paymill-js.png)](https://david-dm.org/paymill/paymill-js)
 [![devDependency Status](https://david-dm.org/paymill/paymill-js/dev-status.png)](https://david-dm.org/paymill/paymill-js#info=devDependencies)
-[![NPM version](https://badge.fury.io/js/paymill-wrapper.png)](http://badge.fury.io/js/paymill-wrapper)
 <!--
 [![Build Status](https://travis-ci.org/paymill/paymill-js.png?branch=master)](https://travis-ci.org/paymill/paymill-js)
 [![NPM version](https://badge.fury.io/js/paymill.node.js.png)](http://badge.fury.io/js/paymill-wrapper)
