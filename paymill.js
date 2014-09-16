@@ -70,7 +70,7 @@ function HttpRequest(path, method, params) {
 	this.params = params;
 	this.requestBody = null;
 	this.headers = {};
-	if (method == "GET" || method == "DELETE") {
+	if (method === "GET" || method === "DELETE") {
 		this.path = this.path + urlEncode(params, true);
 		this.headers = {
 			"Content-Length" : 0
