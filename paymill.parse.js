@@ -268,6 +268,47 @@ function getTimeFromObject(obj) {
 	}
 
 	throw new PMError(PMError.Type.WRONG_PARAMS, obj + "must be either a string, a number or a Date");
+};
+
+function validateField(validationFunc, field, fieldName, optional) {
+    if (field !== undefined && field !== null) {
+        validationFunc(field,fieldName);
+    } else {
+        if (!optional) {
+            throw new PMError(PMError.Type.WRONG_PARAMS, fieldName + " is mandatory");
+        }
+    }
+};
+function validateMandatory(field,fieldname) {
+    if (__.isEmpty(field)) {
+        throw new PMError(PMError.Type.WRONG_PARAMS, fieldName + " is mandatory");
+    }
+}
+function validateNumber(field, fieldname, optional) {
+    return validateField((function (number,numberName) {
+        if (! (__.isNumber(number) || __.isNumber(parseInt(number))) ) {
+            throw new PMError(PMError.Type.WRONG_PARAMS, numberName + " must be a number or a string representing a number");
+        }
+    }),field,fieldname,optional);
+}
+function validateBoolean(field, fieldname, optional) {
+    return validateField((function (boolean, booleanName) {
+        if (! (__.isBoolean(boolean)) ) {
+            throw new PMError(PMError.Type.WRONG_PARAMS, numberName + " must be a boolean");
+        }
+    }),field,fieldname,optional);
+}
+
+function validateString(field, fieldname, optional) {
+    return validateField((function (string,stringName) {
+        if (!(__.isString(string) ) ) {
+            throw new PMError(PMError.Type.WRONG_PARAMS, numberName + " must be a string");
+        }
+    }),field,fieldname,optional);
+}
+
+function getTimeFilter(from, to) {
+    return getTimeFromObject(from) + "-" + getTimeFromObject(to);
 }
 
 function getIdFromObject(obj, objectType) {
@@ -302,6 +343,14 @@ function getRefreshObject(obj,type) {
         var result = new type.prototype.constructor();
         result.id=id;
         return result;
+    }
+}
+
+function getRealEquality(equality) {
+    if (equality === undefined) {
+        return Filter.EQUALITY.EQUAL;
+    } else {
+        return equality;
     }
 }
 function getUnixTimeFromParam(param, paramName) {
@@ -508,9 +557,7 @@ Client.Filter.prototype.email = function(email) {
  * @memberof Client.Filter
  */
 Client.Filter.prototype.created_at = function(from, to) {
-	var realFrom = getTimeFromObject(from);
-	var realTo = getTimeFromObject(to);
-	this.created_at = realFrom + "-" + realTo;
+	this.created_at = getTimeFilter(from,to);
 	return this;
 };
 /**
@@ -521,9 +568,7 @@ Client.Filter.prototype.created_at = function(from, to) {
  * @memberof Client.Filter
  */
 Client.Filter.prototype.updated_at = function(from, to) {
-	var realFrom = getTimeFromObject(from);
-	var realTo = getTimeFromObject(to);
-	this.updated_at = realFrom + "-" + realTo;
+	this.updated_at = getTimeFilter(from,to);
 	return this;
 };
 
@@ -909,12 +954,8 @@ Offer.Filter.prototype.trial_period_days = function(trial_period_days) {
  * @memberof Offer.Filter
  */
 Offer.Filter.prototype.amount = function(amount, equality) {
-	var realEquality = equality;
-	if (equality === undefined) {
-		realEquality = Filter.EQUALITY.EQUAL;
-	}
-	this.amount = realEquality + amount;
-	return this;
+    this.amount = getRealEquality(equality) + amount;
+    return this;
 };
 /**
  * Add filtering by created_at
@@ -924,9 +965,7 @@ Offer.Filter.prototype.amount = function(amount, equality) {
  * @memberof Offer.Filter
  */
 Offer.Filter.prototype.created_at = function(from, to) {
-	var realFrom = getTimeFromObject(from);
-	var realTo = getTimeFromObject(to);
-	this.created_at = realFrom + "-" + realTo;
+	this.created_at = getTimeFilter(from,to);
 	return this;
 };
 /**
@@ -937,9 +976,7 @@ Offer.Filter.prototype.created_at = function(from, to) {
  * @memberof Offer.Filter
  */
 Offer.Filter.prototype.updated_at = function(from, to) {
-	var realFrom = getTimeFromObject(from);
-	var realTo = getTimeFromObject(to);
-	this.updated_at = realFrom + "-" + realTo;
+	this.updated_at = getTimeFilter(from,to);
 	return this;
 };
 
@@ -1177,9 +1214,7 @@ Payment.Filter.prototype.card_type = function(card_type) {
  * @memberof Payment.Filter
  */
 Payment.Filter.prototype.created_at = function(from, to) {
-	var realFrom = getTimeFromObject(from);
-	var realTo = getTimeFromObject(to);
-	this.created_at = realFrom + "-" + realTo;
+	this.created_at = getTimeFilter(from,to);
 	return this;
 };
 
@@ -1472,12 +1507,8 @@ Preauthorization.Filter.prototype.payment = function(payment) {
  * @memberof Preauthorization.Filter
  */
 Preauthorization.Filter.prototype.amount = function(amount, equality) {
-	var realEquality = equality;
-	if (equality === undefined) {
-		realEquality = Filter.EQUALITY.EQUAL;
-	}
-	this.amount = realEquality + amount;
-	return this;
+    this.amount = getRealEquality(equality) + amount;
+    return this;
 };
 /**
  * Add filtering by created_at
@@ -1487,9 +1518,7 @@ Preauthorization.Filter.prototype.amount = function(amount, equality) {
  * @memberof Preauthorization.Filter
  */
 Preauthorization.Filter.prototype.created_at = function(from, to) {
-	var realFrom = getTimeFromObject(from);
-	var realTo = getTimeFromObject(to);
-	this.created_at = realFrom + "-" + realTo;
+	this.created_at = getTimeFilter(from,to);
 	return this;
 };
 /**
@@ -1694,12 +1723,8 @@ Refund.Filter.prototype.transaction = function(transaction) {
  * @memberof Refund.Filter
  */
 Refund.Filter.prototype.amount = function(amount, equality) {
-	var realEquality = equality;
-	if (equality === undefined) {
-		realEquality = Filter.EQUALITY.EQUAL;
-	}
-	this.amount = realEquality + amount;
-	return this;
+    this.amount = getRealEquality(equality) + amount;
+    return this;
 };
 /**
  * Add filtering by created_at
@@ -1709,9 +1734,7 @@ Refund.Filter.prototype.amount = function(amount, equality) {
  * @memberof Refund.Filter
  */
 Refund.Filter.prototype.created_at = function(from, to) {
-	var realFrom = getTimeFromObject(from);
-	var realTo = getTimeFromObject(to);
-	this.created_at = realFrom + "-" + realTo;
+	this.created_at = getTimeFilter(from,to);
 	return this;
 }; 
 
@@ -2003,9 +2026,7 @@ Subscription.Filter.prototype.offer = function(offer) {
  * @memberof Subscription.Filter
  */
 Subscription.Filter.prototype.created_at = function(from, to) {
-	var realFrom = getTimeFromObject(from);
-	var realTo = getTimeFromObject(to);
-	this.created_at = realFrom + "-" + realTo;
+	this.created_at = getTimeFilter(from,to);
 	return this;
 };
 
@@ -2367,12 +2388,8 @@ Transaction.Filter.prototype.payment = function(payment) {
  * @memberof Transaction.Filter
  */
 Transaction.Filter.prototype.amount = function(amount, equality) {
-	var realEquality = equality;
-	if (equality === undefined) {
-		realEquality = Filter.EQUALITY.EQUAL;
-	}
-	this.amount = realEquality + amount;
-	return this;
+    this.amount = getRealEquality(equality) + amount;
+    return this;
 };
 /**
  * Add filtering by description
@@ -2393,9 +2410,7 @@ Transaction.Filter.prototype.description = function(description) {
  * @memberof Transaction.Filter
  */
 Transaction.Filter.prototype.created_at = function(from, to) {
-	var realFrom = getTimeFromObject(from);
-	var realTo = getTimeFromObject(to);
-	this.created_at = realFrom + "-" + realTo;
+	this.created_at = getTimeFilter(from,to);
 	return this;
 };
 /**
@@ -2406,9 +2421,7 @@ Transaction.Filter.prototype.created_at = function(from, to) {
  * @memberof Transaction.Filter
  */
 Transaction.Filter.prototype.updated_at = function(from, to) {
-	var realFrom = getTimeFromObject(from);
-	var realTo = getTimeFromObject(to);
-	this.updated_at = realFrom + "-" + realTo;
+	this.updated_at = getTimeFilter(from,to);
 	return this;
 };
 
@@ -2614,9 +2627,7 @@ Webhook.Filter.prototype.url = function(url) {
  * @memberof Webhook.Filter
  */
 Webhook.Filter.prototype.created_at = function(from, to) {
-	var realFrom = getTimeFromObject(from);
-	var realTo = getTimeFromObject(to);
-	this.created_at = realFrom + "-" + realTo;
+	this.created_at = getTimeFilter(from,to);
 	return this;
 };
 
@@ -2796,25 +2807,22 @@ ClientService.prototype.getEndpointPath = function() {
  * @memberOf ClientService
  */
 ClientService.prototype.create = function(email, description, cb) {
-
-	var path = this.getEndpointPath();
-	var map = {
-	};
-	if (email) {
-		if (!__.isString(email)) {
-			return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "email must be a string"));
-		} else {
-			map.email = email;
-		}
-	}
-	if (description) {
-		if (!__.isString(description)) {
-			return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "description must be a string"));
-		} else {
-			map.description = description;
-		}
-	}
-	return this._create(map, Client, cb);
+    try {
+        var map = {
+        };
+        if (email) {
+            validateString(email,"email",true);
+            map.email = email;
+        }
+        if (description) {
+            validateString(description,"description",true);
+            map.description = description;
+        }
+        var path = this.getEndpointPath();
+        return this._create(map, Client, cb);
+    } catch (e) {
+        return this._reject(e);
+    }
 };
 
 /**
@@ -2892,35 +2900,26 @@ OfferService.prototype.getEndpointPath = function() {
  * @memberOf OfferService
  */
 OfferService.prototype.create = function(amount, currency, interval, name, trial_period_days, cb) {
-
-	// validate
-	if (!amount || !(__.isNumber(amount) || __.isString(amount))) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "amount must be a number or string"));
-	}
-	if (!currency || !__.isString(currency)) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "currency must be a string"));
-	}
-	if (!name || !(__.isNumber(amount) || __.isString(name))) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "name must be a string"));
-	}
-	if (!interval) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "interval is mandatory"));
-	}
-	var path = this.getEndpointPath();
-	var map = {
-		amount : amount,
-		currency : currency,
-		interval : interval.toString(),
-		name : name
-	};
-	if (trial_period_days) {
-		if (__.isNumber(trial_period_days) || !__.isString(amount)) {
-			map.trial_period_days = trial_period_days;
-		} else {
-			return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "trial period must be a number"));
-		}
-	}
-	return this._create(map, Offer, cb);
+    try {
+        validateNumber(amount,"amount",false);
+        validateString(currency,"currency",false);
+        validateString(name,"name",false);
+        validateMandatory(interval,"interval");
+        var path = this.getEndpointPath();
+        var map = {
+            amount : amount,
+            currency : currency,
+            interval : interval.toString(),
+            name : name
+        };
+        if (trial_period_days) {
+            validateNumber(trial_period_days,"trial_period_days",false);
+            map.trial_period_days = trial_period_days;
+        }
+        return this._create(map, Offer, cb);
+    } catch (e) {
+        return this._reject(e);
+    }
 };
 
 /**
@@ -2946,9 +2945,7 @@ OfferService.prototype.list = function(count, offset, filter, order, cb) {
  * @memberOf OfferService
  */
 OfferService.prototype.remove = function(obj, removeWithSubscriptions, cb) {
-    if (!__.isBoolean(removeWithSubscriptions)) {
-        return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "removeWithSubscriptions must be a boolean"));
-    }
+    validateBoolean(removeWithSubscriptions,'removeWithSubscriptions',false);
     var map =  {
         "remove_with_subscriptions": removeWithSubscriptions
     };
@@ -3004,20 +3001,19 @@ PaymentService.prototype.getEndpointPath = function() {
  * @memberOf PaymentService
  */
 PaymentService.prototype.create = function(token, client, cb) {
-	if (!__.isString(token)) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "token must be a string"));
-	}
-	var path = this.getEndpointPath();
-	var map = {
-		token : token
-	};
-	try {
-		var clientId = getIdFromObject(client, Client);
-		map.client = clientId;
-	} catch (e) {
-		// no client
-	}
-	return this._create(map, Payment, cb);
+    try {
+        validateString(token,"token",false);
+        var path = this.getEndpointPath();
+        var map = {
+            token : token
+        };
+        if (!(__.isEmpty(client))) {
+            map.client = getIdFromObject(client, Client);
+        }
+        return this._create(map, Payment, cb);
+    } catch (e) {
+        return this._reject(e);
+    }
 };
 
 /**
@@ -3076,12 +3072,9 @@ PreauthorizationService.prototype.getEndpointPath = function() {
 };
 
 PreauthorizationService.prototype._createPreauthorization = function(map, amount, currency, description, cb) {
-	if (!__.isString(amount) && !__.isNumber(amount)) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "amount must be a string or integer"));
-	}
-	if (!__.isString(currency)) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "currency must be a string"));
-	}
+
+    validateNumber(amount,"amount",false);
+    validateString(currency,"currency",false);
 	var path = this.getEndpointPath();
 	map.amount = amount;
     map.currency = currency;
@@ -3102,9 +3095,8 @@ PreauthorizationService.prototype._createPreauthorization = function(map, amount
  */
 PreauthorizationService.prototype.createWithToken = function(token, amount, currency, description, cb) {
 	try {
-		if (!__.isString(token)) {
-			return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "token must be a string"));
-		}
+
+        validateString(token,"token",false);
 		var map = {
 			"token" : token
 		};
@@ -3395,11 +3387,10 @@ SubscriptionService.prototype._changeAmount = function(obj, amount, type, curren
     var map = {
         "amount_change_type" : type
     };
-    if (!(__.isString(amount) || __.isNumber(amount))) {
-        return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "amount must be a string or integer"));
-    }
+    validateNumber(amount,"amount",false);
     map.amount = amount;
     if (currency) {
+        validateString(currency,"currency",true);
         map.currency = currency;
     }
     if (interval) {
@@ -3693,12 +3684,8 @@ TransactionService.prototype.getEndpointPath = function() {
 };
 
 TransactionService.prototype._createTransaction = function(map, amount, currency, description, client, fee_amount, fee_payment, fee_currency, cb) {
-	if (!(__.isString(amount) || __.isNumber(amount))) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "amount must be a string or integer"));
-	}
-	if (!__.isString(currency)) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "currency must be a string"));
-	}
+	validateNumber(amount,"amount",false);
+    validateString(currency,"currency",false);
 	var path = this.getEndpointPath();
 	map.amount = amount;
 	map.currency = currency;
@@ -3738,11 +3725,9 @@ TransactionService.prototype._createTransaction = function(map, amount, currency
  */
 TransactionService.prototype.createWithToken = function(token, amount, currency, description, client, fee_amount, fee_payment, fee_currency, cb) {
 	try {
-		if (!__.isString(token)) {
-			return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "token must be a string"));
-		}
+		validateString(token,"token",false);
 		var map = {
-			"token" : token,
+			"token" : token
 		};
 		return this._createTransaction(map, amount, currency, description, client, fee_amount, fee_payment, fee_currency, cb);
 	} catch(e) {
@@ -3767,7 +3752,7 @@ TransactionService.prototype.createWithPayment = function(payment, amount, curre
 	try {
 		var id = getIdFromObject(payment, Payment);
 		var map = {
-			"payment" : id,
+			"payment" : id
 		};
 		return this._createTransaction(map, amount, currency, description, client, fee_amount, fee_payment, cb);
 	} catch(e) {
@@ -3792,7 +3777,7 @@ TransactionService.prototype.createWithPreauthorization = function(preauthroizat
 	try {
 		var id = getIdFromObject(preauthroization, Preauthorization);
 		var map = {
-			"preauthorization" : id,
+			"preauthorization" : id
 		};
 		return this._createTransaction(map, amount, currency, description, client, fee_amount, fee_payment, cb);
 	} catch(e) {
@@ -3811,12 +3796,10 @@ TransactionService.prototype.createWithPreauthorization = function(preauthroizat
  */
 TransactionService.prototype.refund = function(transaction, amount, description, cb) {
 	try {
-		if (!(__.isString(amount) || __.isNumber(amount))) {
-			return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "amount must be a string or integer"));
-		}
+		validateNumber(amount,"amount",false);
 		var id = getIdFromObject(transaction, Transaction);
 		var map = {
-			"amount" : amount,
+			"amount" : amount
 		};
 		if (description) {
 			map.description = description;
@@ -3907,18 +3890,11 @@ WebhookService.prototype.getEndpointPath = function() {
  * @memberOf WebhookService
  */
 WebhookService.prototype.createUrl = function(url, event_types, cb) {
-	if (!__.isString(url)) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "url must be a string"));
-	}
-	if (!event_types || !event_types.length || event_types.length < 1) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "invalid event types. supply a string array with at least 1 type"));
-
-	}
+    validateString(url,"url",false);
 	var map = {
-		url : url,
-		event_types : event_types
+		url : url
 	};
-	return this._create(map, Webhook, cb);
+	return this._createWithMap(map, event_types, cb);
 
 };
 /**
@@ -3930,21 +3906,21 @@ WebhookService.prototype.createUrl = function(url, event_types, cb) {
  * @memberOf WebhookService
  */
 WebhookService.prototype.createEmail = function(email, event_types, cb) {
-	if (!__.isString(email)) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "email must be a string"));
-	}
-	if (!event_types || !event_types.length || event_types.length < 1) {
-		return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "invalid event types. supply a string array with at least 1 type"));
-
-	}
+    validateString(email,"email",false);
 	var map = {
 		email : email,
-		event_types : event_types
 	};
-	return this._create(map, Webhook, cb);
+	return this._createWithMap(map, event_types, cb);
 
 };
+WebhookService.prototype._createWithMap = function(map, event_types, cb) {
+    if (!event_types || !event_types.length || event_types.length < 1) {
+        return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "invalid event types. supply a string array with at least 1 type"));
 
+    }
+    map.event_types = event_types;
+    return this._create(map, Webhook, cb);
+};
 /**
  * List Webhooks.
  * @param {(string|number)} [count] limit of objects to be listed. use for pagination.
