@@ -18,7 +18,7 @@ ParseHandler.prototype.httpRequest = function(httpRequest) {
 		url : "https://" + this.apiKey + ":@" + apiHost + apiBaseUrl + httpRequest.path,
 		method : httpRequest.method,
 		success : function(httpResponse) {
-			if (httpResponse.status != 200) {
+            if (!isDataPresent(httpResponse.text)) {
 				defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text));
 			} else {
 				defer.resolve(httpResponse.text);
@@ -61,4 +61,10 @@ ParseHandler.prototype.getHandlerIdentifier = function() {
 	return "parse";
 };
 
-var external = new ParseHandler();
+
+var handlerConstructor = function(apiKey) {
+    var handler=new ParseHandler();
+    handler.setApiKey(apiKey);
+    return handler;
+};
+var platformIdentifier = 'parse';

@@ -14,8 +14,8 @@ NodeHandler.prototype.getPromiseObject = function(defer) {
 
 };
 NodeHandler.prototype.httpRequest = function(httpRequest) {
-	var defer = external.getDeferedObject();
-	var promise = external.getPromiseObject(defer);
+	var defer = this.getDeferedObject();
+	var promise = this.getPromiseObject(defer);
 	var options = {
 		hostname : apiHost,
 		port : 443,
@@ -33,7 +33,7 @@ NodeHandler.prototype.httpRequest = function(httpRequest) {
 			data = data + d;
 		});
 		res.on("end", function() {
-			if (status != 200) {
+            if (!isDataPresent(data)) {
 				defer.reject(new PMError(PMError.Type.API, data, "http status code:" + status + "\nheaders:" + headers + "\ndata:" + data));
 			} else {
 				defer.resolve(data);
@@ -72,4 +72,9 @@ NodeHandler.prototype.getHandlerIdentifier = function() {
 	return "node";
 };
 
-var external = new NodeHandler();
+var handlerConstructor = function(apiKey) {
+    var handler=new NodeHandler();
+    handler.setApiKey(apiKey);
+    return handler;
+};
+var platformIdentifier = 'node';

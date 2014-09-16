@@ -3,10 +3,10 @@
 var __ = require("underscore");
 
 var apiHost = "api.paymill.com";
-var apiBaseUrl = "/v2";
+var apiBaseUrl = "/v2.1";
 var apiEncoding = "utf8";
 /* note, we have to edit this manually, as the package.json is available only in node*/
-var version = "1.0.1";
+var version = "1.1.0";
 var sourcePrefix = "paymill-js";
 
 function ExternalHandler() {
@@ -55,7 +55,7 @@ ExternalHandler.prototype.getHandlerIdentifier = function() {
  * @return {string} the source parameter for transactions and preauthorizations. handler, e.g. "paymill-js-node-1.0.1"
  */
 function getSourceIdentifier() {
-	return sourcePrefix + "-" + external.getSourceIdentifier + "-" + version;
+	return sourcePrefix + "-" + platformIdentifier + "-" + version;
 }
 /**
  * Callback for HttpClient requests.
@@ -87,12 +87,99 @@ function HttpRequest(path, method, params) {
 }
 
 /**
- * Initialize the wrapper with your private API key.
- * @param {string} apiKey your private PAYMILL API key.
- *
+ * Checks if an http text response contains json and a data field.
+ * @param data the http response as string
+ * @returns {boolean} true if json and data is present, else otherwise (e.g. error)
  */
-exports.initialize = function(apiKey) {
-	external.setApiKey(apiKey);
+function isDataPresent(data) {
+    try {
+        var parsedData = JSON.parse(data);
+        if (parsedData.data !== undefined && parsedData.data !== null) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (e) {
+        return false;
+    }
+}
+/**
+ * PaymillContecxt loads the context of PAYMILL for a single account, by providing a merchants private key<br />
+ * It creates 8 services, which represents the PAYMILL API:
+ * @param apiKey
+ * @constructor
+ */
+
+/**
+ *
+ * A PaymillContext represents one client of the PAYMILL API. It holds the API key and exposes the 8 services,
+ * which correspond to the API endpoints.
+ * @class PaymillContext
+ */
+function PaymillContext(apiKey) {
+    // initalize services
+    this.handler = handlerConstructor(apiKey);
+    this.clients = new ClientService();
+    this.clients.setHandler(this.handler);
+    this.offers = new OfferService();
+    this.offers.setHandler(this.handler);
+    this.payments = new PaymentService();
+    this.payments.setHandler(this.handler);
+    this.preauthorizations = new PreauthorizationService();
+    this.preauthorizations.setHandler(this.handler);
+    this.refunds = new RefundService();
+    this.refunds.setHandler(this.handler);
+    this.subscriptions = new SubscriptionService();
+    this.subscriptions.setHandler(this.handler);
+    this.transactions = new TransactionService();
+    this.transactions.setHandler(this.handler);
+    this.webhooks = new WebhookService();
+    this.webhooks.setHandler(this.handler);
+}
+
+PaymillContext.prototype.constructor = PaymillContext;
+PaymillContext.prototype.handler = null;
+PaymillContext.prototype.apiKey = null;
+PaymillContext.prototype.setApiKey = function(apiKey) {
+    this.handler.setApiKey(apiKey);
+};
+
+/**
+ * The {@link ClientService} service.
+ */
+PaymillContext.prototype.clients = null;
+/**
+ * The {@link OfferService} service.
+ */
+PaymillContext.prototype.offers = null;
+/**
+ * The {@link PaymentService} service.
+ */
+PaymillContext.prototype.payments = null;
+/**
+ * The {@link PreauthorizationService} service.
+ */
+PaymillContext.prototype.preauthorizations = null;
+/**
+ * The {@link RefundService} service.
+ */
+PaymillContext.prototype.refunds = null;
+/**
+ * The {@link TransactionService} service.
+ */
+PaymillContext.prototype.transactions = null;
+/**
+ * The {@link SubscriptionService} service.
+ */
+PaymillContext.prototype.subscriptions = null;
+/**
+ * The {@link WebhookService} service.
+ */
+PaymillContext.prototype.webhooks = null;
+
+exports.PaymillContext = PaymillContext;
+exports.getContext = function(apiKey) {
+    return new PaymillContext(apiKey);
 };
 
 function PMError(type, message, detailMessage) {
@@ -145,7 +232,7 @@ function deserializeDate(unixTime) {
 	if (!__.isNumber(unixTime)) {
 		return unixTime;
 	}
-	return new Date(unixTime);
+	return new Date(unixTime*1000);
 }
 
 function urlEncode(params, appendQuestion) {
@@ -202,6 +289,29 @@ function getIdFromObject(obj, objectType) {
 		}
 	}
 	throw new PMError(PMError.Type.WRONG_PARAMS, obj + "must be either a string or " + objectType + " with a valid id.");
+}
+function getRefreshObject(obj,type) {
+    if ( obj instanceof type ) {
+        if (!__.isEmpty(obj.id)) {
+            return obj;
+        } else {
+            throw new PMError(PMError.Type.WRONG_PARAMS, obj + " is of correct type ( " + objectType + " ), but has no valid id.");
+        }
+    } else {
+        var id = getIdFromObject(obj, type);
+        var result = new type.prototype.constructor();
+        result.id=id;
+        return result;
+    }
+}
+function getUnixTimeFromParam(param, paramName) {
+    if ( param instanceof Date) {
+        return Math.floor((param.getTime())/1000);
+    } else if (__.isNumber(param) || __.isString(param)) {
+        return param;
+    } else {
+        throw new PMError(PMError.Type.WRONG_PARAMS, "parameter " + paramName + " must be a Date, number or string");
+    }
 }
 /**
  *
@@ -517,6 +627,98 @@ Filter.EQUALITY = {
 };
 /**
  *
+ * Creates a new Interval.
+ * @class Interval
+ * @param {number} length length of the interval (in units)
+ * @param {string|Interval.Unit} Unit for the interval
+ * @param {string|Interval.Weekday} weekday on which a charge should occur
+ * @extends PaymillObject
+ * @classdesc Defining an interval for an offer.
+ */
+function Interval(length, unit, weekday) {
+	this.length = length;
+	this.unit = unit;
+    this.chargeday = weekday;
+}
+
+Interval.prototype = new PaymillObject();
+Interval.prototype.constructor = Interval;
+/**
+ * Length of the interval (in units)
+ * @type {number}
+ * @memberof Interval.prototype
+ */
+Interval.prototype.length = null;
+/**
+ * Unit for the interval
+ * @type {Interval.Unit}
+ * @memberof Interval.prototype
+ */
+Interval.prototype.unit = null;
+/**
+ * Charge day in the week
+ * @type {Interval.Weekday}
+ * @memberof Interval.prototype
+ */
+Interval.prototype.chargeday = null;
+
+
+Interval.prototype.fromJson = function(jsonObj) {
+    var weekdayParts = jsonObj.split(',');
+    if (weekdayParts.length > 1) {
+        this.chargeday = weekdayParts[1];
+    }
+	var split = weekdayParts[0].split(" ");
+	this.length = parseInt(split[0],10);
+	this.unit = split[1];
+	this.originalJson = jsonObj;
+};
+Interval.prototype.toString = function() {
+    var chargedayPart = (__.isEmpty(this.chargeday)) ? '': ',' + this.chargeday;
+	return "" + this.length + " " + this.unit + chargedayPart;
+};
+
+Interval.prototype.getUpdateIdentifier = function() {
+    return this.toString();
+};
+/**
+ * Units for an Interval.
+ * @memberof Interval
+ * @property {string} DAY
+ * @property {string} WEEK
+ * @property {string} MONTH
+ * @property {string} YEAR
+ */
+Interval.Unit = {
+	"DAY" : "DAY",
+	"WEEK" : "WEEK",
+	"MONTH" : "MONTH",
+	"YEAR" : "YEAR"
+};
+
+/**
+ * Weekdays for an Interval.
+ * @memberof Interval
+ * @property {string} MONDAY
+ * @property {string} TUESDAY
+ * @property {string} WEDNESDAY
+ * @property {string} THURSDAY
+ * @property {string} FRIDAY
+ * @property {string} SATURDAY
+ * @property {string} SUNDAY
+ */
+Interval.Weekday = {
+    MONDAY : "MONDAY",
+    TUESDAY : "TUESDAY",
+    WEDNESDAY : "WEDNESDAY",
+    THURSDAY : "THURSDAY",
+    FRIDAY : "FRIDAY",
+    SATURDAY : "SATURDAY",
+    SUNDAY : "SUNDAY"
+};
+exports.Interval=Interval;
+/**
+ *
  * Creates a new Offer. Generally you should never create a PAYMILL object on your own.
  * @class Offer
  * @extends PaymillObject
@@ -558,7 +760,7 @@ Offer.prototype.currency = null;
 
 /**
  * Defining how often the client should be charged.
- * @type {OfferInterval}
+ * @type {Interval}
  * @memberof Offer.prototype
  */
 Offer.prototype.interval = null;
@@ -605,7 +807,7 @@ Offer.prototype.getFieldDefinitions = function() {
 		created_at : deserializeDate,
 		updated_at : deserializeDate,
 		interval : function(json) {
-			return deserializePaymillObject(json, OfferInterval);
+			return deserializePaymillObject(json, Interval);
 		},
 		subscription_count : function(json) {
 			return deserializePaymillObject(json, SubscriptionCount);
@@ -746,60 +948,6 @@ Offer.Filter.prototype.updated_at = function(from, to) {
  */
 exports.Offer = Offer;
 
-/**
- *
- * Creates a new OfferInterval.
- * @class OfferInterval
- * @param {number} number for the interval
- * @param {string|OfferInterval.Period} period for the interval
- * @extends PaymillObject
- * @classdesc Defining an interval for an offer.
- */
-function OfferInterval(number, period) {
-	this.number = number;
-	this.period = period;
-}
-
-OfferInterval.prototype = new PaymillObject();
-OfferInterval.prototype.constructor = OfferInterval;
-/**
- * Number for the interval
- * @type {number}
- * @memberof OfferInterval.prototype
- */
-OfferInterval.prototype.number = null;
-/**
- * Period for the interval
- * @type {OfferInterval.Period}
- * @memberof OfferInterval.prototype
- */
-OfferInterval.prototype.period = null;
-
-
-OfferInterval.prototype.fromJson = function(jsonObj) {
-	var split=jsonObj.split(" ");
-	this.number=parseInt(split[0],10);
-	this.period=split[1];
-	this.originalJson = jsonObj;
-};
-OfferInterval.prototype.toString = function() {
-	return ""+this.number+" "+this.period;
-};
-/**
- * Period for an OfferInterval.
- * @memberof OfferInterval
- * @property {string} DAY
- * @property {string} WEEK
- * @property {string} MONTH
- * @property {string} YEAR
- */
-OfferInterval.Period = {
-	"DAY" : "DAY",
-	"WEEK" : "WEEK",
-	"MONTH" : "MONTH",
-	"YEAR" : "YEAR"
-}; 
-exports.OfferInterval=OfferInterval;
 /**
  *
  * Creates a new Order. Use factories of implementing classes.
@@ -1080,21 +1228,28 @@ PaymillObject.prototype.getFieldDefinitions = function() {
 	return {};
 };
 PaymillObject.prototype.fromJson = function(jsonObj) {
+    // if we only have a string, it's just the id
+    if ( __.isString(jsonObj) ) {
+        this.id = jsonObj;
+        this.originalJson = jsonObj;
+    } else {
+    // if we have a complex object, deserialize
+        var fieldDefs = this.getFieldDefinitions();
+        for (var key in jsonObj) {
+            if (jsonObj.hasOwnProperty(key)) {
+                var value = jsonObj[key];
+                if (fieldDefs[key] !== undefined) {
+                    this[key] = fieldDefs[key](value);
+                } else {
+                    if (this[key] !== undefined) {
+                        this[key] = value;
+                    }
+                }
+            }
+        }
+        this.originalJson = jsonObj;
+    }
 
-	var fieldDefs = this.getFieldDefinitions();
-	for (var key in jsonObj) {
-		if (jsonObj.hasOwnProperty(key)) {
-			var value = jsonObj[key];
-			if (fieldDefs[key] !== undefined) {
-				this[key] = fieldDefs[key](value);
-			} else {
-				if (this[key] !== undefined) {
-					this[key] = value;
-				}
-			}
-		}
-	}
-	this.originalJson = jsonObj;
 };
 PaymillObject.prototype.getUpdateMap = function() {
 
@@ -1102,18 +1257,22 @@ PaymillObject.prototype.getUpdateMap = function() {
 	var result = {};
 	for (var i = 0; i < updateFields.length; i++) {
 		var key = updateFields[i];
-		if (this[key]) {
-			result[key] = getValueOrId(this[key]);
+		if (this[key] !== undefined && this[key] !== null)  {
+			result[key] = getUpdateValueOrId(this[key]);
 		}
 	}
 	return result;
 };
+
+PaymillObject.prototype.getUpdateIdentifier = function() {
+    return this.id;
+};
 /*
  * use by updatemap to extract paymillobject ids for updates
  */
-function getValueOrId(value) {
-	if ( value instanceof PaymillObject) {
-		return value.id;
+function getUpdateValueOrId(value) {
+	if ( value instanceof PaymillObject ) {
+		return value.getUpdateIdentifier();
 	} else {
 		return value.toString();
 	}
@@ -1190,6 +1349,13 @@ Preauthorization.prototype.payment = null;
  * @memberof Preauthorization.prototype
  */
 Preauthorization.prototype.client = null;
+
+/**
+ * Corresponding Transaction object.
+ * @type {Transaction}
+ * @memberof Preauthorization.prototype
+ */
+Preauthorization.prototype.transaction = null;
 
 /**
  * Unix-Timestamp for the creation date.
@@ -1360,7 +1526,7 @@ Refund.prototype.transaction = null;
 
 /**
  * The refunded amount.
- * @type {string}
+ * @type {number}
  * @memberof Refund.prototype
  */
 Refund.prototype.amount = null;
@@ -1580,6 +1746,7 @@ Subscription.prototype.id = null;
  * @memberof Subscription.prototype
  */
 Subscription.prototype.offer = null;
+
 /**
  * Whether this subscription was issued while being in live mode or not.
  * @type {boolean}
@@ -1588,11 +1755,39 @@ Subscription.prototype.offer = null;
 Subscription.prototype.livemode = null;
 
 /**
- * Cancel this subscription immediately or at the end of the current period?
- * @type {boolean}
+ * The amount of the subscription in cents
+ * @type {number}
  * @memberof Subscription.prototype
  */
-Subscription.prototype.cancel_at_period_end = null;
+Subscription.prototype.amount = null;
+
+/**
+ * A one-time amount in cents, will charge once only
+ * @type {number}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.temp_amount = null;
+
+/**
+ * ISO 4217 formatted currency code
+ * @type {string}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.currency = null;
+
+/**
+ * Name of the subscription
+ * @type {string}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.name = null;
+
+/**
+ * Defining how often the client should be charged
+ * @type {string|Interval}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.interval = null;
 
 /**
  * Unix-Timestamp for the trial period start
@@ -1600,12 +1795,28 @@ Subscription.prototype.cancel_at_period_end = null;
  * @memberof Subscription.prototype
  */
 Subscription.prototype.trial_start = null;
+
 /**
  * Unix-Timestamp for the trial period end.
  * @type {Date}
  * @memberof Subscription.prototype
  */
 Subscription.prototype.trial_end = null;
+
+/**
+ * Limit the validity of the subscription.
+ * @type {string|Interval}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.period_of_validity = null;
+
+/**
+ * Expiring date of the subscription.
+ * @type {string|Interval}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.end_of_period = null;
+
 /**
  * Unix-Timestamp for the next charge.
  * @type {Date}
@@ -1652,6 +1863,41 @@ Subscription.prototype.client = null;
  */
 Subscription.prototype.app_id = null;
 
+/**
+ * Subscription is marked as canceled or not.
+ * @type {boolean}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.is_canceled = null;
+
+/**
+ * Subscription is marked as deleted or not.
+ * @type {boolean}
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.is_deleted = null;
+
+/**
+ * Shows, if subscription is “active”, “inactive”, “expired” or “failed”
+ * @type {string|Transaction.Status} status of the subscription
+ * @memberof Subscription.prototype
+ */
+Subscription.prototype.status = null;
+
+/**
+ * Status of a subscription.
+ * @memberof Subscription
+ * @property {string} ACTIVE
+ * @property {string} INACTIVE
+ * @property {string} EXPIRED
+ * @property {string} FAILED
+ */
+Subscription.Status = {
+    ACTIVE : "active" ,
+    INACTIVE : "inactive",
+    EXPIRED : "expired" ,
+    FAILED : "failed"
+};
 /*
  * special fields
  */
@@ -1661,6 +1907,7 @@ Subscription.prototype.getFieldDefinitions = function() {
 		updated_at : deserializeDate,
 		trial_start : deserializeDate,
 		trial_end : deserializeDate,
+        end_of_period : deserializeDate,
 		next_capture_at : deserializeDate,
 		canceled_at : deserializeDate,
 		offer : function(json) {
@@ -1671,12 +1918,18 @@ Subscription.prototype.getFieldDefinitions = function() {
 		},
 		client : function(json) {
 			return deserializePaymillObject(json, Client);
-		}
+		},
+        interval : function(json) {
+            return deserializePaymillObject(json, Interval);
+        },
+        period_of_validity : function(json) {
+            return deserializePaymillObject(json, Interval);
+        }
 	};
 };
 
 Subscription.prototype.getUpdateableFields = function() {
-	return ["cancel_at_period_end", "offer", "payment"];
+	return [ 'currency', 'name', 'interval' ];
 };
 
 /**
@@ -1962,6 +2215,93 @@ Transaction.prototype.getFieldDefinitions = function() {
 		},
 	};
 };
+/**
+ * Get an end user friendly message for the transaction reponse code
+ * @returns {string} an end user friendly message.
+ */
+Transaction.prototype.getResponseCodeDetail = function()  {
+    if ( this.response_code === undefined || this.response_code === null || this.response_code == 10001 ) {
+        return "General undefined response";
+    } else if( this.response_code == 10002 ) {
+        return "Still waiting on something.";
+    } else if( this.response_code == 20000 ) {
+        return "General success response.";
+    } else if( this.response_code == 40000 ) {
+        return "General problem with data.";
+    } else if( this.response_code == 40001 ) {
+        return "General problem with payment data.";
+    } else if( this.response_code == 40100 ) {
+        return "Problem with credit card data.";
+    } else if( this.response_code == 40101 ) {
+        return "Problem with cvv.";
+    } else if( this.response_code == 40102 ) {
+        return "Card expired or not yet valid.";
+    } else if( this.response_code == 40103 ) {
+        return "Limit exceeded.";
+    } else if( this.response_code == 40104 ) {
+        return "Card invalid.";
+    } else if( this.response_code == 40105 ) {
+        return "Expiry date not valid.";
+    } else if( this.response_code == 40106 ) {
+        return "Credit card brand required.";
+    } else if( this.response_code == 40200 ) {
+        return "Problem with bank account data.";
+    } else if( this.response_code == 40201 ) {
+        return "Bank account data combination mismatch.";
+    } else if( this.response_code == 40202 ) {
+        return "User authentication failed.";
+    } else if( this.response_code == 40300 ) {
+        return "Problem with 3d secure data.";
+    } else if( this.response_code == 40301 ) {
+        return "Currency / amount mismatch";
+    } else if( this.response_code == 40400 ) {
+        return "Problem with input data.";
+    } else if( this.response_code == 40401 ) {
+        return "Amount too low or zero.";
+    } else if( this.response_code == 40402 ) {
+        return "Usage field too long.";
+    } else if( this.response_code == 40403 ) {
+        return "Currency not allowed.";
+    } else if( this.response_code == 50000 ) {
+        return "General problem with backend.";
+    } else if( this.response_code == 50001 ) {
+        return "Country blacklisted.";
+    } else if( this.response_code == 50002 ) {
+        return "IP address blacklisted.";
+    } else if( this.response_code == 50003 ) {
+        return "Anonymous IP proxy used.";
+    } else if( this.response_code == 50100 ) {
+        return "Technical error with credit card.";
+    } else if( this.response_code == 50101 ) {
+        return "Error limit exceeded.";
+    } else if( this.response_code == 50102 ) {
+        return "Card declined by authorization system.";
+    } else if( this.response_code == 50103 ) {
+        return "Manipulation or stolen card.";
+    } else if( this.response_code == 50104 ) {
+        return "Card restricted.";
+    } else if( this.response_code == 50105 ) {
+        return "Invalid card configuration data.";
+    } else if( this.response_code == 50200 ) {
+        return "Technical error with bank account.";
+    } else if( this.response_code == 50201 ) {
+        return "Card blacklisted.";
+    } else if( this.response_code == 50300 ) {
+        return "Technical error with 3D secure.";
+    } else if( this.response_code == 50400 ) {
+        return "Decline because of risk issues.";
+    } else if( this.response_code == 50500 ) {
+        return "General timeout.";
+    } else if( this.response_code == 50501 ) {
+        return "Timeout on side of the acquirer.";
+    } else if( this.response_code == 50502 ) {
+        return "Risk management transaction timeout.";
+    } else if( this.response_code == 50600 ) {
+        return "Duplicate transaction.";
+    } else {
+        return null;
+    }
+};
 Transaction.prototype.getUpdateableFields = function() {
 	return ["description"];
 };
@@ -2175,6 +2515,10 @@ Webhook.EventType = {
 	SUBSCRIPTION_DELETED : "subscription.deleted",
 	SUBSCRIPTION_SUCCEEDED : "subscription.succeeded",
 	SUBCRIPTION_FAILED : "subscription.failed",
+    SUBSCRIPTION_EXPIRING : "subscription.expiring",
+    SUBSCRIPTION_DEACTIVATED : "subscription.deactivated",
+    SUBSCRIPTION_ACTIVATED : "subscription.activated",
+    SUBSCRIPTION_CANCELED : "subscription.canceled",
 	REFUND_CREATED : "refund.created",
 	REFUND_SUCCEEDED : "refund.succeeded",
 	REFUND_FAILED : "refund.failed",
@@ -2286,11 +2630,15 @@ function PaymillService() {
 
 }
 
+PaymillService.prototype.handler = null;
 PaymillService.prototype.getPaymillObject = function() {
 	throw new PMError(PMError.Type._, "PaymillService.getPaymillObject() is abstract! Did you initialze?");
 };
 PaymillService.prototype.getEndpointPath = function() {
 	throw new PMError(PMError.Type._, "PaymillService.getEndpointPath() is abstract! Did you initialze?");
+};
+PaymillService.prototype.setHandler = function(handler) {
+    this.handler = handler;
 };
 
 PaymillService.prototype._create = function(paramMap, type, cb) {
@@ -2309,15 +2657,8 @@ PaymillService.prototype._create = function(paramMap, type, cb) {
 
 PaymillService.prototype._detail = function(obj, cb) {
 	try {
-		var pmType = this.getPaymillObject();
-		var id = getIdFromObject(obj, pmType);
-		var result;
-		if ( obj instanceof pmType) {
-			result = obj;
-		} else {
-			result = new pmType.prototype.constructor();
-		}
-		var httpRequest = new HttpRequest(this.getEndpointPath() + "/" + id, "GET");
+        var result = getRefreshObject(obj,this.getPaymillObject());
+		var httpRequest = new HttpRequest(this.getEndpointPath() + "/" + result.id, "GET");
 		return this._request(httpRequest, function(httpData) {
 			var allData = JSON.parse(httpData);
 			result.fromJson(allData.data);
@@ -2328,23 +2669,26 @@ PaymillService.prototype._detail = function(obj, cb) {
 	}
 };
 PaymillService.prototype._update = function(obj, cb) {
-
-	try {
-		if (!obj instanceof        this.getPaymillObject()) {
-			this._reject(new PMError(PMError.Type.WRONG_PARAMS, "Incorrect object type."));
-			return promise;
-		}
-		var httpRequest = new HttpRequest(this.getEndpointPath() + "/" + obj.id, "PUT", obj.getUpdateMap());
-
-		return this._request(httpRequest, function(httpData) {
-			var allData = JSON.parse(httpData);
-			obj.fromJson(allData.data);
-			return obj;
-		}, cb);
-	} catch(e) {
-		return this._reject(e, cb);
-	}
+    if (! (obj instanceof this.getPaymillObject())) {
+        return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "Incorrect object type for update(), must be " + this.getPaymillObject()));
+    }
+    return this._updateWithMap(obj,obj.getUpdateMap(),cb);
 };
+PaymillService.prototype._updateWithMap = function(obj,map,cb) {
+
+    try {
+        var result = getRefreshObject(obj,this.getPaymillObject());
+        var httpRequest = new HttpRequest(this.getEndpointPath() + "/" + result.id, "PUT", map);
+        return this._request(httpRequest, function(httpData) {
+            var allData = JSON.parse(httpData);
+            result.fromJson(allData.data);
+            return result;
+        }, cb);
+    } catch(e) {
+        return this._reject(e, cb);
+    }
+};
+
 PaymillService.prototype._list = function(count, offset, filter, order, cb) {
 	try {
 		var pmType = this.getPaymillObject();
@@ -2376,32 +2720,36 @@ PaymillService.prototype._list = function(count, offset, filter, order, cb) {
 };
 
 PaymillService.prototype._remove = function(obj, cb) {
-	try {
-		var pmType = this.getPaymillObject();
-		var path = this.getEndpointPath();
-		var id = getIdFromObject(obj, pmType);
-		var result;
-		if ( obj instanceof pmType) {
-			result = obj;
-		} else {
-			result = new pmType.prototype.constructor();
-		}
-		var httpRequest = new HttpRequest(path + "/" + id, "DELETE");
-		return this._request(httpRequest, function(httpData) {
-			var allData = JSON.parse(httpData);
-			result.fromJson(allData.data);
-			return result;
-		}, cb);
-	} catch(e) {
-		return this._reject(e, cb);
-	}
+    return this._removeWithMap(obj,null,cb);
+};
+
+PaymillService.prototype._removeWithMap = function(obj, params, cb) {
+    try {
+        var pmType = this.getPaymillObject();
+        var path = this.getEndpointPath();
+        var id = getIdFromObject(obj, pmType);
+        var result;
+        if ( obj instanceof pmType) {
+            result = obj;
+        } else {
+            result = new pmType.prototype.constructor();
+        }
+        var httpRequest = new HttpRequest(path + "/" + id, "DELETE", params);
+        return this._request(httpRequest, function(httpData) {
+            var allData = JSON.parse(httpData);
+            result.fromJson(allData.data);
+            return result;
+        }, cb);
+    } catch(e) {
+        return this._reject(e, cb);
+    }
 };
 
 PaymillService.prototype._request = function(httpRequest, httpDataHandler, cb) {
-	var defer = external.getDeferedObject();
-	var promise = external.getPromiseObject(defer);
-	promise = external.includeCallbackInPromise(promise, cb);
-	external.httpRequest(httpRequest).then(function(httpData) {
+	var defer = this.handler.getDeferedObject();
+	var promise = this.handler.getPromiseObject(defer);
+	promise = this.handler.includeCallbackInPromise(promise, cb);
+    this.handler.httpRequest(httpRequest).then(function(httpData) {
 		try {
 			var result = httpDataHandler(httpData);
 			defer.resolve(result);
@@ -2414,9 +2762,9 @@ PaymillService.prototype._request = function(httpRequest, httpDataHandler, cb) {
 	return promise;
 };
 PaymillService.prototype._reject = function(error, cb) {
-	var defer = external.getDeferedObject();
-	var promise = external.getPromiseObject(defer);
-	promise = external.includeCallbackInPromise(promise, cb);
+	var defer = this.handler.getDeferedObject();
+	var promise = this.handler.getPromiseObject(defer);
+	promise = this.handler.includeCallbackInPromise(promise, cb);
 	defer.reject(error);
 	return promise;
 };
@@ -2516,11 +2864,6 @@ ClientService.prototype.update = function(obj, cb) {
 	return this._update(obj, cb);
 };
 /**
- * The {@link ClientService} service.
- */
-exports.clients = new ClientService();
-
-/**
  *
  * Creates a new OfferService. Generally you should never create a PAYMILL service on your own. Instead use the exported "offers".
  * @class OfferService
@@ -2542,7 +2885,7 @@ OfferService.prototype.getEndpointPath = function() {
  * This function creates a Offer object.
  * @param {string|number} amount Amount (in cents).
  * @param {string} currency ISO 4217 formatted currency code
- * @param {string|OfferInterval} interval Defining how often the client should be charged. Format: number DAY|WEEK|MONTH|YEAR Example: 2 DAY
+ * @param {string|Interval} interval Defining how often the client should be charged. Format: number DAY|WEEK|MONTH|YEAR Example: 2 DAY
  * @param {string} name Your name for this offer
  * @param {number} [trial_period_days] Give it a try or charge directly? Default is 0
  * @return {Promise} a promise, which will be fulfilled with a Offer or rejected with a PMError.
@@ -2567,14 +2910,14 @@ OfferService.prototype.create = function(amount, currency, interval, name, trial
 	var map = {
 		amount : amount,
 		currency : currency,
-		interval : interval,
+		interval : interval.toString(),
 		name : name
 	};
 	if (trial_period_days) {
 		if (__.isNumber(trial_period_days) || !__.isString(amount)) {
 			map.trial_period_days = trial_period_days;
 		} else {
-			return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "interval is mandatory"));
+			return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "trial period must be a number"));
 		}
 	}
 	return this._create(map, Offer, cb);
@@ -2595,18 +2938,25 @@ OfferService.prototype.list = function(count, offset, filter, order, cb) {
 };
 
 /**
- * Remove a Offer.
+ * Remove an Offer.
  * @param {Offer} obj a Offer object or its id.
+ * @param {boolean} removeWithSubscriptions if true, the plan and all subscriptions associated with it will be deleted. If false, only the plan will be deleted.
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Offer or rejected with a PMError.
  * @memberOf OfferService
  */
-OfferService.prototype.remove = function(obj, cb) {
-	return this._remove(obj, cb);
+OfferService.prototype.remove = function(obj, removeWithSubscriptions, cb) {
+    if (!__.isBoolean(removeWithSubscriptions)) {
+        return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "removeWithSubscriptions must be a boolean"));
+    }
+    var map =  {
+        "remove_with_subscriptions": removeWithSubscriptions
+    };
+    return this._removeWithMap(obj, map, cb);
 };
 
 /**
- * Get a Offer.
+ * Get an Offer.
  * @param {(string|Offer)} obj a Offer object or its id. note, if you set a Offer object it will be updated, no new object will be created.
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Offer or rejected with a PMError.
@@ -2626,11 +2976,6 @@ OfferService.prototype.detail = function(obj, cb) {
 OfferService.prototype.update = function(obj, cb) {
 	return this._update(obj, cb);
 };
-
-/**
- * The {@link OfferService} service.
- */
-exports.offers = new OfferService();
 
 /**
  *
@@ -2711,10 +3056,6 @@ PaymentService.prototype.detail = function(obj, cb) {
 	return this._detail(obj, cb);
 };
 
-/**
- * The {@link PaymentService} service.
- */
-exports.payments = new PaymentService();
 
 /**
  *
@@ -2746,7 +3087,7 @@ PreauthorizationService.prototype._createPreauthorization = function(map, amount
     map.currency = currency;
     map.description = description;
 	map.source = getSourceIdentifier();
-	return this._create(map, Transaction, cb);
+	return this._create(map, Preauthorization, cb);
 };
 
 /**
@@ -2756,7 +3097,7 @@ PreauthorizationService.prototype._createPreauthorization = function(map, amount
  * @param {string} currency ISO 4217 formatted currency code.
  * @param {string} description  A short description for the preauthorization.
  * @param {Object} [cb] a callback.
- * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError. The actual preauthorization is in the transaction member "preauthorization".
+ * @return {Promise} a promise, which will be fulfilled with a Preauthorization or rejected with a PMError. The actual preauthorization is in the transaction member "preauthorization".
  * @memberOf PreauthorizationService
  */
 PreauthorizationService.prototype.createWithToken = function(token, amount, currency, description, cb) {
@@ -2779,7 +3120,7 @@ PreauthorizationService.prototype.createWithToken = function(token, amount, curr
  * @param {string} currency ISO 4217 formatted currency code.
  * @param {string} description  A short description for the preauthorization.
  * @param {Object} [cb] a callback.
- * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError. The actual preauthorization is in the transaction member "preauthorization".
+ * @return {Promise} a promise, which will be fulfilled with a Preauthorization or rejected with a PMError. The actual preauthorization is in the transaction member "preauthorization".
  * @memberOf PreauthorizationService
  */
 PreauthorizationService.prototype.createWithPayment = function(payment, amount, currency, description, cb) {
@@ -2830,11 +3171,6 @@ PreauthorizationService.prototype.detail = function(obj, cb) {
 };
 
 /**
- * The {@link PreauthorizationService} service.
- */
-exports.preauthorizations = new PreauthorizationService();
-
-/**
  *
  * Creates a new RefundService. Generally you should never create a PAYMILL service on your own. Instead use the exported "refunds". To refund transactions, use the transaction service.
  * @class RefundService
@@ -2876,12 +3212,6 @@ RefundService.prototype.list = function(count, offset, filter, order, cb) {
 RefundService.prototype.detail = function(obj, cb) {
 	return this._detail(obj, cb);
 };
-
-/**
- * The {@link RefundService} service.
- */
-exports.refunds = new RefundService();
-
 /**
  *
  * Creates a new SubscriptionService. Generally you should never create a PAYMILL service on your own. Instead use the exported "subscriptions".
@@ -2901,37 +3231,74 @@ SubscriptionService.prototype.getEndpointPath = function() {
 };
 
 /**
- * This function creates a subscription between a client and an offer. A client can have several subscriptions to different offers, but only one subscription to the same offer. The clients is charged for each billing interval entered.
+ * Create a subscription with payment and offer. Chain further values by calling with..() functions and finish by calling create().
+ *
  * @param {(string|Offer)} offer an offer object or its id.
- * @param {(string|Payment)} payment an offer object or its id.
+ * @param {(string|Payment)} payment a payment object or its id.
+ * @return {SubscriptionService.Creator} a creator. when configured please call create()
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.fromOffer = function(payment,offer) {
+    var creator = new SubscriptionService.Creator(this);
+    creator.payment = payment;
+    creator.offer = offer;
+    return creator;
+};
+
+SubscriptionService.prototype.fromParams = function(payment, amount, currency, interval) {
+    var creator = new SubscriptionService.Creator(this);
+    creator.payment = payment;
+    creator.amount = amount;
+    creator.currency = currency;
+    creator.interval = interval;
+    return creator;
+};
+
+/**
+ * This function creates a Subscription between a Client and an Offer. A Client can have several Subscriptions to different Offers, but only one Subscription to the same Offer. The Clients is charged for each billing interval entered.
+ * <strong>NOTE</strong>As the Subscription create method has a lot of options, we recommend you to use a Subscription.Creator.
+ * @param {(string|Offer)} offer an offer object or its id.
+ * @param {(string|Payment)} payment a payment object or its id.
  * @param {(string|Client)} client the identifier of a client or a client. If not provided the client from the payment is being used.
- * @param {(string|number|Date)} start_at Unix-Timestamp for the trial period start
+ * @param {(string|number|Date)} start_at Unix-Timestamp for the subscription start date, if trial_end > start_at, the trial_end will be set to start_at
+ * @param {(string|number)} amount the amount of the subscription in cents
+ * @param {(string)} currency ISO 4217 formatted currency code startAt
+ * @param {(string|Interval)} interval define how often the client should be charged.
+ * @param {(string|Interval)} periodOfValidity limits the validity of the subscription
+ * @param {(string)} name name of the subscription
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
  * @memberOf SubscriptionService
  */
-SubscriptionService.prototype.create = function(offer, payment, client, start_at, cb) {
+SubscriptionService.prototype.createWithAll = function(payment, client, offer, amount, currency, interval, startAt,
+    name,periodOfValidity, cb) {
 	try {
 		var map = {};
-		var offerId = getIdFromObject(offer, Offer);
-		map.offer = offerId;
-		var paymentId = getIdFromObject(payment, Payment);
-		map.payment = paymentId;
-		try {
-			var clientId = getIdFromObject(client, Client);
-			map.client = clientId;
-		} catch (e) {
-			// no client
-		}
-		if (start_at) {
-			if ( start_at instanceof Date) {
-				map.start_at = start_at.getTime();
-			} else if (__.isNumber(start_at) || __.isString(start_at)) {
-				map.start_at = start_at;
-			} else {
-				return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "start_at must be a Date, number or string"));
-			}
-		}
+        map.payment = getIdFromObject(payment, Payment);
+        if (!__.isEmpty(client)) {
+            map.client = getIdFromObject(client, Client);
+        }
+        if (!__.isEmpty(offer)) {
+            map.offer = getIdFromObject(offer, Offer);
+        }
+        if (__.isNumber(amount)) {
+            map.amount = amount;
+        }
+        if (!__.isEmpty(currency)) {
+            map.currency = currency;
+        }
+        if (!__.isEmpty(interval)) {
+            map.interval = interval.toString();
+        }
+        if (startAt) {
+            map.start_at = getUnixTimeFromParam(startAt,"startAt");
+        }
+        if (!__.isEmpty(name)) {
+            map.name = name;
+        }
+        if (!__.isEmpty(periodOfValidity)) {
+            map.period_of_validity = periodOfValidity.toString();
+        }
 		return this._create(map, Subscription, cb);
 	} catch (e) {
 		return this._reject(e);
@@ -2964,6 +3331,242 @@ SubscriptionService.prototype.remove = function(obj, cb) {
 };
 
 /**
+ * Temporary pauses a subscription. <br />
+ * <strong>NOTE</strong><br />
+ * Pausing is permitted until one day (24 hours) before the next charge date.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.pause = function(obj, cb) {
+    var map = { "pause" : true };
+	return this._updateWithMap(obj, map, cb);
+};
+
+/**
+ * Unpauses a subscription. Next charge will occur according to the defined interval.<br />
+ * <strong>NOTE</strong><br />
+ * if the nextCaptureAt is the date of reactivation: a charge will happen<br />
+ * if the next_capture_at is in the past: it will be set to: reactivationdate + interval <br/>
+ * <br />
+ * <strong>IMPORTANT</strong><br />
+ * An inactive subscription can reactivated within 13 month from the date of pausing. After this period, the subscription will
+ * expire and cannot be re-activated.<br />
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.unpause = function(obj, cb) {
+    var map = { "pause" : true };
+    return this._updateWithMap(obj, map, cb);
+};
+
+/**
+ * Changes the amount of a subscription. The new amount is valid until the end of the subscription. If you want to set a
+ * temporary one-time amount use changeAmountTemporary().
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|number)} amount the new amount.
+ * @param {(string)} [currency] optionally, a new currency.
+ * @param {(string|Interval)} [interval] optionally, a new interval.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.changeAmount = function(obj, amount, currency, interval, cb) {
+    return this._changeAmount(obj, amount, 1, currency, interval, cb);
+};
+
+/**
+ * Changes the amount of a subscription. The new amount is valid one-time only after which the original subscription amount will
+ * be charged again. If you want to permanently change the amount use changeAmount()
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|number)} amount the new amount.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.changeAmountTemporary = function(obj, amount, cb) {
+    return this._changeAmount(obj, amount, 0, false, false, cb);
+};
+
+SubscriptionService.prototype._changeAmount = function(obj, amount, type, currency, interval, cb) {
+    var map = {
+        "amount_change_type" : type
+    };
+    if (!(__.isString(amount) || __.isNumber(amount))) {
+        return this._reject(new PMError(PMError.Type.WRONG_PARAMS, "amount must be a string or integer"));
+    }
+    map.amount = amount;
+    if (currency) {
+        map.currency = currency;
+    }
+    if (interval) {
+        map.interval = interval.toString();
+    }
+    return this._updateWithMap(obj, map, cb);
+};
+/**
+ * Change the offer of a subscription. <br />
+ * The plan will be changed immediately. The next_capture_at will change to the current date (immediately). A refund will be
+ * given if due. <br />
+ * If the new amount is higher than the old one, a pro-rata charge will occur. The next charge date is immediate i.e. the
+ * current date. If the new amount is less then the old one, a pro-rata refund will occur. The next charge date is immediate
+ * i.e. the current date. <br />
+ * <strong>IMPORTANT</strong><br />
+ * Permitted up only until one day (24 hours) before the next charge date. <br />
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|Offer)} offer a new offer or its id.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.changeOfferChangeCaptureDateAndRefund = function(obj, offer, cb) {
+    return this._changeOffer(obj, offer, 2);
+};
+
+/**
+ * Change the offer of a subscription. <br />
+ * The plan will be changed immediately. The next_capture_at will change to the current date (immediately). A refund will be
+ * given if due. <br />
+ * If the new amount is higher than the old one, a pro-rata charge will occur. The next charge date is immediate i.e. the
+ * current date. If the new amount is less then the old one, a pro-rata refund will occur. The next charge date is immediate
+ * i.e. the current date. <br />
+ * <strong>IMPORTANT</strong><br />
+ * Permitted up only until one day (24 hours) before the next charge date. <br />
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|Offer)} offer a new offer or its id.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.changeOfferKeepCaptureDateAndRefund = function(obj, offer, cb) {
+    return this._changeOffer(obj, offer, 1);
+};
+
+/**
+ * Change the offer of a subscription. <br />
+ * the plan will be changed immediately. The next_capture_at date will remain unchanged. No refund will be given <br />
+ * <strong>IMPORTANT</strong><br />
+ * Permitted up only until one day (24 hours) before the next charge date. <br />
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|Offer)} offer a new offer or its id.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.changeOfferKeepCaptureDateNoRefund = function(obj, offer, cb) {
+    return this._changeOffer(obj, offer, 0);
+};
+
+
+SubscriptionService.prototype._changeOffer = function(obj, offer, type, cb) {
+    var map = {
+        "offer_change_type" : type
+    };
+    map.offer = getIdFromObject(offer, Offer);
+    return this._updateWithMap(obj, map, cb);
+};
+
+/**
+ * Stop the trial period of a subscription and charge immediately.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.endTrial = function(obj, cb) {
+    var map = {
+        "trial_end" : false
+    };
+    return this._updateWithMap(obj, map, cb);
+};
+
+/**
+ * Stop the trial period of a subscription on a specific date.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|number|Date)} date the date, on which the subscription should end.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.endTrialAt = function(obj, date, cb) {
+    var map = {};
+    try {
+        map.trial_end = getUnixTimeFromParam(date,"date");
+        return this._updateWithMap(obj, map, cb);
+    } catch (e) {
+        return this._reject(e);
+    }
+
+};
+
+/**
+ * Change the period of validity for a subscription.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {(string|Interval)} newValidity the new validity.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.limitValidity = function(obj, newValidity, cb) {
+    var map = {};
+    try {
+        if (__.isEmpty(newValidity)) {
+            throw new PMError(PMError.Type.WRONG_PARAMS, "newValidity must be a an interval");
+        }
+        map.period_of_validity = newValidity.toString();
+        return this._updateWithMap(obj, map, cb);
+    } catch (e) {
+        return this._reject(e);
+    }
+
+};
+
+/**
+ * Change the validity of a subscription to unlimited
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.unlimitValidity = function(obj, cb) {
+    var map = {
+        "period_of_validity" : "remove"
+    };
+    return this._updateWithMap(obj, map, cb);
+};
+
+
+/**
+ * This function removes an existing subscription. The subscription will be deleted and no pending transactions will be charged.
+ * Deleted subscriptions will not be displayed.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.delete = function(obj, cb) {
+    var map = { "remove" : true };
+    return this._removeWithMap(obj, map, cb);
+};
+
+/**
+ * This function cancels an existing subscription. The subscription will be directly terminated and no pending transactions will
+ * be charged.
+ * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+ * @memberOf SubscriptionService
+ */
+SubscriptionService.prototype.cancel = function(obj, cb) {
+    var map = { "remove" : false };
+    return this._removeWithMap(obj, map, cb);
+};
+
+
+/**
  * Get a Subscription.
  * @param {(string|Subscription)} obj a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.
  * @param {Object} [cb] a callback.
@@ -2971,13 +3574,36 @@ SubscriptionService.prototype.remove = function(obj, cb) {
  * @memberOf SubscriptionService
  */
 SubscriptionService.prototype.detail = function(obj, cb) {
-	return this._detail(obj, cb);
+    return this._detail(obj, cb);
 };
+
 /**
- * Update a Subscription.
+ * Updates a subscription.Following fields will be updated:<br />
+ * <p>
+ * <ul>
+ * <li>interval (note, that nextCaptureAt will not change.)
+ * <li>currency
+ * <li>name
+ * <ul>
+ * <p>
+ * To update further properties of a subscription use following methods:<br />
+ * <p>
+ * <ul>
+ * <li>cancel() to cancel.
+ * <li>changeAmount() to change the amount.
+ * <li>changeOfferChangeCaptureDateAndRefund() to change the offer.
+ * <li>changeOfferKeepCaptureDateAndRefund() to change the offer.
+ * <li>changeOfferKeepCaptureDateNoRefund() to change the offer.
+ * <li>endTrial() to end the trial
+ * <li>limitValidity() to change the validity.
+ * <li>pause() to pause
+ * <li>unlimitValidity() to change the validity.
+ * <li>unpause() to unpause.
+ * <ul>
+ * <p>
  * @param {Subscription} obj a Subscription object.
  * @param {Object} [cb] a callback.
- * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError.
+ * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
  * @memberOf SubscriptionService
  */
 SubscriptionService.prototype.update = function(obj, cb) {
@@ -2985,9 +3611,68 @@ SubscriptionService.prototype.update = function(obj, cb) {
 };
 
 /**
- * The {@link SubscriptionService} service.
+ * A helper for the complex creation method
+ * @class SubscriptionService.Creator
+ * @memberof SubscriptionService
  */
-exports.subscriptions = new SubscriptionService();
+SubscriptionService.Creator = function(service) {
+    this.service = service;
+};
+
+SubscriptionService.Creator.prototype.service = null;
+SubscriptionService.Creator.prototype.payment = null;
+SubscriptionService.Creator.prototype.client = null;
+SubscriptionService.Creator.prototype.offer = null;
+SubscriptionService.Creator.prototype.amount = null;
+SubscriptionService.Creator.prototype.currency = null;
+SubscriptionService.Creator.prototype.interval = null;
+SubscriptionService.Creator.prototype.startAt = null;
+SubscriptionService.Creator.prototype.name = null;
+SubscriptionService.Creator.prototype.periodOfValidity = null;
+
+SubscriptionService.Creator.prototype.create = function(cb) {
+ return this.service.createWithAll(this.payment,this.client,this.offer,this.amount,this.currency,this.interval,this.startAt,this.name,this.periodOfValidity,cb);
+};
+
+SubscriptionService.Creator.prototype.withAmount = function(amount) {
+    this.amount = amount;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withClient = function(client) {
+    this.client = client;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withCurrency = function(currency) {
+    this.currency = currency;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withInterval = function(interval) {
+    this.interval = interval;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withName = function(name) {
+    this.name = name;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withOffer = function(offer) {
+    this.offer = offer;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withPeriodOfValidity = function(periodOfValidity) {
+    this.periodOfValidity = periodOfValidity;
+    return this;
+};
+
+SubscriptionService.Creator.prototype.withStartDate = function(startAt) {
+    this.startAt = startAt;
+    return this;
+};
 
 /**
  *
@@ -3194,10 +3879,6 @@ TransactionService.prototype.detail = function(obj, cb) {
 	return this._detail(obj, cb);
 };
 
-/**
- * The {@link TransactionService} service.
- */
-exports.transactions = new TransactionService();
 
 /**
  *
@@ -3310,11 +3991,6 @@ WebhookService.prototype.update = function(obj, cb) {
 	return this._update(obj, cb);
 };
 
-/**
- * The {@link WebhookService} service.
- */
-exports.webhooks = new WebhookService();
-
 function ParseHandler() {
 }
 
@@ -3335,7 +4011,7 @@ ParseHandler.prototype.httpRequest = function(httpRequest) {
 		url : "https://" + this.apiKey + ":@" + apiHost + apiBaseUrl + httpRequest.path,
 		method : httpRequest.method,
 		success : function(httpResponse) {
-			if (httpResponse.status != 200) {
+            if (!isDataPresent(httpResponse.text)) {
 				defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text));
 			} else {
 				defer.resolve(httpResponse.text);
@@ -3378,4 +4054,10 @@ ParseHandler.prototype.getHandlerIdentifier = function() {
 	return "parse";
 };
 
-var external = new ParseHandler();
+
+var handlerConstructor = function(apiKey) {
+    var handler=new ParseHandler();
+    handler.setApiKey(apiKey);
+    return handler;
+};
+var platformIdentifier = 'parse';

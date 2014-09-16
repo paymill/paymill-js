@@ -1,11 +1,12 @@
 var shared = require("../test/shared.js");
 var pm = shared.pm;
+var pmc = shared.pmc;
 var expect = require("expect.js");
 
 describe('Node promise', function() {
 
 	it('should work with callback', function(done) {
-		pm.payments.create(shared.token, null, function(err, result) {
+		pmc.payments.create(shared.token, null, function(err, result) {
 			expect(result).to.be.a(pm.Payment);
 			done();
 		});
@@ -13,7 +14,7 @@ describe('Node promise', function() {
 	it('should work with callback and promise', function(done) {
 		var doneincb = false;
 		var doneinpr = false;
-		pm.payments.create(shared.token, null, function(err, result) {
+		pmc.payments.create(shared.token, null, function(err, result) {
 			if (err) {
 				done(err);
 			}
@@ -40,7 +41,7 @@ describe('Deserialization', function() {
 		transaction.fromJson(JSON.parse(transaction1));
 		expect(transaction.id).to.equal("tran_54645bcb98ba7acfe204");
 		expect(transaction.amount).to.be("4200");
-		expect(transaction.created_at.getTime()).to.be(1349946151);
+		expect(transaction.created_at.getTime()/1000).to.be(1349946151);
 		expect(transaction.fees[0].payment).to.be("pay_123");
 		expect(transaction.invoices[0]).to.be("inv_1");
 		expect(transaction.invoices[1]).to.be("inv_2");

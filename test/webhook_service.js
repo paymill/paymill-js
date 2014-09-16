@@ -1,5 +1,6 @@
 var shared = require("../test/shared.js");
 var pm = shared.pm;
+var pmc = shared.pmc;
 var expect = require("expect.js");
 
 describe('WebhookService', function() {
@@ -22,7 +23,7 @@ describe('WebhookService', function() {
 	});
 	describe('#list()', function() {
 		it('list should work with no params', function(done) {
-			pm.webhooks.list().then(function(result) {
+			pmc.webhooks.list().then(function(result) {
 				expect(result).to.be.a(pm.PaymillList);
 			}).then(function() {
 				done();
@@ -31,7 +32,7 @@ describe('WebhookService', function() {
 			});
 		});
 		it('list should work with offset and count', function(done) {
-			shared.verifyListCountOffset(pm.webhooks).then(function() {
+			shared.verifyListCountOffset(pmc.webhooks).then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -39,7 +40,7 @@ describe('WebhookService', function() {
 		});
 
 		it('list should work  with url order', function(done) {
-			shared.verifyListOrderChanged(pm.webhooks, pm.Webhook.Order.url().asc(), pm.Webhook.Order.url().desc()).then(function() {
+			shared.verifyListOrderChanged(pmc.webhooks, pm.Webhook.Order.url().asc(), pm.Webhook.Order.url().desc()).then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -47,7 +48,7 @@ describe('WebhookService', function() {
 		});
 
 		it('list should work with filter', function(done) {
-			shared.verifyListFilter(shared.createEmailWebhook, pm.webhooks, (new pm.Webhook.Filter()), "email").then(function() {
+			shared.verifyListFilter(shared.createEmailWebhook, pmc.webhooks, (new pm.Webhook.Filter()), "email").then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -58,7 +59,7 @@ describe('WebhookService', function() {
 
 	it('remove()', function() {
 		it('with id', function(done) {
-			shared.verifyRemoveWithDetail(shared.createEmailWebhook, pm.webhooks, pm.Webhook).then(function() {
+			shared.verifyRemoveWithDetail(shared.createEmailWebhook, pmc.webhooks, pm.Webhook).then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -68,7 +69,7 @@ describe('WebhookService', function() {
 
 	describe('#update()', function() {
 		it('update and detail', function(done) {
-			shared.verifyUpdate(shared.createEmailWebhook, pm.webhooks, "email", "testemail123@test.com").then(function() {
+			shared.verifyUpdate(shared.createEmailWebhook, pmc.webhooks, "email", "testemail123@test.com").then(function() {
 				done();
 			}, function(err) {
 				done(err);

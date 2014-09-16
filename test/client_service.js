@@ -1,5 +1,6 @@
 var shared = require("../test/shared.js");
 var pm = shared.pm;
+var pmc = shared.pmc;
 var expect = require("expect.js");
 
 describe('ClientService', function() {
@@ -9,7 +10,7 @@ describe('ClientService', function() {
 		it('should create a Client with email and description', function(done) {
 			var description = shared.randomDescription();
 			var email = "user" + shared.randomAmount() + "@test.com";
-			pm.clients.create(email, description).then(function(result) {
+			pmc.clients.create(email, description).then(function(result) {
 				expect(result).to.be.a(pm.Client);
 				checkClientFields(result);
 				expect(result.email).to.be(email);
@@ -24,7 +25,7 @@ describe('ClientService', function() {
 		it('should create a Client with email', function(done) {
 			var description = shared.randomDescription();
 			var email = "user" + shared.randomAmount() + "@test.com";
-			pm.clients.create(email, description).then(function(result) {
+			pmc.clients.create(email, description).then(function(result) {
 				expect(result).to.be.a(pm.Client);
 				checkClientFields(result);
 				expect(result.email).to.be(email);
@@ -39,7 +40,7 @@ describe('ClientService', function() {
 		it('should create a Client without params', function(done) {
 			var description = shared.randomDescription();
 			var email = "user" + shared.randomAmount() + "@test.com";
-			pm.clients.create().then(function(result) {
+			pmc.clients.create().then(function(result) {
 				expect(result).to.be.a(pm.Client);
 				checkClientFields(result);
 			}).then(function() {
@@ -54,7 +55,7 @@ describe('ClientService', function() {
 
 	describe('#list()', function() {
 		it('list should work with no params', function(done) {
-			pm.clients.list().then(function(result) {
+			pmc.clients.list().then(function(result) {
 				expect(result).to.be.a(pm.PaymillList);
 			}).then(function() {
 				done();
@@ -63,7 +64,7 @@ describe('ClientService', function() {
 			});
 		});
 		it('list should work with offset and count', function(done) {
-			shared.verifyListCountOffset(pm.clients).then(function() {
+			shared.verifyListCountOffset(pmc.clients).then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -71,7 +72,7 @@ describe('ClientService', function() {
 		});
 		it('list should work  with order', function(done) {
 			var firstId;
-			shared.verifyListOrderChanged(pm.clients, pm.Client.Order.created_at().asc(), pm.Client.Order.created_at().desc()).then(function() {
+			shared.verifyListOrderChanged(pmc.clients, pm.Client.Order.created_at().asc(), pm.Client.Order.created_at().desc()).then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -79,7 +80,7 @@ describe('ClientService', function() {
 		});
 
 		it('list should work with filter', function(done) {
-			shared.verifyListFilter(shared.createClient, pm.clients, (new pm.Client.Filter()), "email").then(function() {
+			shared.verifyListFilter(shared.createClient, pmc.clients, (new pm.Client.Filter()), "email").then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -89,7 +90,7 @@ describe('ClientService', function() {
 	});
 	describe('#remove()', function() {
 		it('with id', function(done) {
-			shared.verifyRemoveWithDetail(shared.createClient, pm.clients, pm.Client).then(function() {
+			shared.verifyRemoveWithDetail(shared.createClient, pmc.clients, pm.Client).then(function() {
 				done();
 			}, function(err) {
 				done(err);
@@ -99,7 +100,7 @@ describe('ClientService', function() {
 
 	describe('#update()', function() {
 		it('update and detail', function(done) {
-			shared.verifyUpdate(shared.createClient, pm.clients, "email", "email123@test.com").then(function() {
+			shared.verifyUpdate(shared.createClient, pmc.clients, "email", "email123@test.com").then(function() {
 				done();
 			}, function(err) {
 				done(err);

@@ -4,8 +4,11 @@ out/
 coverage/
 paymill.js
 paymill.parse.js
+paymill.apiomat.js
 lib/
 libnode/
 libparse/
+samples/
+docs/
 .travis.yml
 Gruntfile.js
