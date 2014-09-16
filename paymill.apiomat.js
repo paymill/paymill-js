@@ -336,7 +336,7 @@ function getRefreshObject(obj,type) {
         if (!__.isEmpty(obj.id)) {
             return obj;
         } else {
-            throw new PMError(PMError.Type.WRONG_PARAMS, obj + " is of correct type ( " + objectType + " ), but has no valid id.");
+            throw new PMError(PMError.Type.WRONG_PARAMS, obj + " is of correct type ( " + type + " ), but has no valid id.");
         }
     } else {
         var id = getIdFromObject(obj, type);
@@ -996,14 +996,14 @@ function Order() {
 
 /**
  * Is the order ascending?
- * @type {boolean}
+ * @type {boolean}
  * @memberOf Order
  */
 Order.prototype.ascending = null;
 /**
  * The type of the order, overwritten by concrete implmentations
  * @abstract
- * @type {boolean}
+ * @type {boolean}
  * @memberOf Order
  */
 Order.prototype.type = null;
@@ -1500,7 +1500,7 @@ Preauthorization.Filter.prototype.payment = function(payment) {
 	return this;
 };
 /**
- * Add filtering by amount. e.g. "300” or ">300" or "<300"
+ * Add filtering by amount. e.g. "300" or ">300" or "<300"
  * @param {(string|number)} amount the target amount
  * @param {(string|Filter.EQUALITY)} equality equality for the filter. If none is specified EQUAL is used.
  * @returns {Filter} the same filter.
@@ -2381,7 +2381,7 @@ Transaction.Filter.prototype.payment = function(payment) {
 	return this;
 };
 /**
- * Add filtering by amount. e.g. "300” or ">300” or "<300”
+ * Add filtering by amount. e.g. "300" or ">300" or "<300"
  * @param {(string|number)} amount the target amount
  * @param {(string|Filter.EQUALITY)} equality equality for the filter. If none is specified EQUAL is used.
  * @returns {Filter} the same filter.
@@ -2449,7 +2449,7 @@ exports.Transaction = Transaction;
  * Creates a new Webhook. Generally you should never create a PAYMILL object on your own.
  * @class Webhook
  * @extends PaymillObject
- * @classdesc With webhooks we give you the possibility to react automatically to certain events which happen within our system. A webhook is basically a URL where we send an HTTP POST request to, every time one of the events attached to that webhook is triggered. Alternatively you can define an email address where we send the event’s information to You can manage your webhooks via the API as explained below or you can use the web interface inside our cockpit.<br/>Our call to the webhook / email includes a JSON encoded event object with detailed information about the event in it’s POST body.
+ * @classdesc With webhooks we give you the possibility to react automatically to certain events which happen within our system. A webhook is basically a URL where we send an HTTP POST request to, every time one of the events attached to that webhook is triggered. Alternatively you can define an email address where we send the event's information to You can manage your webhooks via the API as explained below or you can use the web interface inside our cockpit.<br/>Our call to the webhook / email includes a JSON encoded event object with detailed information about the event in it's POST body.
  */
 function Webhook() {
 
@@ -3682,7 +3682,6 @@ TransactionService.prototype.getEndpointPath = function() {
 TransactionService.prototype._createTransaction = function(map, amount, currency, description, client, fee_amount, fee_payment, fee_currency, cb) {
 	validateNumber(amount,"amount",false);
     validateString(currency,"currency",false);
-	var path = this.getEndpointPath();
 	map.amount = amount;
 	map.currency = currency;
 	map.description = description;
@@ -3879,7 +3878,7 @@ WebhookService.prototype.getEndpointPath = function() {
 
 /**
  * With this call you can create a webhook to a url via the API.
- *  @param {string} url the url of the webhook
+ * @param {string} url the url of the webhook
  * @param {Array.<string>} event_types includes a set of webhook event types as strings.
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Webhook or rejected with a PMError.
