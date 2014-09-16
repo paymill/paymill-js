@@ -36,6 +36,21 @@ describe('Node promise', function() {
 });
 
 describe('Deserialization', function() {
+    it('should work with a transaction object', function() {
+        var transaction = new pm.Transaction();
+        transaction.fromJson(JSON.parse(transaction1));
+        expect(transaction.id).to.equal("tran_54645bcb98ba7acfe204");
+        expect(transaction.amount).to.be("4200");
+        expect(transaction.created_at.getTime()/1000).to.be(1349946151);
+        expect(transaction.fees[0].payment).to.be("pay_123");
+        expect(transaction.invoices[0]).to.be("inv_1");
+        expect(transaction.invoices[1]).to.be("inv_2");
+        expect(transaction.client instanceof pm.Client).to.be(true);
+        expect(transaction.client.email).to.be("lovely-client@example.com");
+    });
+});
+
+describe('Deserialization', function() {
 	it('should work with a transaction object', function() {
 		var transaction = new pm.Transaction();
 		transaction.fromJson(JSON.parse(transaction1));
