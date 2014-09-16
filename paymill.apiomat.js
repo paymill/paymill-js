@@ -279,32 +279,32 @@ function validateField(validationFunc, field, fieldName, optional) {
         }
     }
 }
-function validateMandatory(field,fieldname) {
+function validateMandatory(field,fieldName) {
     if (__.isEmpty(field)) {
         throw new PMError(PMError.Type.WRONG_PARAMS, fieldName + " is mandatory");
     }
 }
 function validateNumber(field, fieldname, optional) {
-    return validateField((function (number,numberName) {
-        if (! (__.isNumber(number) || __.isNumber(parseInt(number))) ) {
+    return validateField(function (number,numberName) {
+        if (! (__.isNumber(number) || __.isNumber(parseInt(number,10))) ) {
             throw new PMError(PMError.Type.WRONG_PARAMS, numberName + " must be a number or a string representing a number");
         }
-    }),field,fieldname,optional);
+    },field,fieldname,optional);
 }
 function validateBoolean(field, fieldname, optional) {
-    return validateField((function (boolean, booleanName) {
+    return validateField(function (boolean, booleanName) {
         if (! (__.isBoolean(boolean)) ) {
-            throw new PMError(PMError.Type.WRONG_PARAMS, numberName + " must be a boolean");
+            throw new PMError(PMError.Type.WRONG_PARAMS, booleanName + " must be a boolean");
         }
-    }),field,fieldname,optional);
+    },field,fieldname,optional);
 }
 
 function validateString(field, fieldname, optional) {
-    return validateField((function (string,stringName) {
+    return validateField(function (string,stringName) {
         if (!(__.isString(string) ) ) {
-            throw new PMError(PMError.Type.WRONG_PARAMS, numberName + " must be a string");
+            throw new PMError(PMError.Type.WRONG_PARAMS, stringName + " must be a string");
         }
-    }),field,fieldname,optional);
+    },field,fieldname,optional);
 }
 
 function getTimeFilter(from, to) {
@@ -2818,7 +2818,6 @@ ClientService.prototype.create = function(email, description, cb) {
             validateString(description,"description",true);
             map.description = description;
         }
-        var path = this.getEndpointPath();
         return this._create(map, Client, cb);
     } catch (e) {
         return this._reject(e);
@@ -2905,7 +2904,6 @@ OfferService.prototype.create = function(amount, currency, interval, name, trial
         validateString(currency,"currency",false);
         validateString(name,"name",false);
         validateMandatory(interval,"interval");
-        var path = this.getEndpointPath();
         var map = {
             amount : amount,
             currency : currency,
@@ -3003,7 +3001,6 @@ PaymentService.prototype.getEndpointPath = function() {
 PaymentService.prototype.create = function(token, client, cb) {
     try {
         validateString(token,"token",false);
-        var path = this.getEndpointPath();
         var map = {
             token : token
         };
@@ -3075,7 +3072,6 @@ PreauthorizationService.prototype._createPreauthorization = function(map, amount
 
     validateNumber(amount,"amount",false);
     validateString(currency,"currency",false);
-	var path = this.getEndpointPath();
 	map.amount = amount;
     map.currency = currency;
     map.description = description;
@@ -3414,7 +3410,7 @@ SubscriptionService.prototype._changeAmount = function(obj, amount, type, curren
  * @memberOf SubscriptionService
  */
 SubscriptionService.prototype.changeOfferChangeCaptureDateAndRefund = function(obj, offer, cb) {
-    return this._changeOffer(obj, offer, 2);
+    return this._changeOffer(obj, offer, 2,cb);
 };
 
 /**
@@ -3433,7 +3429,7 @@ SubscriptionService.prototype.changeOfferChangeCaptureDateAndRefund = function(o
  * @memberOf SubscriptionService
  */
 SubscriptionService.prototype.changeOfferKeepCaptureDateAndRefund = function(obj, offer, cb) {
-    return this._changeOffer(obj, offer, 1);
+    return this._changeOffer(obj, offer, 1, cb);
 };
 
 /**
@@ -3448,7 +3444,7 @@ SubscriptionService.prototype.changeOfferKeepCaptureDateAndRefund = function(obj
  * @memberOf SubscriptionService
  */
 SubscriptionService.prototype.changeOfferKeepCaptureDateNoRefund = function(obj, offer, cb) {
-    return this._changeOffer(obj, offer, 0);
+    return this._changeOffer(obj, offer, 0, cb);
 };
 
 
