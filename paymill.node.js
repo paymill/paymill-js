@@ -70,7 +70,7 @@ function HttpRequest(path, method, params) {
 	this.params = params;
 	this.requestBody = null;
 	this.headers = {};
-	if (method == "GET" || method == "DELETE") {
+	if (method === "GET" || method === "DELETE") {
 		this.path = this.path + urlEncode(params, true);
 		this.headers = {
 			"Content-Length" : 0
@@ -268,7 +268,7 @@ function getTimeFromObject(obj) {
 	}
 
 	throw new PMError(PMError.Type.WRONG_PARAMS, obj + "must be either a string, a number or a Date");
-};
+}
 
 function validateField(validationFunc, field, fieldName, optional) {
     if (field !== undefined && field !== null) {
@@ -278,7 +278,7 @@ function validateField(validationFunc, field, fieldName, optional) {
             throw new PMError(PMError.Type.WRONG_PARAMS, fieldName + " is mandatory");
         }
     }
-};
+}
 function validateMandatory(field,fieldname) {
     if (__.isEmpty(field)) {
         throw new PMError(PMError.Type.WRONG_PARAMS, fieldName + " is mandatory");
@@ -613,7 +613,7 @@ Fee.prototype.application = null;
 Fee.prototype.payment = null;
 
 /**
- * Fee amount in the smallest currency unit e.g. “420” for 4.20 €
+ * Fee amount in the smallest currency unit e.g. "420" for 4.20 €
  * @type {number}
  * @memberof Fee.prototype
  */
@@ -637,7 +637,7 @@ Fee.prototype.billed_at = null;
  */
 Fee.prototype.getFieldDefinitions = function() {
 	return {
-		billed_at : deserializeDate,
+		billed_at : deserializeDate
 	};
 };
 
@@ -947,7 +947,7 @@ Offer.Filter.prototype.trial_period_days = function(trial_period_days) {
 	return this;
 };
 /**
- * Add filtering by amount. e.g. “300” or “>300” or “<300”
+ * Add filtering by amount. e.g. "300" or ">300" or "<300"
  * @param {(string|number)} amount the amount to be filtered
  * @param {(string|Filter.EQUALITY)} equality equality for the filter. If none is specified EQUAL is used.
  * @returns {Filter} the same filter.
@@ -1049,7 +1049,7 @@ Order.prototype.toHttpMap = function() {
  *
  * Creates a new payment. Generally you should never create a PAYMILL object on your own.
  * @class Payment
- * @classdesc The Payment object represents a payment with a credit card or via direct debit. It is used for several function calls (e.g. transactions, subscriptions, clients, ...). To be PCI compliant these information is encoded by our Paymill PSP. You only get in touch with safe data (token) and needn’t to care about the security problematic of informations like credit card data.
+ * @classdesc The Payment object represents a payment with a credit card or via direct debit. It is used for several function calls (e.g. transactions, subscriptions, clients, ...). To be PCI compliant these information is encoded by our Paymill PSP. You only get in touch with safe data (token) and needn't to care about the security problematic of informations like credit card data.
  */
 function Payment() {
 
@@ -1158,7 +1158,7 @@ Payment.Type = {
 Payment.prototype.getFieldDefinitions = function() {
 	return {
 		created_at : deserializeDate,
-		updated_at : deserializeDate,
+		updated_at : deserializeDate
 	};
 };
 
@@ -1198,7 +1198,7 @@ Payment.Filter.constructor = Payment.Filter;
 
 /**
  * Add filtering by card_type
- * @param {string} card_type e.g. “visa”, “mastercard” etc.
+ * @param {string} card_type e.g. "visa", "mastercard" etc.
  * @returns {Filter} the same filter.
  * @memberof Payment.Filter
  */
@@ -1320,7 +1320,7 @@ PaymillObject.prototype.getUpdateableFields = function() {
  *
  * Creates a new Preauthorization. Generally you should never create a PAYMILL object on your own.
  * @class Preauthorization
- * @classdesc If you’d like to reserve some money from the client’s credit card but you’d also like to execute the transaction itself a bit later, then use preauthorizations. This is NOT possible with direct debit. <br/>A preauthorization is valid for 7 days.
+ * @classdesc If you'd like to reserve some money from the client's credit card but you'd also like to execute the transaction itself a bit later, then use preauthorizations. This is NOT possible with direct debit. <br/>A preauthorization is valid for 7 days.
  */
 function Preauthorization() {
 
@@ -1500,7 +1500,7 @@ Preauthorization.Filter.prototype.payment = function(payment) {
 	return this;
 };
 /**
- * Add filtering by amount. e.g. “300” or “>300” or “<300”
+ * Add filtering by amount. e.g. "300” or ">300" or "<300"
  * @param {(string|number)} amount the target amount
  * @param {(string|Filter.EQUALITY)} equality equality for the filter. If none is specified EQUAL is used.
  * @returns {Filter} the same filter.
@@ -1619,7 +1619,7 @@ Refund.prototype.response_code = null;
 Refund.Status = {
 	OPEN : "open",
 	PENDING : "pending",
-	REFUNDED : "refunded",
+	REFUNDED : "refunded"
 };
 Refund.prototype.getFieldDefinitions = function() {
 	return {
@@ -1627,7 +1627,7 @@ Refund.prototype.getFieldDefinitions = function() {
 		updated_at : deserializeDate,
 		transaction : function(json) {
 			return deserializePaymillObject(json, Transaction);
-		},
+		}
 	};
 };
 /**
@@ -1716,7 +1716,7 @@ Refund.Filter.prototype.transaction = function(transaction) {
 };
 
 /**
- * Add filtering by amount. e.g. “300” or “>300” or “<300”
+ * Add filtering by amount. e.g. "300" or ">300" or "<300"
  * @param {(string|number)} amount the target amount
  * @param {(string|Filter.EQUALITY)} equality equality for the filter. If none is specified EQUAL is used.
  * @returns {Filter} the same filter.
@@ -1748,7 +1748,7 @@ exports.Refund = Refund;
  * Creates a new Subscription. Generally you should never create a PAYMILL object on your own.
  * @class Subscription
  * @extends PaymillObject
- * @classdesc Subscriptions allow you to charge recurring payments on a client’s credit card / to a client’s direct debit. A subscription connects a client to the offers-object. A client can have several subscriptions to different offers, but only one subscription to the same offer.
+ * @classdesc Subscriptions allow you to charge recurring payments on a client's credit card / to a client's direct debit. A subscription connects a client to the offers-object. A client can have several subscriptions to different offers, but only one subscription to the same offer.
  */
 function Subscription() {
 
@@ -1901,7 +1901,7 @@ Subscription.prototype.is_canceled = null;
 Subscription.prototype.is_deleted = null;
 
 /**
- * Shows, if subscription is “active”, “inactive”, “expired” or “failed”
+ * Shows, if subscription is "active", "inactive", "expired" or "failed"
  * @type {string|Transaction.Status} status of the subscription
  * @memberof Subscription.prototype
  */
@@ -2088,7 +2088,7 @@ Transaction.prototype.id = null;
 Transaction.prototype.amount = null;
 
 /**
- * The used amount, smallest possible unit per currency (for euro, we’re calculating the amount in cents).
+ * The used amount, smallest possible unit per currency (for euro, we're calculating the amount in cents).
  * @type {number}
  * @memberof Transaction.prototype
  */
@@ -2233,7 +2233,7 @@ Transaction.prototype.getFieldDefinitions = function() {
 		},
 		refunds : function(json) {
 			return deserializePaymillObjectList(json, Refund);
-		},
+		}
 	};
 };
 /**
@@ -2241,83 +2241,83 @@ Transaction.prototype.getFieldDefinitions = function() {
  * @returns {string} an end user friendly message.
  */
 Transaction.prototype.getResponseCodeDetail = function()  {
-    if ( this.response_code === undefined || this.response_code === null || this.response_code == 10001 ) {
+    if ( this.response_code === undefined || this.response_code === null || this.response_code === 10001 ) {
         return "General undefined response";
-    } else if( this.response_code == 10002 ) {
+    } else if( this.response_code === 10002 ) {
         return "Still waiting on something.";
-    } else if( this.response_code == 20000 ) {
+    } else if( this.response_code === 20000 ) {
         return "General success response.";
-    } else if( this.response_code == 40000 ) {
+    } else if( this.response_code === 40000 ) {
         return "General problem with data.";
-    } else if( this.response_code == 40001 ) {
+    } else if( this.response_code === 40001 ) {
         return "General problem with payment data.";
-    } else if( this.response_code == 40100 ) {
+    } else if( this.response_code === 40100 ) {
         return "Problem with credit card data.";
-    } else if( this.response_code == 40101 ) {
+    } else if( this.response_code === 40101 ) {
         return "Problem with cvv.";
-    } else if( this.response_code == 40102 ) {
+    } else if( this.response_code === 40102 ) {
         return "Card expired or not yet valid.";
-    } else if( this.response_code == 40103 ) {
+    } else if( this.response_code === 40103 ) {
         return "Limit exceeded.";
-    } else if( this.response_code == 40104 ) {
+    } else if( this.response_code === 40104 ) {
         return "Card invalid.";
-    } else if( this.response_code == 40105 ) {
+    } else if( this.response_code === 40105 ) {
         return "Expiry date not valid.";
-    } else if( this.response_code == 40106 ) {
+    } else if( this.response_code === 40106 ) {
         return "Credit card brand required.";
-    } else if( this.response_code == 40200 ) {
+    } else if( this.response_code === 40200 ) {
         return "Problem with bank account data.";
-    } else if( this.response_code == 40201 ) {
+    } else if( this.response_code === 40201 ) {
         return "Bank account data combination mismatch.";
-    } else if( this.response_code == 40202 ) {
+    } else if( this.response_code === 40202 ) {
         return "User authentication failed.";
-    } else if( this.response_code == 40300 ) {
+    } else if( this.response_code === 40300 ) {
         return "Problem with 3d secure data.";
-    } else if( this.response_code == 40301 ) {
+    } else if( this.response_code === 40301 ) {
         return "Currency / amount mismatch";
-    } else if( this.response_code == 40400 ) {
+    } else if( this.response_code === 40400 ) {
         return "Problem with input data.";
-    } else if( this.response_code == 40401 ) {
+    } else if( this.response_code === 40401 ) {
         return "Amount too low or zero.";
-    } else if( this.response_code == 40402 ) {
+    } else if( this.response_code === 40402 ) {
         return "Usage field too long.";
-    } else if( this.response_code == 40403 ) {
+    } else if( this.response_code === 40403 ) {
         return "Currency not allowed.";
-    } else if( this.response_code == 50000 ) {
+    } else if( this.response_code === 50000 ) {
         return "General problem with backend.";
-    } else if( this.response_code == 50001 ) {
+    } else if( this.response_code === 50001 ) {
         return "Country blacklisted.";
-    } else if( this.response_code == 50002 ) {
+    } else if( this.response_code === 50002 ) {
         return "IP address blacklisted.";
-    } else if( this.response_code == 50003 ) {
+    } else if( this.response_code === 50003 ) {
         return "Anonymous IP proxy used.";
-    } else if( this.response_code == 50100 ) {
+    } else if( this.response_code === 50100 ) {
         return "Technical error with credit card.";
-    } else if( this.response_code == 50101 ) {
+    } else if( this.response_code === 50101 ) {
         return "Error limit exceeded.";
-    } else if( this.response_code == 50102 ) {
+    } else if( this.response_code === 50102 ) {
         return "Card declined by authorization system.";
-    } else if( this.response_code == 50103 ) {
+    } else if( this.response_code === 50103 ) {
         return "Manipulation or stolen card.";
-    } else if( this.response_code == 50104 ) {
+    } else if( this.response_code === 50104 ) {
         return "Card restricted.";
-    } else if( this.response_code == 50105 ) {
+    } else if( this.response_code === 50105 ) {
         return "Invalid card configuration data.";
-    } else if( this.response_code == 50200 ) {
+    } else if( this.response_code === 50200 ) {
         return "Technical error with bank account.";
-    } else if( this.response_code == 50201 ) {
+    } else if( this.response_code === 50201 ) {
         return "Card blacklisted.";
-    } else if( this.response_code == 50300 ) {
+    } else if( this.response_code === 50300 ) {
         return "Technical error with 3D secure.";
-    } else if( this.response_code == 50400 ) {
+    } else if( this.response_code === 50400 ) {
         return "Decline because of risk issues.";
-    } else if( this.response_code == 50500 ) {
+    } else if( this.response_code === 50500 ) {
         return "General timeout.";
-    } else if( this.response_code == 50501 ) {
+    } else if( this.response_code === 50501 ) {
         return "Timeout on side of the acquirer.";
-    } else if( this.response_code == 50502 ) {
+    } else if( this.response_code === 50502 ) {
         return "Risk management transaction timeout.";
-    } else if( this.response_code == 50600 ) {
+    } else if( this.response_code === 50600 ) {
         return "Duplicate transaction.";
     } else {
         return null;
@@ -2381,7 +2381,7 @@ Transaction.Filter.prototype.payment = function(payment) {
 	return this;
 };
 /**
- * Add filtering by amount. e.g. “300” or “>300” or “<300”
+ * Add filtering by amount. e.g. "300” or ">300” or "<300”
  * @param {(string|number)} amount the target amount
  * @param {(string|Filter.EQUALITY)} equality equality for the filter. If none is specified EQUAL is used.
  * @returns {Filter} the same filter.
@@ -2539,7 +2539,7 @@ Webhook.EventType = {
 	INVOICE_AVAILABLE : "invoice.available",
 	APP_MERCHANT_ACTIVATED : "app.merchant.activated",
 	APP_MERCHANT_DEACTIVATED : "app.merchant.deactivated",
-	APP_MERCHANT_REJECTED : "app.merchant.rejected",
+	APP_MERCHANT_REJECTED : "app.merchant.rejected"
 };
 
 Webhook.prototype.getUpdateableFields = function() {
@@ -3786,7 +3786,7 @@ TransactionService.prototype.createWithPreauthorization = function(preauthroizat
 };
 
 /**
- * This function refunds a transaction that has been created previously and was refunded in parts or wasn’t refunded at all. The inserted amount will be refunded to the credit card / direct debit of the original transaction. There will be some fees for the merchant for every refund.
+ * This function refunds a transaction that has been created previously and was refunded in parts or wasn't refunded at all. The inserted amount will be refunded to the credit card / direct debit of the original transaction. There will be some fees for the merchant for every refund.
  * @param {(string|Transaction)} transaction the transaction object or its id.
  * @param {(string|number)} amount amount (in cents) which will be charged.
  * @param {string} description additional description for this refund
@@ -3908,7 +3908,7 @@ WebhookService.prototype.createUrl = function(url, event_types, cb) {
 WebhookService.prototype.createEmail = function(email, event_types, cb) {
     validateString(email,"email",false);
 	var map = {
-		email : email,
+		email : email
 	};
 	return this._createWithMap(map, event_types, cb);
 
