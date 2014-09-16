@@ -1,5 +1,5 @@
 ![PAYMILL icon](https://static.paymill.com/r/335f99eb3914d517bf392beb1adaf7cccef786b6/img/logo-download_Light.png)
-# PAYMILL-JS (beta)
+# PAYMILL-JS
 
 
 [![NPM version](https://badge.fury.io/js/paymill-wrapper.png)](http://badge.fury.io/js/paymill-wrapper)
@@ -9,10 +9,7 @@
 <br/>
 [![Dependency Status](https://david-dm.org/paymill/paymill-js.png)](https://david-dm.org/paymill/paymill-js)
 [![devDependency Status](https://david-dm.org/paymill/paymill-js/dev-status.png)](https://david-dm.org/paymill/paymill-js#info=devDependencies)
-<!--
-[![Build Status](https://travis-ci.org/paymill/paymill-js.png?branch=master)](https://travis-ci.org/paymill/paymill-js)
-[![NPM version](https://badge.fury.io/js/paymill.node.js.png)](http://badge.fury.io/js/paymill-wrapper)
--->
+
 An universal JavaScript API wrapper. Works with [Node](http://nodejs.org/), [Parse](http://www.parse.com), [apiOmat](http://www.apiomat.com) and potentially any other javascript-based backend.
 
 Please open an issue and let us know if you find any bugs, have a feature request or have successfully integrated it into your project.
@@ -143,6 +140,12 @@ XXX : {
 ```
 
 ## Changelog
+
+### 2.0.0
++ Upgraded to PAYMILL API v2.1
+* Changed library interface to support multiple instances (e.g. for marketplaces)
+* Added Travis and Codeclimate
+* Updated project dependencies
 
 ### 1.1.0
 + Added support for preauthorization description [#8](https://github.com/paymill/paymill-js/issues/8)
