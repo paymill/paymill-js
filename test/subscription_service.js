@@ -4,7 +4,7 @@ var pmc = shared.pmc;
 var expect = require("expect.js");
 
 describe('SubscriptionService', function() {
-    this.timeout(12000);
+    this.timeout(15000);
     var today = new Date();
     var inAweek = new Date(today.getTime() + (86400 * 7 * 1000));
     var inTwoWeeks = new Date(today.getTime() + 2*(86400 * 7 * 1000));
