@@ -80,7 +80,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2496">line 2496</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2873">line 2873</a>
     </li></ul></dd>
     
     
@@ -261,7 +261,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2488">line 2488</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2870">line 2870</a>
     </li></ul></dd>
     
     
@@ -429,7 +429,7 @@
 <span class="param-type">string</span>
 |
 
-<span class="param-type"><a href="OfferInterval.html">OfferInterval</a></span>
+<span class="param-type"><a href="Interval.html">Interval</a></span>
 
 
             
@@ -542,7 +542,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2524">line 2524</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2901">line 2901</a>
     </li></ul></dd>
     
     
@@ -600,7 +600,7 @@
     
     
     <div class="description">
-        Get a Offer.
+        Get an Offer.
     </div>
     
 
@@ -727,7 +727,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2588">line 2588</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2960">line 2960</a>
     </li></ul></dd>
     
     
@@ -1022,7 +1022,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2566">line 2566</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2933">line 2933</a>
     </li></ul></dd>
     
     
@@ -1072,7 +1072,7 @@
         
             
 <dt>
-    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">(obj, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">(obj, removeWithSubscriptions, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1080,7 +1080,7 @@
     
     
     <div class="description">
-        Remove a Offer.
+        Remove an Offer.
     </div>
     
 
@@ -1147,6 +1147,37 @@
 	
         <tr>
             
+                <td class="name"><code>removeWithSubscriptions</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">if true, the plan and all subscriptions associated with it will be deleted. If false, only the plan will be deleted.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
                 <td class="name"><code>cb</code></td>
             
             
@@ -1204,7 +1235,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2577">line 2577</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2945">line 2945</a>
     </li></ul></dd>
     
     
@@ -1389,7 +1420,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2599">line 2599</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2971">line 2971</a>
     </li></ul></dd>
     
     
@@ -1452,13 +1483,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferInterval.html">OfferInterval</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="PaymillList.html">PaymillList</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Interval.html">Interval</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="PaymillContext.html">PaymillContext</a></li><li><a href="PaymillList.html">PaymillList</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="SubscriptionService.Creator.html">Creator</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Feb 20 2014 17:47:38 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Sep 16 2014 16:25:56 GMT+0300 (OESZ)
 </footer>
 
 <script> prettyPrint(); </script>

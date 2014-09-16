@@ -80,7 +80,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2854">line 2854</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3203">line 3203</a>
     </li></ul></dd>
     
     
@@ -115,6 +115,13 @@
     
     
     
+        <h3 class="subsection-title">Classes</h3>
+        
+        <dl>
+            <dt><a href="SubscriptionService.Creator.html">Creator</a></dt>
+            <dd></dd>
+        </dl>
+    
     
     
     
@@ -126,7 +133,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="create"><span class="type-signature"></span>create<span class="signature">(offer, payment, client, start_at, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="cancel"><span class="type-signature"></span>cancel<span class="signature">(obj, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -134,7 +141,1377 @@
     
     
     <div class="description">
-        This function creates a subscription between a client and an offer. A client can have several subscriptions to different offers, but only one subscription to the same offer. The clients is charged for each billing interval entered.
+        This function cancels an existing subscription. The subscription will be directly terminated and no pending transactions will
+be charged.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3550">line 3550</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="changeAmount"><span class="type-signature"></span>changeAmount<span class="signature">(obj, amount, <span class="optional">currency</span>, <span class="optional">interval</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Changes the amount of a subscription. The new amount is valid until the end of the subscription. If you want to set a
+temporary one-time amount use changeAmountTemporary().
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>amount</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">the new amount.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>currency</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">optionally, a new currency.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>interval</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Interval.html">Interval</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">optionally, a new interval.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3365">line 3365</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="changeAmountTemporary"><span class="type-signature"></span>changeAmountTemporary<span class="signature">(obj, amount, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Changes the amount of a subscription. The new amount is valid one-time only after which the original subscription amount will
+be charged again. If you want to permanently change the amount use changeAmount()
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>amount</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">the new amount.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3378">line 3378</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="changeOfferChangeCaptureDateAndRefund"><span class="type-signature"></span>changeOfferChangeCaptureDateAndRefund<span class="signature">(obj, offer, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Change the offer of a subscription. <br />
+The plan will be changed immediately. The next_capture_at will change to the current date (immediately). A refund will be
+given if due. <br />
+If the new amount is higher than the old one, a pro-rata charge will occur. The next charge date is immediate i.e. the
+current date. If the new amount is less then the old one, a pro-rata refund will occur. The next charge date is immediate
+i.e. the current date. <br />
+<strong>IMPORTANT</strong><br />
+Permitted up only until one day (24 hours) before the next charge date. <br />
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>offer</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Offer.html">Offer</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a new offer or its id.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3412">line 3412</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="changeOfferKeepCaptureDateAndRefund"><span class="type-signature"></span>changeOfferKeepCaptureDateAndRefund<span class="signature">(obj, offer, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Change the offer of a subscription. <br />
+The plan will be changed immediately. The next_capture_at will change to the current date (immediately). A refund will be
+given if due. <br />
+If the new amount is higher than the old one, a pro-rata charge will occur. The next charge date is immediate i.e. the
+current date. If the new amount is less then the old one, a pro-rata refund will occur. The next charge date is immediate
+i.e. the current date. <br />
+<strong>IMPORTANT</strong><br />
+Permitted up only until one day (24 hours) before the next charge date. <br />
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>offer</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Offer.html">Offer</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a new offer or its id.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3431">line 3431</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="changeOfferKeepCaptureDateNoRefund"><span class="type-signature"></span>changeOfferKeepCaptureDateNoRefund<span class="signature">(obj, offer, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Change the offer of a subscription. <br />
+the plan will be changed immediately. The next_capture_at date will remain unchanged. No refund will be given <br />
+<strong>IMPORTANT</strong><br />
+Permitted up only until one day (24 hours) before the next charge date. <br />
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>offer</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Offer.html">Offer</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a new offer or its id.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3446">line 3446</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="createWithAll"><span class="type-signature"></span>createWithAll<span class="signature">(offer, payment, client, start_at, amount, currency, interval, periodOfValidity, name, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This function creates a Subscription between a Client and an Offer. A Client can have several Subscriptions to different Offers, but only one Subscription to the same Offer. The Clients is charged for each billing interval entered.
+<strong>NOTE</strong>As the Subscription create method has a lot of options, we recommend you to use a Subscription.Creator.
     </div>
     
 
@@ -231,7 +1608,7 @@
             
             
             
-            <td class="description last">an offer object or its id.</td>
+            <td class="description last">a payment object or its id.</td>
         </tr>
 	
 	
@@ -302,7 +1679,171 @@
             
             
             
-            <td class="description last">Unix-Timestamp for the trial period start</td>
+            <td class="description last">Unix-Timestamp for the subscription start date, if trial_end > start_at, the trial_end will be set to start_at</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>amount</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">the amount of the subscription in cents</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>currency</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">ISO 4217 formatted currency code startAt</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>interval</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Interval.html">Interval</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">define how often the client should be charged.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>periodOfValidity</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Interval.html">Interval</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">limits the validity of the subscription</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">name of the subscription</td>
         </tr>
 	
 	
@@ -366,7 +1907,193 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2882">line 2882</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3261">line 3261</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="delete"><span class="type-signature"></span>delete<span class="signature">(obj, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This function removes an existing subscription. The subscription will be deleted and no pending transactions will be charged.
+Deleted subscriptions will not be displayed.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3537">line 3537</a>
     </li></ul></dd>
     
     
@@ -551,7 +2278,801 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2942">line 2942</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3563">line 3563</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="endTrial"><span class="type-signature"></span>endTrial<span class="signature">(obj, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Stop the trial period of a subscription and charge immediately.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3466">line 3466</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="endTrialAt"><span class="type-signature"></span>endTrialAt<span class="signature">(obj, date, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Stop the trial period of a subscription on a specific date.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>date</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">number</span>
+|
+
+<span class="param-type">Date</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">the date, on which the subscription should end.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3481">line 3481</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="fromOffer"><span class="type-signature"></span>fromOffer<span class="signature">(offer, payment)</span><span class="type-signature"> &rarr; {<a href="SubscriptionService.Creator.html">SubscriptionService.Creator</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Create a subscription with payment and offer. Chain further values by calling with..() functions and finish by calling create().
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>offer</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Offer.html">Offer</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">an offer object or its id.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>payment</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Payment.html">Payment</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">a payment object or its id.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3229">line 3229</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a creator. when configured please call create()
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="SubscriptionService.Creator.html">SubscriptionService.Creator</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="limitValidity"><span class="type-signature"></span>limitValidity<span class="signature">(obj, newValidity, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Change the period of validity for a subscription.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>newValidity</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Interval.html">Interval</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">the new validity.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3500">line 3500</a>
     </li></ul></dd>
     
     
@@ -846,7 +3367,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2920">line 2920</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3306">line 3306</a>
     </li></ul></dd>
     
     
@@ -872,6 +3393,193 @@
             
 <div class="param-desc">
     a promise, which will be fulfilled with a PayMillObjectList or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="pause"><span class="type-signature"></span>pause<span class="signature">(obj, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Temporary pauses a subscription. <br />
+<strong>NOTE</strong><br />
+Pausing is permitted until one day (24 hours) before the next charge date.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3330">line 3330</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
 </div>
 
 
@@ -1028,7 +3736,384 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2931">line 2931</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3317">line 3317</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="unlimitValidity"><span class="type-signature"></span>unlimitValidity<span class="signature">(obj, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Change the validity of a subscription to unlimited
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3521">line 3521</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="unpause"><span class="type-signature"></span>unpause<span class="signature">(obj, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Unpauses a subscription. Next charge will occur according to the defined interval.<br />
+<strong>NOTE</strong><br />
+if the nextCaptureAt is the date of reactivation: a charge will happen<br />
+if the next_capture_at is in the past: it will be set to: reactivationdate + interval <br/>
+<br />
+<strong>IMPORTANT</strong><br />
+An inactive subscription can reactivated within 13 month from the date of pausing. After this period, the subscription will
+expire and cannot be re-activated.<br />
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html">Subscription</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a Subscription object or its id. note, if you set a Subscription object it will be updated, no new object will be created.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">a callback.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3349">line 3349</a>
     </li></ul></dd>
     
     
@@ -1086,7 +4171,29 @@
     
     
     <div class="description">
-        Update a Subscription.
+        Updates a subscription.Following fields will be updated:<br />
+<p>
+<ul>
+<li>interval (note, that nextCaptureAt will not change.)
+<li>currency
+<li>name
+<ul>
+<p>
+To update further properties of a subscription use following methods:<br />
+<p>
+<ul>
+<li>cancel() to cancel.
+<li>changeAmount() to change the amount.
+<li>changeOfferChangeCaptureDateAndRefund() to change the offer.
+<li>changeOfferKeepCaptureDateAndRefund() to change the offer.
+<li>changeOfferKeepCaptureDateNoRefund() to change the offer.
+<li>endTrial() to end the trial
+<li>limitValidity() to change the validity.
+<li>pause() to pause
+<li>unlimitValidity() to change the validity.
+<li>unpause() to unpause.
+<ul>
+<p>
     </div>
     
 
@@ -1210,7 +4317,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line2952">line 2952</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line3596">line 3596</a>
     </li></ul></dd>
     
     
@@ -1235,7 +4342,7 @@
     
             
 <div class="param-desc">
-    a promise, which will be fulfilled with a Transaction or rejected with a PMError.
+    a promise, which will be fulfilled with a Subscription or rejected with a PMError.
 </div>
 
 
@@ -1273,13 +4380,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferInterval.html">OfferInterval</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="PaymillList.html">PaymillList</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Interval.html">Interval</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="PaymillContext.html">PaymillContext</a></li><li><a href="PaymillList.html">PaymillList</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="SubscriptionService.Creator.html">Creator</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Feb 20 2014 17:47:39 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Sep 16 2014 16:25:57 GMT+0300 (OESZ)
 </footer>
 
 <script> prettyPrint(); </script>

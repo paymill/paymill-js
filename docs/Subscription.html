@@ -30,7 +30,7 @@
     Subscription
     </h2>
     
-        <div class="class-description">Subscriptions allow you to charge recurring payments on a client’s credit card / to a client’s direct debit. A subscription connects a client to the offers-object. A client can have several subscriptions to different offers, but only one subscription to the same offer.</div>
+        <div class="class-description">Subscriptions allow you to charge recurring payments on a client's credit card / to a client's direct debit. A subscription connects a client to the offers-object. A client can have several subscriptions to different offers, but only one subscription to the same offer.</div>
     
 </header>  
 
@@ -82,7 +82,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1530">line 1530</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1746">line 1746</a>
     </li></ul></dd>
     
     
@@ -142,6 +142,244 @@
         <dl>
             
 <dt>
+    <h4 class="name" id="Status"><span class="type-signature">&lt;static> </span>Status<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Status of a subscription.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+        <h5 class="subsection-title">Properties:</h5>
+        
+        <dl>
+
+<table class="props">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>ACTIVE</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last"></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>INACTIVE</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last"></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>EXPIRED</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last"></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>FAILED</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last"></td>
+        </tr>
+	
+	
+	</tbody>
+</table></dl>
+        
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1918">line 1918</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="amount"><span class="type-signature"></span>amount<span class="type-signature"> :number</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The amount of the subscription in cents
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">number</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1785">line 1785</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
     <h4 class="name" id="app_id"><span class="type-signature"></span>app_id<span class="type-signature"> :string</span></h4>
     
     
@@ -188,71 +426,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1626">line 1626</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="cancel_at_period_end"><span class="type-signature"></span>cancel_at_period_end<span class="type-signature"> :boolean</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        Cancel this subscription immediately or at the end of the current period?
-    </div>
-    
-    
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">boolean</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1568">line 1568</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1887">line 1887</a>
     </li></ul></dd>
     
     
@@ -316,7 +490,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1606">line 1606</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1867">line 1867</a>
     </li></ul></dd>
     
     
@@ -380,7 +554,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1619">line 1619</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1880">line 1880</a>
     </li></ul></dd>
     
     
@@ -444,7 +618,138 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1594">line 1594</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1855">line 1855</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="currency"><span class="type-signature"></span>currency<span class="type-signature"> :string</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        ISO 4217 formatted currency code
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1799">line 1799</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="end_of_period"><span class="type-signature"></span>end_of_period<span class="type-signature"> :string|<a href="Interval.html">Interval</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Expiring date of the subscription.
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Interval.html">Interval</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1841">line 1841</a>
     </li></ul></dd>
     
     
@@ -508,7 +813,202 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1549">line 1549</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1765">line 1765</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="interval"><span class="type-signature"></span>interval<span class="type-signature"> :string|<a href="Interval.html">Interval</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Defining how often the client should be charged
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Interval.html">Interval</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1813">line 1813</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="is_canceled"><span class="type-signature"></span>is_canceled<span class="type-signature"> :boolean</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Subscription is marked as canceled or not.
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">boolean</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1894">line 1894</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="is_deleted"><span class="type-signature"></span>is_deleted<span class="type-signature"> :boolean</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Subscription is marked as deleted or not.
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">boolean</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1901">line 1901</a>
     </li></ul></dd>
     
     
@@ -572,7 +1072,71 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1561">line 1561</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1778">line 1778</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="name"><span class="type-signature"></span>name<span class="type-signature"> :string</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Name of the subscription
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1806">line 1806</a>
     </li></ul></dd>
     
     
@@ -636,7 +1200,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1587">line 1587</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1848">line 1848</a>
     </li></ul></dd>
     
     
@@ -700,7 +1264,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1555">line 1555</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1771">line 1771</a>
     </li></ul></dd>
     
     
@@ -764,7 +1328,205 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1613">line 1613</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1874">line 1874</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="period_of_validity"><span class="type-signature"></span>period_of_validity<span class="type-signature"> :string|<a href="Interval.html">Interval</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Limit the validity of the subscription.
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Interval.html">Interval</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1834">line 1834</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="status"><span class="type-signature"></span>status<span class="type-signature"> :string|<a href="Subscription.html#Status">Subscription.Status</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Shows, if subscription is "active", "inactive", "expired" or "failed"
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Subscription.html#Status">Subscription.Status</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1908">line 1908</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="temp_amount"><span class="type-signature"></span>temp_amount<span class="type-signature"> :number</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        A one-time amount in cents, will charge once only
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">number</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1792">line 1792</a>
     </li></ul></dd>
     
     
@@ -828,7 +1590,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1581">line 1581</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1827">line 1827</a>
     </li></ul></dd>
     
     
@@ -892,7 +1654,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1575">line 1575</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1820">line 1820</a>
     </li></ul></dd>
     
     
@@ -956,7 +1718,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1600">line 1600</a>
+        <a href="paymill.node.js.html">paymill.node.js</a>, <a href="paymill.node.js.html#line1861">line 1861</a>
     </li></ul></dd>
     
     
@@ -989,13 +1751,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferInterval.html">OfferInterval</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="PaymillList.html">PaymillList</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Interval.html">Interval</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="PaymillContext.html">PaymillContext</a></li><li><a href="PaymillList.html">PaymillList</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="SubscriptionService.Creator.html">Creator</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Feb 20 2014 17:47:39 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Sep 16 2014 16:25:57 GMT+0300 (OESZ)
 </footer>
 
 <script> prettyPrint(); </script>

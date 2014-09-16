@@ -43,14 +43,18 @@
     <section>
         <article><p><img src="https://static.paymill.com/r/335f99eb3914d517bf392beb1adaf7cccef786b6/img/logo-download_Light.png" alt="PAYMILL icon"></p>
 <h1>PAYMILL-JS (beta)</h1>
-<p><a href="https://david-dm.org/paymill/paymill-js"><img src="https://david-dm.org/paymill/paymill-js.png" alt="Dependency Status"></a>
+<p><a href="http://badge.fury.io/js/paymill-wrapper"><img src="https://badge.fury.io/js/paymill-wrapper.png" alt="NPM version"></a>
+<a href="https://travis-ci.org/paymill/paymill-js"><img src="https://travis-ci.org/paymill/paymill-js.svg?branch=master" alt="Build Status"></a>
+<a href="https://codeclimate.com/github/paymill/paymill-js"><img src="https://codeclimate.com/github/paymill/paymill-js/badges/gpa.svg" alt="Code Climate"></a>
+<a href="https://codeclimate.com/github/paymill/paymill-js"><img src="https://codeclimate.com/github/paymill/paymill-js/badges/coverage.svg" alt="Test Coverage"></a>
+<br/>
+<a href="https://david-dm.org/paymill/paymill-js"><img src="https://david-dm.org/paymill/paymill-js.png" alt="Dependency Status"></a>
 <a href="https://david-dm.org/paymill/paymill-js#info=devDependencies"><img src="https://david-dm.org/paymill/paymill-js/dev-status.png" alt="devDependency Status"></a>
-<a href="http://badge.fury.io/js/paymill-wrapper"><img src="https://badge.fury.io/js/paymill-wrapper.png" alt="NPM version"></a>
 <!--
 [![Build Status](https://travis-ci.org/paymill/paymill-js.png?branch=master)](https://travis-ci.org/paymill/paymill-js)
 [![NPM version](https://badge.fury.io/js/paymill.node.js.png)](http://badge.fury.io/js/paymill-wrapper)
 -->
-An universal JavaScript API wrapper. Works with <a href="http://nodejs.org/">Node</a>, <a href="http://www.parse.com">Parse</a> and potentially any other javascript-based backend.</p>
+An universal JavaScript API wrapper. Works with <a href="http://nodejs.org/">Node</a>, <a href="http://www.parse.com">Parse</a>, <a href="http://www.apiomat.com">apiOmat</a> and potentially any other javascript-based backend.</p>
 <p>Please open an issue and let us know if you find any bugs, have a feature request or have successfully integrated it into your project.</p>
 <h2>Getting started</h2>
 <ul>
@@ -145,6 +149,20 @@ In Parse, the wrapper expects the callback to be an object in the form </li>
     src : ['paymill.js', 'lib/*.js','lib/models/*.js','lib/services/*.js','libXXX/*.js'],
     dest : 'paymill.XXX.js',
 },</code></pre>
+<h2>Changelog</h2>
+<h3>1.1.0</h3>
+<ul>
+<li>Added support for preauthorization description <a href="https://github.com/paymill/paymill-js/issues/8">#8</a></li>
+<li>updated project dependencies</li>
+</ul>
+<h3>1.0.1</h3>
+<ul>
+<li>Added support for source identifier</li>
+</ul>
+<h3>1.0.0</h3>
+<ul>
+<li>Stable release</li>
+</ul>
 <h2>License</h2>
 <p>Copyright 2013 PAYMILL GmbH.</p>
 <p>MIT License (enclosed)</p></article>
@@ -158,13 +176,13 @@ In Parse, the wrapper expects the callback to be an object in the form </li>
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferInterval.html">OfferInterval</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="PaymillList.html">PaymillList</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Interval.html">Interval</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="PaymillContext.html">PaymillContext</a></li><li><a href="PaymillList.html">PaymillList</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="SubscriptionService.Creator.html">Creator</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Feb 20 2014 17:47:36 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Sep 16 2014 16:25:54 GMT+0300 (OESZ)
 </footer>
 
 <script> prettyPrint(); </script>
