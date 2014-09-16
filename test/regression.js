@@ -52,4 +52,19 @@ describe('Regression tests', function() {
             ;
         });
     });
+    describe('list filter with amount', function() {
+        it('should work', function(done) {
+            var amount = shared.randomAmount();
+            pmc.transactions.createWithToken(shared.token, amount, shared.currency, "test1234").then(function(transaction) {
+                return pmc.transactions.list(null,null, (new pm.Transaction.Filter()).amount(amount))
+            }).then(function(list) {
+                expect(list.items[0].amount).to.be(amount);
+            }).then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+            ;
+        });
+    });
 });
