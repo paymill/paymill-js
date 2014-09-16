@@ -44,11 +44,11 @@ See [documentation](http://www.apiomat.com/docs/modules/paymill-module/) of the 
 ## Usage
 
 ### Initialization 
-Before using the wrapper you have to initialize it, using your private PAYMILL key: ``paymill.initialize(yourApiKey);``.
+Before using the wrapper you have to create a [PaymillContext](http://paymill.github.io/paymill-js/docs/PaymillContext.html) using your private PAYMILL key: ``paymill.getContext(yourApiKey);``.
 
 ### Services
 
-Each endpoint of the PAYMILL [API](https://www.paymill.com/en-gb/documentation-3/reference/api-reference/) has a corrseponding service. For example, to access transaction functions you can use ``paymill.transactions``.
+Each endpoint of the PAYMILL [API](https://www.paymill.com/en-gb/documentation-3/reference/api-reference/) has a corrseponding service in a [PaymillContext](http://paymill.github.io/paymill-js/docs/PaymillContext.html) . For example, to access transaction functions you can use ``paymill.transactions``.
 
 Available methods are (depending on the service):
 
@@ -79,6 +79,16 @@ paymill.transactions.detail(transaction).then(function(detail){
 	}
 });
 ```
+### Listing entities
+
+All list interfaces return a [PaymillList](http://paymill.github.io/paymill-js/docs/PaymillList.html). The total count is contained in the ``` count ``` variable, the actual array is in the ``` items ``` variable. You can always (optionally) define count, offset, filter or order to a list request. For example, if you like to show all transactions from a praticular client, paginated and order by the creation date, you would use following code:
+
+``` 
+pmc.transactions.list(pageSize,pageNumber*pageSize,
+(newpmc.Transaction.Filter()).client("client1234"),
+pmc.Transaction.Order().created_at().desc())
+```
+
 ### Callbacks and promises
 
 All service methods are asynchronous. To receive the result you either have to specify a callback function or you use the returned [Promise](http://promises-aplus.github.io/promises-spec/).
@@ -111,7 +121,7 @@ paymill.clients.create().then(function(client) {
 ```
 
 ### Deserialization
-The Wrapper deserializes all responses from the API. If you need to access the original json, all PAYMILL objects include the ``originalJson`` member, which holds the json used for deserialization
+The Wrapper deserializes all responses from the API. If you need to access the original json, all PAYMILL objects include the ``originalJson`` member, which holds the json used for deserialization.
 
 
 ## Contributors
