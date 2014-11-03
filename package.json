@@ -12,7 +12,7 @@
     }
   ],
   "description": "PAYMILL REST API Javascrip wrapper. Work with Node, parse.com and is easily extendable for other platforms",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "keywords": [
     "paymill",
     "wrapper",
