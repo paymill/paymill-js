@@ -30,7 +30,7 @@ ApiomatHandler.prototype.httpRequest = function(httpRequest) {
 	/* Callback handlers */
 	var successCB = function (msg, code) {
         if (!isDataPresent(msg)) {
-			defer.reject(new PMError(PMError.Type.API, data, "http status code:" + code + "\nheaders:" + headers + "\ndata:" + msg));
+			defer.reject(new PMError(PMError.Type.API, data, "http status code:" + code + "\nheaders:" + headers + "\ndata:" + msg, JSON.stringify(data)));
 		}
 		else
 		{
