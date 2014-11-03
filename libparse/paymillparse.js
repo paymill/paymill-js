@@ -19,13 +19,13 @@ ParseHandler.prototype.httpRequest = function(httpRequest) {
 		method : httpRequest.method,
 		success : function(httpResponse) {
             if (!isDataPresent(httpResponse.text)) {
-				defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text));
+				defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text, JSON.stringify(httpResponse.text)));
 			} else {
 				defer.resolve(httpResponse.text);
 			}
 		},
 		error : function(httpResponse) {
-			defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text));
+			defer.reject(new PMError(PMError.Type.API, httpResponse.text, "http status code:" + httpResponse.status + "\nheaders:" + httpResponse.headers + "\ndata:" + httpResponse.text, JSON.stringify(httpResponse.text)));
 		}
 	};
 	if (httpRequest.method=="POST" || httpRequest.method=="PUT") {
