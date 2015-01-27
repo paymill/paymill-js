@@ -6,7 +6,7 @@ var apiHost = "api.paymill.com";
 var apiBaseUrl = "/v2.1";
 var apiEncoding = "utf8";
 /* note, we have to edit this manually, as the package.json is available only in node*/
-var version = "1.1.0";
+var version = "2.0.2";
 var sourcePrefix = "paymill-js";
 
 function ExternalHandler() {
@@ -218,7 +218,7 @@ NodeHandler.prototype.httpRequest = function(httpRequest) {
 		});
 		res.on("end", function() {
             if (!isDataPresent(data)) {
-				defer.reject(new PMError(PMError.Type.API, data, "http status code:" + status + "\nheaders:" + headers + "\ndata:" + data));
+				defer.reject(new PMError(PMError.Type.API, data, "http status code:" + status + "\nheaders:" + headers + "\ndata:" + data, JSON.stringify(data)));
 			} else {
 				defer.resolve(data);
 			}
@@ -262,18 +262,19 @@ var handlerConstructor = function(apiKey) {
     return handler;
 };
 var platformIdentifier = 'node';
-function PMError(type, message, detailMessage) {
+function PMError(type, message, detailMessage, apiMessage) {
 	if (message && message.length > 0) {
 		this.message = type + ":" + message;
 	} else {
 		this.message = type + ".";
 	}
 	this.detailMessage = detailMessage;
+	this.apiMessage = apiMessage;
 	this.type = type;
 	return this;
 }
 
-PMError.prototype = Error.prototype;
+PMError.prototype = new Error();
 PMError.prototype.constructor = PMError;
 PMError.prototype.name = "PMError";
 
