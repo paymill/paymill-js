@@ -21,3 +21,5 @@ coverage
 dist
 paymill.sublime-project
 paymill.sublime-workspace
+
+.DS_Store
