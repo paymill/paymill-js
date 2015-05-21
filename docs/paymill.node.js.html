@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>JSDoc: Source: paymill.node.js</title>
-    
+
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
     <!--[if lt IE 9]>
@@ -16,16 +16,17 @@
 <body>
 
 <div id="main">
-    
+
     <h1 class="page-title">Source: paymill.node.js</h1>
+
     
-    
+
 
 
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>/** @module paymill */
+            <pre class="prettyprint source linenums"><code>/** @module paymill */
 
 var __ = require("underscore");
 
@@ -33,7 +34,7 @@ var apiHost = "api.paymill.com";
 var apiBaseUrl = "/v2.1";
 var apiEncoding = "utf8";
 /* note, we have to edit this manually, as the package.json is available only in node*/
-var version = "1.1.0";
+var version = "2.0.3";
 var sourcePrefix = "paymill-js";
 
 function ExternalHandler() {
@@ -121,7 +122,7 @@ function HttpRequest(path, method, params) {
 function isDataPresent(data) {
     try {
         var parsedData = JSON.parse(data);
-        if (parsedData.data !== undefined && parsedData.data !== null) {
+        if (parsedData.data !== undefined &amp;&amp; parsedData.data !== null) {
             return true;
         } else {
             return false;
@@ -209,18 +210,99 @@ exports.getContext = function(apiKey) {
     return new PaymillContext(apiKey);
 };
 
-function PMError(type, message, detailMessage) {
-	if (message && message.length > 0) {
+function NodeHandler() {
+	this.when = require("when");
+	this.https = require("https");
+}
+
+NodeHandler.prototype = ExternalHandler.prototype;
+NodeHandler.prototype.constructor = NodeHandler;
+NodeHandler.prototype.getDeferedObject = function() {
+	return this.when.defer();
+};
+
+NodeHandler.prototype.getPromiseObject = function(defer) {
+	return defer.promise;
+
+};
+NodeHandler.prototype.httpRequest = function(httpRequest) {
+	var defer = this.getDeferedObject();
+	var promise = this.getPromiseObject(defer);
+	var options = {
+		hostname : apiHost,
+		port : 443,
+		path : apiBaseUrl + httpRequest.path,
+		auth : this.apiKey + ":",
+		method : httpRequest.method,
+		headers : httpRequest.headers
+	};
+	var req = this.https.request(options, function(res) {
+		res.setEncoding(apiEncoding);
+		var status = res.statusCode;
+		var headers = res.headers;
+		var data = "";
+		res.on("data", function(d) {
+			data = data + d;
+		});
+		res.on("end", function() {
+            if (!isDataPresent(data)) {
+				defer.reject(new PMError(PMError.Type.API, data, "http status code:" + status + "\nheaders:" + headers + "\ndata:" + data, JSON.stringify(data)));
+			} else {
+				defer.resolve(data);
+			}
+		});
+
+	});
+
+	req.on("error", function(e) {
+		defer.reject(new PMError(PMError.Type.IO, null, e.toString()));
+	});
+	if ( typeof httpRequest.requestBody === "string" &amp;&amp; httpRequest.requestBody.length > 0) {
+		req.write(httpRequest.requestBody);
+	}
+	req.end();
+	return promise;
+};
+NodeHandler.prototype.includeCallbackInPromise = function(promise, callback) {
+	var positive, negative;
+	if (__.isFunction(callback)) {
+		var when = this.when;
+		positive = function(result) {
+			callback(null, result);
+			return when.resolve(result);
+		};
+		negative = function(error) {
+			callback(error);
+			return when.reject(error);
+		};
+		promise.then(positive, negative);
+	}
+	return promise;
+};
+
+NodeHandler.prototype.getHandlerIdentifier = function() {
+	return "node";
+};
+
+var handlerConstructor = function(apiKey) {
+    var handler=new NodeHandler();
+    handler.setApiKey(apiKey);
+    return handler;
+};
+var platformIdentifier = 'node';
+function PMError(type, message, detailMessage, apiMessage) {
+	if (message &amp;&amp; message.length > 0) {
 		this.message = type + ":" + message;
 	} else {
 		this.message = type + ".";
 	}
 	this.detailMessage = detailMessage;
+	this.apiMessage = apiMessage;
 	this.type = type;
 	return this;
 }
 
-PMError.prototype = Error.prototype;
+PMError.prototype = new Error();
 PMError.prototype.constructor = PMError;
 PMError.prototype.name = "PMError";
 
@@ -274,7 +356,7 @@ function urlEncode(params, appendQuestion) {
 		ret.push(key + "=" + encodeURIComponent(params[key]));
 	}
 	if (ret.length > 0) {
-		var result = ret.join("&");
+		var result = ret.join("&amp;");
 		if (appendQuestion) {
 			return "?" + result;
 		} else {
@@ -298,7 +380,7 @@ function getTimeFromObject(obj) {
 }
 
 function validateField(validationFunc, field, fieldName, optional) {
-    if (field !== undefined && field !== null) {
+    if (field !== undefined &amp;&amp; field !== null) {
         validationFunc(field,fieldName);
     } else {
         if (!optional) {
@@ -342,17 +424,17 @@ function getIdFromObject(obj, objectType) {
 	if (!obj) {
 		throw new PMError(PMError.Type.WRONG_PARAMS, "Object must be either a string or object with a string member 'id', but it is not defined");
 	}
-	if (__.isString(obj) && !__.isEmpty(obj)) {
+	if (__.isString(obj) &amp;&amp; !__.isEmpty(obj)) {
 		return obj;
 	}
 	if (objectType) {
 		//there is an object type
-		if ( obj instanceof objectType && obj.id && __.isString(obj.id)) {
+		if ( obj instanceof objectType &amp;&amp; obj.id &amp;&amp; __.isString(obj.id)) {
 			return obj.id;
 		}
 	} else {
 		// no object type defined
-		if (obj.id && __.isString(obj.id)) {
+		if (obj.id &amp;&amp; __.isString(obj.id)) {
 			return obj.id;
 		}
 	}
@@ -1164,6 +1246,20 @@ Payment.prototype.app_id = null;
 Payment.prototype.account = null;
 
 /**
+ * Whether or not this payment is recurring (can be used more than once).
+ * @type {boolean}
+ * @memberof Payment.prototype
+ */
+Payment.prototype.is_recurring = null;
+
+/**
+ * Whether or not this payment is usable for preauthorization.
+ * @type {boolean}
+ * @memberof Payment.prototype
+ */
+Payment.prototype.is_usable_for_preauthorization = null;
+
+/**
  * Name of the account holder. Only for direct debit payments.
  * @type {string}
  * @memberof Payment.prototype
@@ -1319,7 +1415,7 @@ PaymillObject.prototype.getUpdateMap = function() {
 	var result = {};
 	for (var i = 0; i &lt; updateFields.length; i++) {
 		var key = updateFields[i];
-		if (this[key] !== undefined && this[key] !== null)  {
+		if (this[key] !== undefined &amp;&amp; this[key] !== null)  {
 			result[key] = getUpdateValueOrId(this[key]);
 		}
 	}
@@ -1928,6 +2024,22 @@ Subscription.prototype.is_canceled = null;
 Subscription.prototype.is_deleted = null;
 
 /**
+ * SEPA mandate reference, can be optionally specified for direct debit transactions.
+ * If specified for other payment methods, it has no effect but must still be valid.
+ * If specified, the string must not be empty, can be up to 35 characters long and may contain:&lt;br />
+ * &lt;p>
+ * &lt;ul>
+ * &lt;li>digits 0-9
+ * &lt;li>letters a-z A-Z
+ * &lt;li>special characters: ‘ , . : + - / ( ) ?
+ * &lt;ul>
+ * @type {string}
+ * @memberof Subscription.prototype
+ */
+ Subscription.prototype.mandate_reference = null;
+
+
+/**
  * Shows, if subscription is "active", "inactive", "expired" or "failed"
  * @type {string|Subscription.Status}
  * @memberof Subscription.prototype
@@ -1979,7 +2091,7 @@ Subscription.prototype.getFieldDefinitions = function() {
 };
 
 Subscription.prototype.getUpdateableFields = function() {
-	return [ 'currency', 'name', 'interval' ];
+	return [ 'currency', 'name', 'interval', 'payment' ];
 };
 
 /**
@@ -2060,7 +2172,8 @@ Subscription.Filter.prototype.created_at = function(from, to) {
 /**
  * The {@link Subscription} object.
  */
-exports.Subscription = Subscription; 
+exports.Subscription = Subscription;
+
 /**
  *
  * Creates a new SubscriptionCount.
@@ -2220,6 +2333,37 @@ Transaction.prototype.fees = null;
  * @memberof Transaction.prototype
  */
 Transaction.prototype.app_id = null;
+
+/**
+ * Whether or not this transaction is refundable
+ * @type {boolean}
+ * @memberof Transaction.prototype
+ */
+Transaction.prototype.is_refundable = null;
+
+/**
+ * Whether or not this transaction can be marked as fraud
+ * @type {boolean}
+ * @memberof Transaction.prototype
+ */
+Transaction.prototype.is_markable_as_fraud = null;
+
+
+/**
+ * SEPA mandate reference, can be optionally specified for direct debit transactions.
+ * If specified for other payment methods, it has no effect but must still be valid.
+ * If specified, the string must not be empty, can be up to 35 characters long and may contain:&lt;br />
+ * &lt;p>
+ * &lt;ul>
+ * &lt;li>digits 0-9
+ * &lt;li>letters a-z A-Z
+ * &lt;li>special characters: ‘ , . : + - / ( ) ?
+ * &lt;ul>
+ * @type {string}
+ * @memberof Transaction.prototype
+ */
+Transaction.prototype.mandate_reference = null;
+
 
 /**
  * Status of a Transaction.
@@ -3280,13 +3424,14 @@ SubscriptionService.prototype.fromParams = function(payment, amount, currency, i
  * @param {(string)} currency ISO 4217 formatted currency code startAt
  * @param {(string|Interval)} interval define how often the client should be charged.
  * @param {(string|Interval)} periodOfValidity limits the validity of the subscription
+ * @param {string} mandate_reference a mandate reference
  * @param {(string)} name name of the subscription
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
  * @memberOf SubscriptionService
  */
 SubscriptionService.prototype.createWithAll = function(payment, client, offer, amount, currency, interval, startAt,
-    name,periodOfValidity, cb) {
+    name,periodOfValidity, mandate_reference, cb) {
 	try {
 		var map = {};
         map.payment = getIdFromObject(payment, Payment);
@@ -3311,6 +3456,9 @@ SubscriptionService.prototype.createWithAll = function(payment, client, offer, a
         if (!__.isEmpty(name)) {
             map.name = name;
         }
+				if (!__.isEmpty(mandate_reference)) {
+						map.mandate_reference = mandate_reference;
+				}
         if (!__.isEmpty(periodOfValidity)) {
             map.period_of_validity = periodOfValidity.toString();
         }
@@ -3598,6 +3746,7 @@ SubscriptionService.prototype.detail = function(obj, cb) {
  * &lt;li>interval (note, that nextCaptureAt will not change.)
  * &lt;li>currency
  * &lt;li>name
+ * &lt;li>payment
  * &lt;ul>
  * &lt;p>
  * To update further properties of a subscription use following methods:&lt;br />
@@ -3643,6 +3792,8 @@ SubscriptionService.Creator.prototype.interval = null;
 SubscriptionService.Creator.prototype.startAt = null;
 SubscriptionService.Creator.prototype.name = null;
 SubscriptionService.Creator.prototype.periodOfValidity = null;
+SubscriptionService.Creator.prototype.mandate_reference = null;
+
 
 SubscriptionService.Creator.prototype.create = function(cb) {
  return this.service.createWithAll(this.payment,this.client,this.offer,this.amount,this.currency,this.interval,this.startAt,this.name,this.periodOfValidity,cb);
@@ -3685,6 +3836,17 @@ SubscriptionService.Creator.prototype.withPeriodOfValidity = function(periodOfVa
 
 SubscriptionService.Creator.prototype.withStartDate = function(startAt) {
     this.startAt = startAt;
+    return this;
+};
+
+/**
+ * Add a mandate reference
+ * @param {string} mandate_reference
+ * @return {SubscriptionService.Creator} the same creator
+ * @memberOf SubscriptionService.Creator
+ */
+SubscriptionService.Creator.prototype.withMandateReference = function(mandate_reference) {
+    this.mandate_reference = mandate_reference;
     return this;
 };
 
@@ -3886,6 +4048,162 @@ TransactionService.prototype.detail = function(obj, cb) {
 
 
 /**
+ * Create a transaction with a token. Chain further values by calling withXXX()
+ * functions and finish by calling create().
+ * @param {string} token the payment token, generated by the PAYMILL bridge.
+ * @param {(string|number)} amount amount (in cents) which will be charged.
+ * @param {string} currency ISO 4217 formatted currency code.
+ * @return {TransactionService.Creator} a creator. when configured, please call create()
+ * @memberOf TransactionService
+ */
+TransactionService.prototype.fromToken = function(token, amount, currency) {
+    var creator = new TransactionService.Creator(this);
+		validateString(token,"token",false);
+		creator.map.token = token;
+
+		validateNumber(amount,"amount",false);
+		validateString(currency,"currency",false);
+		creator.map.amount = amount;
+		creator.map.currency = currency;
+		creator.map.description = "";
+
+    return creator;
+};
+
+/**
+ * Create a transaction with a preauthorization. Chain further values by calling withXXX()
+ * functions and finish by calling create().
+ * @param {(string|Preauthorization)} preauth the preauthroization object for the transaction or its id.
+ * @param {(string|number)} amount amount (in cents) which will be charged.
+ * @param {string} currency ISO 4217 formatted currency code.
+ * @return {TransactionService.Creator} a creator. when configured, please call create()
+ * @memberOf TransactionService
+ */
+TransactionService.prototype.fromPreauth = function(preauth, amount, currency) {
+    var creator = new TransactionService.Creator(this);
+		creator.map.preauthorization = getIdFromObject(preauth,Preauthorization);
+
+		validateNumber(amount,"amount",false);
+		validateString(currency,"currency",false);
+		creator.map.amount = amount;
+		creator.map.currency = currency;
+		creator.map.description = "";
+
+    return creator;
+};
+
+/**
+ * Create a transaction with a preauthorization. Chain further values by calling withXXX()
+ * functions and finish by calling create().
+ * @param {(string|Payment)} payment the payment object for the transaction or its id
+ * @param {(string|number)} amount amount (in cents) which will be charged.
+ * @param {string} currency ISO 4217 formatted currency code.
+ * @return {TransactionService.Creator} a creator. when configured, please call create()
+ * @memberOf TransactionService
+ */
+TransactionService.prototype.fromPayment = function(payment, amount, currency) {
+    var creator = new TransactionService.Creator(this);
+		creator.map.payment = getIdFromObject(payment, Payment);
+
+		validateNumber(amount,"amount",false);
+		validateString(currency,"currency",false);
+		creator.map.amount = amount;
+		creator.map.currency = currency;
+		creator.map.description = "";
+
+    return creator;
+};
+
+/**
+ * A helper for the complex creation method
+ * @class TransactionService.Creator
+ * @memberof TransactionService
+ */
+TransactionService.Creator = function(service) {
+    this.service = service;
+		this.map = {};
+};
+
+/**
+ * Create a transaction with this creator.
+ * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError.
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.create = function(cb) {
+	return this.service._create(this.map, Transaction, cb);
+};
+
+/**
+ * Add a description
+ * @param {string} description
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withDescription = function(description) {
+		validateString(description);
+    this.map.description = description;
+    return this;
+};
+
+/**
+ * Add a client
+ * @param {(string|Client)} client
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withClient = function(client) {
+    this.map.client = getIdFromObject(client);
+    return this;
+};
+
+/**
+ * Add a fee amount
+ * @param {(string|Client)} fee_amount
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withFeeAmount = function(fee_amount) {
+		validateNumber(fee_amount);
+    this.map.fee_amount = fee_amount;
+    return this;
+};
+
+/**
+ * Add a fee payment
+ * @param {(string|Client)} client
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withFeePayment = function(fee_payment) {
+    this.map.fee_payment = getIdFromObject(fee_payment);
+    return this;
+};
+
+/**
+ * Add a fee currency
+ * @param {string} fee_currency
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withFeeCurrency = function(fee_currency) {
+    validateString(fee_currency,"fee_currency",false);
+    this.map.fee_currency = fee_currency;
+    return this;
+};
+
+/**
+ * Add a mandate reference
+ * @param {string} mandate_reference
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withMandateReference = function(mandate_reference) {
+    validateString(mandate_reference,"mandate_reference",false);
+    this.map.mandate_reference = mandate_reference;
+    return this;
+};
+
+/**
  *
  * Creates a new WebhookService. Generally you should never create a PAYMILL service on your own. Instead use the exported "webhooks".
  * @class WebhookService
@@ -3988,87 +4306,7 @@ WebhookService.prototype.detail = function(obj, cb) {
 WebhookService.prototype.update = function(obj, cb) {
 	return this._update(obj, cb);
 };
-
-function NodeHandler() {
-	this.when = require("when");
-	this.https = require("https");
-}
-
-NodeHandler.prototype = ExternalHandler.prototype;
-NodeHandler.prototype.constructor = NodeHandler;
-NodeHandler.prototype.getDeferedObject = function() {
-	return this.when.defer();
-};
-
-NodeHandler.prototype.getPromiseObject = function(defer) {
-	return defer.promise;
-
-};
-NodeHandler.prototype.httpRequest = function(httpRequest) {
-	var defer = this.getDeferedObject();
-	var promise = this.getPromiseObject(defer);
-	var options = {
-		hostname : apiHost,
-		port : 443,
-		path : apiBaseUrl + httpRequest.path,
-		auth : this.apiKey + ":",
-		method : httpRequest.method,
-		headers : httpRequest.headers
-	};
-	var req = this.https.request(options, function(res) {
-		res.setEncoding(apiEncoding);
-		var status = res.statusCode;
-		var headers = res.headers;
-		var data = "";
-		res.on("data", function(d) {
-			data = data + d;
-		});
-		res.on("end", function() {
-            if (!isDataPresent(data)) {
-				defer.reject(new PMError(PMError.Type.API, data, "http status code:" + status + "\nheaders:" + headers + "\ndata:" + data));
-			} else {
-				defer.resolve(data);
-			}
-		});
-
-	});
-
-	req.on("error", function(e) {
-		defer.reject(new PMError(PMError.Type.IO, null, e.toString()));
-	});
-	if ( typeof httpRequest.requestBody === "string" && httpRequest.requestBody.length > 0) {
-		req.write(httpRequest.requestBody);
-	}
-	req.end();
-	return promise;
-};
-NodeHandler.prototype.includeCallbackInPromise = function(promise, callback) {
-	var positive, negative;
-	if (__.isFunction(callback)) {
-		var when = this.when;
-		positive = function(result) {
-			callback(null, result);
-			return when.resolve(result);
-		};
-		negative = function(error) {
-			callback(error);
-			return when.reject(error);
-		};
-		promise.then(positive, negative);
-	}
-	return promise;
-};
-
-NodeHandler.prototype.getHandlerIdentifier = function() {
-	return "node";
-};
-
-var handlerConstructor = function(apiKey) {
-    var handler=new NodeHandler();
-    handler.setApiKey(apiKey);
-    return handler;
-};
-var platformIdentifier = 'node';</code></pre>
+</code></pre>
         </article>
     </section>
 
@@ -4078,13 +4316,13 @@ var platformIdentifier = 'node';</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Interval.html">Interval</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="PaymillContext.html">PaymillContext</a></li><li><a href="PaymillList.html">PaymillList</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="SubscriptionService.Creator.html">Creator</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="module-paymill-Client.html">Client</a></li><li><a href="module-paymill-ClientService.html">ClientService</a></li><li><a href="module-paymill-Fee.html">Fee</a></li><li><a href="module-paymill-Filter.html">Filter</a></li><li><a href="module-paymill-Interval.html">Interval</a></li><li><a href="module-paymill-Offer.html">Offer</a></li><li><a href="module-paymill-OfferService.html">OfferService</a></li><li><a href="module-paymill-Order.html">Order</a></li><li><a href="module-paymill-Payment.html">Payment</a></li><li><a href="module-paymill-PaymentService.html">PaymentService</a></li><li><a href="module-paymill-PaymillContext.html">PaymillContext</a></li><li><a href="module-paymill-PaymillList.html">PaymillList</a></li><li><a href="module-paymill-Preauthorization.html">Preauthorization</a></li><li><a href="module-paymill-PreauthorizationService.html">PreauthorizationService</a></li><li><a href="module-paymill-Refund.html">Refund</a></li><li><a href="module-paymill-RefundService.html">RefundService</a></li><li><a href="module-paymill-Subscription.html">Subscription</a></li><li><a href="module-paymill-SubscriptionCount.html">SubscriptionCount</a></li><li><a href="module-paymill-SubscriptionService.html">SubscriptionService</a></li><li><a href="module-paymill-Transaction.html">Transaction</a></li><li><a href="module-paymill-TransactionService.html">TransactionService</a></li><li><a href="module-paymill-Webhook.html">Webhook</a></li><li><a href="module-paymill-WebhookService.html">WebhookService</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionService.Creator.html">Creator</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.Creator.html">Creator</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li></ul>
 </nav>
 
-<br clear="both">
+<br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Sep 16 2014 16:25:54 GMT+0300 (OESZ)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0</a> on Thu May 21 2015 23:29:25 GMT+0300 (EEST)
 </footer>
 
 <script> prettyPrint(); </script>

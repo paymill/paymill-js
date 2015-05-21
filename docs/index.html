@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
-    
+    <title>JSDoc: Home</title>
+
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
     <!--[if lt IE 9]>
@@ -16,16 +16,18 @@
 <body>
 
 <div id="main">
+
+    <h1 class="page-title">Home</h1>
+
     
-    <h1 class="page-title">Index</h1>
-    
-    
+
 
 
     
 
 
     <h3> </h3>
+
 
 
 
@@ -42,129 +44,115 @@
 
     <section>
         <article><p><img src="https://static.paymill.com/r/335f99eb3914d517bf392beb1adaf7cccef786b6/img/logo-download_Light.png" alt="PAYMILL icon"></p>
-<h1>PAYMILL-JS (beta)</h1>
-<p><a href="http://badge.fury.io/js/paymill-wrapper"><img src="https://badge.fury.io/js/paymill-wrapper.png" alt="NPM version"></a>
+<h1>PAYMILL-JS</h1><p><a href="http://badge.fury.io/js/paymill-wrapper"><img src="https://badge.fury.io/js/paymill-wrapper.png" alt="NPM version"></a>
 <a href="https://travis-ci.org/paymill/paymill-js"><img src="https://travis-ci.org/paymill/paymill-js.svg?branch=master" alt="Build Status"></a>
 <a href="https://codeclimate.com/github/paymill/paymill-js"><img src="https://codeclimate.com/github/paymill/paymill-js/badges/gpa.svg" alt="Code Climate"></a>
 <a href="https://codeclimate.com/github/paymill/paymill-js"><img src="https://codeclimate.com/github/paymill/paymill-js/badges/coverage.svg" alt="Test Coverage"></a>
 <br/>
 <a href="https://david-dm.org/paymill/paymill-js"><img src="https://david-dm.org/paymill/paymill-js.png" alt="Dependency Status"></a>
-<a href="https://david-dm.org/paymill/paymill-js#info=devDependencies"><img src="https://david-dm.org/paymill/paymill-js/dev-status.png" alt="devDependency Status"></a>
-<!--
-[![Build Status](https://travis-ci.org/paymill/paymill-js.png?branch=master)](https://travis-ci.org/paymill/paymill-js)
-[![NPM version](https://badge.fury.io/js/paymill.node.js.png)](http://badge.fury.io/js/paymill-wrapper)
--->
-An universal JavaScript API wrapper. Works with <a href="http://nodejs.org/">Node</a>, <a href="http://www.parse.com">Parse</a>, <a href="http://www.apiomat.com">apiOmat</a> and potentially any other javascript-based backend.</p>
+<a href="https://david-dm.org/paymill/paymill-js#info=devDependencies"><img src="https://david-dm.org/paymill/paymill-js/dev-status.png" alt="devDependency Status"></a></p>
+<p>An universal JavaScript API wrapper. Works with <a href="http://nodejs.org/">Node</a>, <a href="http://www.parse.com">Parse</a>, <a href="http://www.apiomat.com">apiOmat</a> and potentially any other javascript-based backend.</p>
 <p>Please open an issue and let us know if you find any bugs, have a feature request or have successfully integrated it into your project.</p>
-<h2>Getting started</h2>
-<ul>
+<h2>Getting started</h2><ul>
 <li>If you are not familiar with PAYMILL, start with the <a href="https://www.paymill.com/en-gb/documentation-3/">documentation</a>.</li>
 <li>Install the latest release.</li>
 <li>Check the API <a href="https://www.paymill.com/en-gb/documentation-3/reference/api-reference/">reference</a>. For code snippets select &quot;JS&quot;.</li>
 <li>Check the full JSdoc <a href="http://paymill.github.io/paymill-js/docs/">documentation</a>.</li>
 <li>Check the tests / samples.</li>
 </ul>
-<h2>Installation</h2>
-<h3>Node</h3>
-<p>Install the package using npm: <code>npm install paymill-wrapper</code> or <code>npm install -g paymill-wrapper</code> to install globaly. You can also add <code>paymill-wrapper</code> to your <code>package.json</code> dependecies.</p>
+<h2>Installation</h2><h3>Node</h3><p>Install the package using npm: <code>npm install paymill-wrapper</code> or <code>npm install -g paymill-wrapper</code> to install globaly. You can also add <code>paymill-wrapper</code> to your <code>package.json</code> dependecies.</p>
 <p>Use the module with <code>var paymill = require(&quot;paymill-wrapper&quot;);</code>.</p>
-<h3>Parse</h3>
-<p>Copy <code>paymill.parse.js</code> to your your cloud code folder.</p>
+<h3>Parse</h3><p>Copy <code>paymill.parse.js</code> to your your cloud code folder.</p>
 <p>Use the module with <code>var paymill = require(&quot;cloud/paymill.parse.js&quot;);</code>.</p>
-<h3>apiOmat</h3>
-<p>In your <a href="http://www.apiomat.com">apiOmat</a> dashboard add the Modules 'Paymill' and 'Server Code' to use paymill function in 'Server Code' module.
+<h3>apiOmat</h3><p>In your <a href="http://www.apiomat.com">apiOmat</a> dashboard add the Modules 'Paymill' and 'Server Code' to use paymill function in 'Server Code' module.
 See <a href="http://www.apiomat.com/docs/modules/paymill-module/">documentation</a> of the module for further informations.</p>
-<h2>Usage</h2>
-<h3>Initialization</h3>
-<p>Before using the wrapper you have to initialize it, using your private PAYMILL key: <code>paymill.initialize(yourApiKey);</code>.</p>
-<h3>Services</h3>
-<p>Each endpoint of the PAYMILL <a href="https://www.paymill.com/en-gb/documentation-3/reference/api-reference/">API</a> has a corrseponding service. For example, to access transaction functions you can use <code>paymill.transactions</code>.</p>
+<h2>Usage</h2><h3>Initialization</h3><p>Before using the wrapper you have to create a <a href="http://paymill.github.io/paymill-js/docs/PaymillContext.html">PaymillContext</a> using your private PAYMILL key: <code>paymill.getContext(yourApiKey);</code>.</p>
+<h3>Services</h3><p>Each endpoint of the PAYMILL <a href="https://www.paymill.com/en-gb/documentation-3/reference/api-reference/">API</a> has a corrseponding service in a <a href="http://paymill.github.io/paymill-js/docs/PaymillContext.html">PaymillContext</a> . For example, to access transaction functions you can use <code>paymill.transactions</code>.</p>
 <p>Available methods are (depending on the service):</p>
 <ul>
 <li><strong>create ( or createXXX )</strong>
 A service may include multiple create methods, depending on the parameters. You cannot create an object locally and call create with it, you have to supply the input parameters.</li>
-<li><strong>update</strong> 
+<li><strong> fromXXX(mandatory).withXXX(optional)...withXXX(optional).create()</strong>
+Some services have a lot of optional parameters. For those services you can call one of the fromXXX() methods (with the mandatory parameters). These methods return a &quot;creator&quot;. You can add optional parameters by chain calling withXXX() on the creator. Don't forget to call create() at the end.</li>
+<li><strong>update</strong>
 Accepts an object. The same object will be updated and returned.</li>
 <li><strong>remove</strong>
 Accepts an object or an objects id and returns an object. If the parameter is an object, the same object will be updated and returned.</li>
 <li><strong>detail</strong>
-Accepts an object or an objects id. If the parameter is an object, acts like a &quot;refresh&quot; and updates it. </li>
+Accepts an object or an objects id. If the parameter is an object, acts like a &quot;refresh&quot; and updates it.</li>
 <li><strong>list</strong>
-Accepts count and offset parameters for pagination, as well as order and filter. Returns a List object, which holds the global count in <code>count</code> and an array of the objects in 
+Accepts count and offset parameters for pagination, as well as order and filter. Returns a List object, which holds the global count in <code>count</code> and an array of the objects in
 <code>items</code></li>
 </ul>
-<h3>Removing, updating and retrieving</h3>
-<p>When you use methods like remove, update or detail with an object as argument, the wrapper will use the response from the API to update the <strong>same</strong> object and will return the same object. If you use the id of an object as a string, the wrapper will create a new object and return it.</p>
+<h3>Removing, updating and retrieving</h3><p>When you use methods like remove, update or detail with an object as argument, the wrapper will use the response from the API to update the <strong>same</strong> object and will return the same object. If you use the id of an object as a string, the wrapper will create a new object and return it.</p>
 <p>Example:</p>
-<pre><code>var transaction; // some transaction you created
+<pre class="prettyprint source"><code>var transaction; // some transaction you created
 paymill.transactions.detail(transaction).then(function(detail){
     if (detail===transaction) {
         console.log(&quot;Wrapper works!&quot;);
     }
-});</code></pre>
-<h3>Callbacks and promises</h3>
-<p>All service methods are asynchronous. To receive the result you either have to specify a callback function or you use the returned <a href="http://promises-aplus.github.io/promises-spec/">Promise</a>.</p>
-<h4>Callbacks</h4>
-<p>The last parameter of every service method is a callback. The callback will be executed after the request. The format of the callbacks is platform specific.</p>
+});</code></pre><h3>Listing entities</h3><p>All list interfaces return a <a href="http://paymill.github.io/paymill-js/docs/PaymillList.html">PaymillList</a>. The total count is contained in the <code>count</code> variable, the actual array is in the <code>items</code> variable. You can always (optionally) define count, offset, filter or order to a list request. For example, if you like to show all transactions from a praticular client, paginated and order by the creation date, you would use following code:</p>
+<pre class="prettyprint source"><code>pmc.transactions.list(pageSize,pageNumber*pageSize,
+(newpmc.Transaction.Filter()).client(&quot;client1234&quot;),
+pmc.Transaction.Order().created_at().desc())</code></pre><h3>Callbacks and promises</h3><p>All service methods are asynchronous. To receive the result you either have to specify a callback function or you use the returned <a href="http://promises-aplus.github.io/promises-spec/">Promise</a>.</p>
+<h4>Callbacks</h4><p>The last parameter of every service method is a callback. The callback will be executed after the request. The format of the callbacks is platform specific.</p>
 <ul>
 <li><strong>Node</strong> 
 In Node, the wrapper expects the callback to be a function in the form <code>function(error,result)</code> .</li>
 <li><strong>Parse</strong>
 In Parse, the wrapper expects the callback to be an object in the form </li>
 </ul>
-<pre><code>var callback= {
+<pre class="prettyprint source"><code>var callback= {
     success: function(result) {…},
     error: function(error) {..}
-}</code></pre>
-<h4>Promises</h4>
-<p>All service methods return an A+ compliant <a href="http://promises-aplus.github.io/promises-spec/">Promise</a>. The promise is resolved with the result or rejected with an error. You can chain promises like this:</p>
-<pre><code>paymill.clients.create().then(function(client) {
+}</code></pre><h4>Promises</h4><p>All service methods return an A+ compliant <a href="http://promises-aplus.github.io/promises-spec/">Promise</a>. The promise is resolved with the result or rejected with an error. You can chain promises like this:</p>
+<pre class="prettyprint source"><code>paymill.clients.create().then(function(client) {
     //client created, lets create a payment
     return paymill.payments.create(atoken,client);
 }).then(function(payment){
     //payment created, do something with it
 },function(error) {
     // an error occured
-});</code></pre>
-<h3>Deserialization</h3>
-<p>The Wrapper deserializes all responses from the API. If you need to access the original json, all PAYMILL objects include the <code>originalJson</code> member, which holds the json used for deserialization</p>
-<h2>Contributors</h2>
-<h3>Getting started:</h3>
-<ul>
+});</code></pre><h3>Deserialization</h3><p>The Wrapper deserializes all responses from the API. If you need to access the original json, all PAYMILL objects include the <code>originalJson</code> member, which holds the json used for deserialization.</p>
+<h2>Contributors</h2><h3>Getting started:</h3><ul>
 <li>Install node.js</li>
 <li>Run <code>npm install</code> to install dependencies or <code>sudo npm install -g</code> to install dependecies globally.</li>
 <li>run <code>npm test</code> to run jshint and mocha tests. <strong>Note:</strong> you have to have a valid private key in a <code>PMAPIKEY</code> environment variable.</li>
 <li>run <code>npm run-script docs</code> to generate documentation</li>
 </ul>
 <p>(if Error: Cannot find module X, check if $NODE_PATH is correct)</p>
-<h3>Adding a new platform</h3>
-<p>To add a new platform (XXX), you have to:</p>
+<h3>Adding a new platform</h3><p>To add a new platform (XXX), you have to:</p>
 <ul>
 <li>Create a folder <code>libXXX</code>. </li>
 <li>Implement an ExternalHandler. </li>
 <li>Make sure <a href="http://underscorejs.org/">underscore.js</a> is available for your platform.</li>
 <li>In Gruntfile.js add </li>
 </ul>
-<pre><code>XXX : {
+<pre class="prettyprint source"><code>XXX : {
     src : ['paymill.js', 'lib/*.js','lib/models/*.js','lib/services/*.js','libXXX/*.js'],
     dest : 'paymill.XXX.js',
-},</code></pre>
-<h2>Changelog</h2>
-<h3>1.1.0</h3>
-<ul>
+},</code></pre><h2>Changelog</h2><h3>2.1.0</h3><ul>
+<li>Upgraded objects to latest version</li>
+<li>TransactionService now supports a Creator.</li>
+<li>Updated project dependencies</li>
+</ul>
+<h3>2.0.0</h3><ul>
+<li>Upgraded to PAYMILL API v2.1</li>
+<li>Changed library interface to support multiple instances (e.g. for marketplaces)</li>
+<li>Added Travis and Codeclimate</li>
+<li>Updated project dependencies</li>
+</ul>
+<h3>1.1.0</h3><ul>
 <li>Added support for preauthorization description <a href="https://github.com/paymill/paymill-js/issues/8">#8</a></li>
 <li>updated project dependencies</li>
 </ul>
-<h3>1.0.1</h3>
-<ul>
+<h3>1.0.1</h3><ul>
 <li>Added support for source identifier</li>
 </ul>
-<h3>1.0.0</h3>
-<ul>
+<h3>1.0.0</h3><ul>
 <li>Stable release</li>
 </ul>
-<h2>License</h2>
-<p>Copyright 2013 PAYMILL GmbH.</p>
+<h2>License</h2><p>Copyright 2013 PAYMILL GmbH.</p>
 <p>MIT License (enclosed)</p></article>
     </section>
 
@@ -176,13 +164,13 @@ In Parse, the wrapper expects the callback to be an object in the form </li>
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="ClientService.html">ClientService</a></li><li><a href="Fee.html">Fee</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Interval.html">Interval</a></li><li><a href="Offer.html">Offer</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="OfferService.html">OfferService</a></li><li><a href="Order.html">Order</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="PaymentService.html">PaymentService</a></li><li><a href="PaymillContext.html">PaymillContext</a></li><li><a href="PaymillList.html">PaymillList</a></li><li><a href="Preauthorization.html">Preauthorization</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="PreauthorizationService.html">PreauthorizationService</a></li><li><a href="Refund.html">Refund</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="RefundService.html">RefundService</a></li><li><a href="Subscription.html">Subscription</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionCount.html">SubscriptionCount</a></li><li><a href="SubscriptionService.html">SubscriptionService</a></li><li><a href="SubscriptionService.Creator.html">Creator</a></li><li><a href="Transaction.html">Transaction</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.html">TransactionService</a></li><li><a href="Webhook.html">Webhook</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-paymill.html">paymill</a></li></ul><h3>Classes</h3><ul><li><a href="Client.Filter.html">Filter</a></li><li><a href="Client.Order.html">Order</a></li><li><a href="module-paymill-Client.html">Client</a></li><li><a href="module-paymill-ClientService.html">ClientService</a></li><li><a href="module-paymill-Fee.html">Fee</a></li><li><a href="module-paymill-Filter.html">Filter</a></li><li><a href="module-paymill-Interval.html">Interval</a></li><li><a href="module-paymill-Offer.html">Offer</a></li><li><a href="module-paymill-OfferService.html">OfferService</a></li><li><a href="module-paymill-Order.html">Order</a></li><li><a href="module-paymill-Payment.html">Payment</a></li><li><a href="module-paymill-PaymentService.html">PaymentService</a></li><li><a href="module-paymill-PaymillContext.html">PaymillContext</a></li><li><a href="module-paymill-PaymillList.html">PaymillList</a></li><li><a href="module-paymill-Preauthorization.html">Preauthorization</a></li><li><a href="module-paymill-PreauthorizationService.html">PreauthorizationService</a></li><li><a href="module-paymill-Refund.html">Refund</a></li><li><a href="module-paymill-RefundService.html">RefundService</a></li><li><a href="module-paymill-Subscription.html">Subscription</a></li><li><a href="module-paymill-SubscriptionCount.html">SubscriptionCount</a></li><li><a href="module-paymill-SubscriptionService.html">SubscriptionService</a></li><li><a href="module-paymill-Transaction.html">Transaction</a></li><li><a href="module-paymill-TransactionService.html">TransactionService</a></li><li><a href="module-paymill-Webhook.html">Webhook</a></li><li><a href="module-paymill-WebhookService.html">WebhookService</a></li><li><a href="Offer.Filter.html">Filter</a></li><li><a href="Offer.Order.html">Order</a></li><li><a href="Payment.Filter.html">Filter</a></li><li><a href="Payment.Order.html">Order</a></li><li><a href="Preauthorization.Filter.html">Filter</a></li><li><a href="Preauthorization.Order.html">Order</a></li><li><a href="Refund.Filter.html">Filter</a></li><li><a href="Refund.Order.html">Order</a></li><li><a href="Subscription.Filter.html">Filter</a></li><li><a href="Subscription.Order.html">Order</a></li><li><a href="SubscriptionService.Creator.html">Creator</a></li><li><a href="Transaction.Filter.html">Filter</a></li><li><a href="Transaction.Order.html">Order</a></li><li><a href="TransactionService.Creator.html">Creator</a></li><li><a href="Webhook.Filter.html">Filter</a></li><li><a href="Webhook.Order.html">Order</a></li></ul>
 </nav>
 
-<br clear="both">
+<br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Sep 16 2014 16:25:54 GMT+0300 (OESZ)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0</a> on Thu May 21 2015 23:29:25 GMT+0300 (EEST)
 </footer>
 
 <script> prettyPrint(); </script>
