@@ -55,7 +55,9 @@ describe('TransactionService', function() {
 		it('should create a transaction with random amount and preauthorization', function(done) {
 			var amount = shared.randomAmount();
 			var preauthorization;
-			pmc.preauthorizations.createWithToken(shared.token, amount, shared.currency).then(function(preauth) {
+			shared.getToken().then( function(token) {
+				return pmc.preauthorizations.createWithToken(token, amount, shared.currency);
+			}).then(function(preauth) {
 				//preauth created
 				expect(preauth).to.be.ok();
 				preauthorization = preauth;
@@ -79,12 +81,14 @@ describe('TransactionService', function() {
 		});
 
 	});
-	
+
 	describe('#refund()', function() {
 		it('should refund a transaction', function(done) {
 			var amount = shared.randomAmount();
 			var transaction;
-			pmc.transactions.createWithToken(shared.token, amount, shared.currency, "test1234").then(function(result) {
+			shared.getToken().then( function(token) {
+				return pmc.transactions.createWithToken(token, amount, shared.currency, "test1234");
+			}).then(function(result) {
 				transaction=result;
 				expect(result).to.be.a(pm.Transaction);
 				expect(result.origin_amount).to.be(amount);
@@ -93,10 +97,10 @@ describe('TransactionService', function() {
 				expect(result.client).to.be.a(pm.Client);
 				expect(result.payment).to.be.a(pm.Payment);
 				expect(result.preauthorization).to.be(null);
-				return pmc.transactions.refund(result,100,"testrefund");
+				return pmc.transactions.refund(result,amount-1,"testrefund");
 			}).then(function(refund) {
 				expect(refund).to.be.a(pm.Refund);
-				expect(refund.amount.toString()).to.be("100");
+				expect(refund.amount.toString()).to.be(""+ (amount-1));
 				expect(refund.description).to.be("testrefund");
 				expect(refund.transaction.id).to.be(transaction.id);
 			}).then(function() {
@@ -215,7 +219,6 @@ function checkTransactionFields(trans) {
 	expect(trans.created_at).to.be.ok();
 	expect(trans.updated_at).to.be.ok();
 	expect(trans.response_code).to.be.ok();
-	expect(trans.short_id).to.be.ok();
 	expect(trans.invoices).to.be.ok();
 	expect(trans.fees).to.be.ok();
 }
