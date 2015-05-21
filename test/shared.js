@@ -1,6 +1,8 @@
 var pm = require('../paymill.node.js');
 var when = require("when");
 var expect = require("expect.js");
+var https = require('https');
+var when = require("when");
 
 var pmc = null;
 
@@ -8,11 +10,31 @@ var defaultCurrency = "EUR";
 var defaultToken = "098f6bcd4621d373cade4e832627b4f6";
 var webhookEvent = pm.Webhook.EventType.TRANSACTION_SUCCEDED;
 var webhookEventArray = [pm.Webhook.EventType.TRANSACTION_SUCCEDED,pm.Webhook.EventType.TRANSACTION_FAILED];
+var publicKey = process.env.PMPUBLICAPIKEY;
 
 if (!process.env.PMAPIKEY) {
 	throw new Error("you have to have a valid private kay in a PMAPIKEY environment variable.");
 } else {
     pmc = pm.getContext(process.env.PMAPIKEY);
+		// try to get a new token
+		//try {
+			https.get(getTokenUrl(), function(res) {
+				res.on("data", function(chunk) {
+    			try {
+						chunks = chunk.toString();
+						obj = JSON.parse(chunks.substring(15,chunks.length - 1));
+						defaultToken = obj.transaction.identification.uniqueId;
+						console.log("Extracted token:" + defaultToken);
+					} catch (e) {
+						console.log("Cannot extract token from:" + chunk + ". Exception:" + e);
+					}
+  			});
+			}).on('error', function(e) {
+  			console.log("Cannot request token: " + e.message);
+			});
+		//} catch(e) {
+		//	console.error("Could not fetch new token (" + e + ")")
+		//}
 }
 
 exports.pm = pm;
@@ -23,6 +45,27 @@ exports.webhookEventArray = webhookEventArray;
 exports.expect = expect;
 exports.apiKey = process.env.PMAPIKEY;
 exports.token = defaultToken;
+
+
+exports.getToken = getToken;
+function getToken() {
+	var defer = when.defer();
+	https.get(getTokenUrl(), function(res) {
+		res.on("data", function(chunk) {
+			try {
+				chunks = chunk.toString();
+				obj = JSON.parse(chunks.substring(15,chunks.length - 1));
+				var result = obj.transaction.identification.uniqueId;
+				defer.resolve(result);
+			} catch (e) {
+				defer.reject("Cannot extract token from:" + chunk + ". Exception:" + e);
+			}
+		});
+	}).on('error', function(e) {
+		defer.reject("Cannot request token: " + e.message);
+	});
+	return defer.promise;
+}
 
 exports.currency = defaultCurrency;
 exports.toStrinAmount = function(amount) {
@@ -337,4 +380,8 @@ function checkSubscriptionFields(target) {
 	expect(target.client).to.be.ok();
 	expect(target.created_at).to.be.ok();
 	expect(target.updated_at).to.be.ok();
+}
+
+function getTokenUrl() {
+	return "https://test-token.paymill.com/?transaction.mode=CONNECTOR_TEST&channel.id=" + publicKey + "&jsonPFunction=paymilljstests&account.number=4111111111111111&account.expiry.month=12&account.expiry.year=2015&account.verification=123&account.holder=Max%20Mustermann&presentation.amount3D=&presentation.currency3D=";
 }

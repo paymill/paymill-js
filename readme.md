@@ -54,14 +54,16 @@ Available methods are (depending on the service):
 
 - **create ( or createXXX )**
 A service may include multiple create methods, depending on the parameters. You cannot create an object locally and call create with it, you have to supply the input parameters.
-- **update** 
+- ** fromXXX(mandatory).withXXX(optional)...withXXX(optional).create()**
+Some services have a lot of optional parameters. For those services you can call one of the fromXXX() methods (with the mandatory parameters). These methods return a "creator". You can add optional parameters by chain calling withXXX() on the creator. Don't forget to call create() at the end.
+- **update**
 Accepts an object. The same object will be updated and returned.
 - **remove**
 Accepts an object or an objects id and returns an object. If the parameter is an object, the same object will be updated and returned.
 - **detail**
-Accepts an object or an objects id. If the parameter is an object, acts like a "refresh" and updates it. 
+Accepts an object or an objects id. If the parameter is an object, acts like a "refresh" and updates it.
 - **list**
-Accepts count and offset parameters for pagination, as well as order and filter. Returns a List object, which holds the global count in ``count`` and an array of the objects in 
+Accepts count and offset parameters for pagination, as well as order and filter. Returns a List object, which holds the global count in ``count`` and an array of the objects in
 ``items``
 
 
@@ -150,6 +152,11 @@ XXX : {
 ```
 
 ## Changelog
+
+### 2.1.0
++ Upgraded objects to latest version
++ TransactionService now supports a Creator.
+* Updated project dependencies
 
 ### 2.0.0
 + Upgraded to PAYMILL API v2.1

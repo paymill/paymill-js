@@ -55,7 +55,9 @@ describe('TransactionService', function() {
 		it('should create a transaction with random amount and preauthorization', function(done) {
 			var amount = shared.randomAmount();
 			var preauthorization;
-			pmc.preauthorizations.createWithToken(shared.token, amount, shared.currency).then(function(preauth) {
+			shared.getToken().then( function(token) {
+				return pmc.preauthorizations.createWithToken(token, amount, shared.currency);
+			}).then(function(preauth) {
 				//preauth created
 				expect(preauth).to.be.ok();
 				preauthorization = preauth;
@@ -79,12 +81,82 @@ describe('TransactionService', function() {
 		});
 
 	});
-	
+
+	describe('Creator', function() {
+		it('should create a transaction with preauthorization creator', function(done) {
+			var amount = shared.randomAmount();
+			var preauthorization;
+			shared.getToken().then( function(token) {
+				return pmc.preauthorizations.createWithToken(token, amount, shared.currency);
+			}).then(function(preauth) {
+				preauthorization = preauth;
+				return pmc.transactions.fromPreauth(preauth,amount,shared.currency).create();
+			}).then(function(transaction) {
+				expect(transaction).to.be.a(pm.Transaction);
+				expect(transaction.origin_amount).to.be(amount);
+				expect(transaction.currency).to.be(shared.currency);
+				expect(transaction.preauthorization.id).to.be(preauthorization.id);
+			}).then(function() {
+				done();
+			}, function(err) {
+				done(err);
+			});
+			;
+		});
+
+		it('should create a transaction with payment creator, client and mandate_reference', function(done) {
+			var amount = shared.randomAmount();
+			var payment;
+			var client;
+			shared.createClient().then( function(newclient) {
+				client = newclient;
+				return shared.getToken();
+			}).then(function(token) {
+				return pmc.payments.create(token, client.id);
+			}).then(function(newpayment) {
+				payment = newpayment;
+				return pmc.transactions.fromPayment(payment,amount,shared.currency).withDescription("temp123").withClient(client).withMandateReference("DE1234").create();
+			}).then(function(transaction) {
+				expect(transaction).to.be.a(pm.Transaction);
+				expect(transaction.origin_amount).to.be(amount);
+				expect(transaction.currency).to.be(shared.currency);
+				expect(transaction.payment.id).to.be(payment.id);
+				expect(transaction.client.id).to.be(client.id);
+				expect(transaction.mandate_reference).to.be("DE1234");
+				expect(transaction.description).to.be("temp123");
+
+			}).then(function() {
+				done();
+			}, function(err) {
+				done(err);
+			});
+			;
+		});
+
+		it('should create a transaction with token creator', function(done) {
+			var amount = shared.randomAmount();
+			shared.getToken().then( function(token) {
+				return pmc.transactions.fromToken(token, amount, shared.currency).create();
+			}).then(function(transaction) {
+				expect(transaction).to.be.a(pm.Transaction);
+				expect(transaction.origin_amount).to.be(amount);
+				expect(transaction.currency).to.be(shared.currency);
+			}).then(function() {
+				done();
+			}, function(err) {
+				done(err);
+			});
+		});
+
+	});
+
 	describe('#refund()', function() {
 		it('should refund a transaction', function(done) {
 			var amount = shared.randomAmount();
 			var transaction;
-			pmc.transactions.createWithToken(shared.token, amount, shared.currency, "test1234").then(function(result) {
+			shared.getToken().then( function(token) {
+				return pmc.transactions.createWithToken(token, amount, shared.currency, "test1234");
+			}).then(function(result) {
 				transaction=result;
 				expect(result).to.be.a(pm.Transaction);
 				expect(result.origin_amount).to.be(amount);
@@ -93,10 +165,10 @@ describe('TransactionService', function() {
 				expect(result.client).to.be.a(pm.Client);
 				expect(result.payment).to.be.a(pm.Payment);
 				expect(result.preauthorization).to.be(null);
-				return pmc.transactions.refund(result,100,"testrefund");
+				return pmc.transactions.refund(result,amount-1,"testrefund");
 			}).then(function(refund) {
 				expect(refund).to.be.a(pm.Refund);
-				expect(refund.amount.toString()).to.be("100");
+				expect(refund.amount.toString()).to.be(""+ (amount-1));
 				expect(refund.description).to.be("testrefund");
 				expect(refund.transaction.id).to.be(transaction.id);
 			}).then(function() {
@@ -215,7 +287,6 @@ function checkTransactionFields(trans) {
 	expect(trans.created_at).to.be.ok();
 	expect(trans.updated_at).to.be.ok();
 	expect(trans.response_code).to.be.ok();
-	expect(trans.short_id).to.be.ok();
 	expect(trans.invoices).to.be.ok();
 	expect(trans.fees).to.be.ok();
 }
