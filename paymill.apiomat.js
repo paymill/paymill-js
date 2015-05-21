@@ -2022,6 +2022,22 @@ Subscription.prototype.is_canceled = null;
 Subscription.prototype.is_deleted = null;
 
 /**
+ * SEPA mandate reference, can be optionally specified for direct debit transactions.
+ * If specified for other payment methods, it has no effect but must still be valid.
+ * If specified, the string must not be empty, can be up to 35 characters long and may contain:<br />
+ * <p>
+ * <ul>
+ * <li>digits 0-9
+ * <li>letters a-z A-Z
+ * <li>special characters: ‘ , . : + - / ( ) ?
+ * <ul>
+ * @type {string}
+ * @memberof Subscription.prototype
+ */
+ Subscription.prototype.mandate_reference = null;
+
+
+/**
  * Shows, if subscription is "active", "inactive", "expired" or "failed"
  * @type {string|Subscription.Status}
  * @memberof Subscription.prototype
@@ -3406,13 +3422,14 @@ SubscriptionService.prototype.fromParams = function(payment, amount, currency, i
  * @param {(string)} currency ISO 4217 formatted currency code startAt
  * @param {(string|Interval)} interval define how often the client should be charged.
  * @param {(string|Interval)} periodOfValidity limits the validity of the subscription
+ * @param {string} mandate_reference a mandate reference
  * @param {(string)} name name of the subscription
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
  * @memberOf SubscriptionService
  */
 SubscriptionService.prototype.createWithAll = function(payment, client, offer, amount, currency, interval, startAt,
-    name,periodOfValidity, cb) {
+    name,periodOfValidity, mandate_reference, cb) {
 	try {
 		var map = {};
         map.payment = getIdFromObject(payment, Payment);
@@ -3437,6 +3454,9 @@ SubscriptionService.prototype.createWithAll = function(payment, client, offer, a
         if (!__.isEmpty(name)) {
             map.name = name;
         }
+				if (!__.isEmpty(mandate_reference)) {
+						map.mandate_reference = mandate_reference;
+				}
         if (!__.isEmpty(periodOfValidity)) {
             map.period_of_validity = periodOfValidity.toString();
         }
@@ -3770,6 +3790,8 @@ SubscriptionService.Creator.prototype.interval = null;
 SubscriptionService.Creator.prototype.startAt = null;
 SubscriptionService.Creator.prototype.name = null;
 SubscriptionService.Creator.prototype.periodOfValidity = null;
+SubscriptionService.Creator.prototype.mandate_reference = null;
+
 
 SubscriptionService.Creator.prototype.create = function(cb) {
  return this.service.createWithAll(this.payment,this.client,this.offer,this.amount,this.currency,this.interval,this.startAt,this.name,this.periodOfValidity,cb);
@@ -3812,6 +3834,17 @@ SubscriptionService.Creator.prototype.withPeriodOfValidity = function(periodOfVa
 
 SubscriptionService.Creator.prototype.withStartDate = function(startAt) {
     this.startAt = startAt;
+    return this;
+};
+
+/**
+ * Add a mandate reference
+ * @param {string} mandate_reference
+ * @return {SubscriptionService.Creator} the same creator
+ * @memberOf SubscriptionService.Creator
+ */
+SubscriptionService.Creator.prototype.withMandateReference = function(mandate_reference) {
+    this.mandate_reference = mandate_reference;
     return this;
 };
 
