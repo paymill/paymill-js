@@ -12,7 +12,7 @@
     }
   ],
   "description": "PAYMILL REST API Javascrip wrapper. Work with Node, parse.com and is easily extendable for other platforms",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "keywords": [
     "paymill",
     "wrapper",
@@ -46,14 +46,14 @@
     }
   },
   "dependencies": {
-    "underscore": "~1.7.0",
+    "underscore": "~1.8.3",
     "when": "~3.7.0"
   },
   "devDependencies": {
-    "jsdoc": "~3.2.2",
-    "jshint": "~2.6.0",
+    "jsdoc": "~3.3.0",
+    "jshint": "~2.7.0",
     "grunt-cli": "~0.1.9",
-    "mocha": "~2.1.0",
+    "mocha": "~2.2.5",
     "istanbul": "~0.3.2",
     "expect.js": "~0.3.1",
     "grunt": "~0.4.1",

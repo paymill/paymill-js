@@ -82,6 +82,74 @@ describe('TransactionService', function() {
 
 	});
 
+	describe('Creator', function() {
+		it('should create a transaction with preauthorization creator', function(done) {
+			var amount = shared.randomAmount();
+			var preauthorization;
+			shared.getToken().then( function(token) {
+				return pmc.preauthorizations.createWithToken(token, amount, shared.currency);
+			}).then(function(preauth) {
+				preauthorization = preauth;
+				return pmc.transactions.fromPreauth(preauth,amount,shared.currency).create();
+			}).then(function(transaction) {
+				expect(transaction).to.be.a(pm.Transaction);
+				expect(transaction.origin_amount).to.be(amount);
+				expect(transaction.currency).to.be(shared.currency);
+				expect(transaction.preauthorization.id).to.be(preauthorization.id);
+			}).then(function() {
+				done();
+			}, function(err) {
+				done(err);
+			});
+			;
+		});
+
+		it('should create a transaction with payment creator, client and mandate_reference', function(done) {
+			var amount = shared.randomAmount();
+			var payment;
+			var client;
+			shared.createClient().then( function(newclient) {
+				client = newclient;
+				return shared.getToken();
+			}).then(function(token) {
+				return pmc.payments.create(token, client.id);
+			}).then(function(newpayment) {
+				payment = newpayment;
+				return pmc.transactions.fromPayment(payment,amount,shared.currency).withDescription("temp123").withClient(client).withMandateReference("DE1234").create();
+			}).then(function(transaction) {
+				expect(transaction).to.be.a(pm.Transaction);
+				expect(transaction.origin_amount).to.be(amount);
+				expect(transaction.currency).to.be(shared.currency);
+				expect(transaction.payment.id).to.be(payment.id);
+				expect(transaction.client.id).to.be(client.id);
+				expect(transaction.mandate_reference).to.be("DE1234");
+				expect(transaction.description).to.be("temp123");
+
+			}).then(function() {
+				done();
+			}, function(err) {
+				done(err);
+			});
+			;
+		});
+
+		it('should create a transaction with token creator', function(done) {
+			var amount = shared.randomAmount();
+			shared.getToken().then( function(token) {
+				return pmc.transactions.fromToken(token, amount, shared.currency).create();
+			}).then(function(transaction) {
+				expect(transaction).to.be.a(pm.Transaction);
+				expect(transaction.origin_amount).to.be(amount);
+				expect(transaction.currency).to.be(shared.currency);
+			}).then(function() {
+				done();
+			}, function(err) {
+				done(err);
+			});
+		});
+
+	});
+
 	describe('#refund()', function() {
 		it('should refund a transaction', function(done) {
 			var amount = shared.randomAmount();
