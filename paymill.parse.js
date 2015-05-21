@@ -2023,7 +2023,7 @@ Subscription.prototype.getFieldDefinitions = function() {
 };
 
 Subscription.prototype.getUpdateableFields = function() {
-	return [ 'currency', 'name', 'interval' ];
+	return [ 'currency', 'name', 'interval', 'payment' ];
 };
 
 /**
@@ -2104,7 +2104,8 @@ Subscription.Filter.prototype.created_at = function(from, to) {
 /**
  * The {@link Subscription} object.
  */
-exports.Subscription = Subscription; 
+exports.Subscription = Subscription;
+
 /**
  *
  * Creates a new SubscriptionCount.
@@ -3642,6 +3643,7 @@ SubscriptionService.prototype.detail = function(obj, cb) {
  * <li>interval (note, that nextCaptureAt will not change.)
  * <li>currency
  * <li>name
+ * <li>payment
  * <ul>
  * <p>
  * To update further properties of a subscription use following methods:<br />
