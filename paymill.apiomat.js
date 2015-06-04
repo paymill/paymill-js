@@ -1244,6 +1244,20 @@ Payment.prototype.app_id = null;
 Payment.prototype.account = null;
 
 /**
+ * Whether or not this payment is recurring (can be used more than once).
+ * @type {boolean}
+ * @memberof Payment.prototype
+ */
+Payment.prototype.is_recurring = null;
+
+/**
+ * Whether or not this payment is usable for preauthorization.
+ * @type {boolean}
+ * @memberof Payment.prototype
+ */
+Payment.prototype.is_usable_for_preauthorization = null;
+
+/**
  * Name of the account holder. Only for direct debit payments.
  * @type {string}
  * @memberof Payment.prototype
@@ -2008,6 +2022,22 @@ Subscription.prototype.is_canceled = null;
 Subscription.prototype.is_deleted = null;
 
 /**
+ * SEPA mandate reference, can be optionally specified for direct debit transactions.
+ * If specified for other payment methods, it has no effect but must still be valid.
+ * If specified, the string must not be empty, can be up to 35 characters long and may contain:<br />
+ * <p>
+ * <ul>
+ * <li>digits 0-9
+ * <li>letters a-z A-Z
+ * <li>special characters: ‘ , . : + - / ( ) ?
+ * <ul>
+ * @type {string}
+ * @memberof Subscription.prototype
+ */
+ Subscription.prototype.mandate_reference = null;
+
+
+/**
  * Shows, if subscription is "active", "inactive", "expired" or "failed"
  * @type {string|Subscription.Status}
  * @memberof Subscription.prototype
@@ -2059,7 +2089,7 @@ Subscription.prototype.getFieldDefinitions = function() {
 };
 
 Subscription.prototype.getUpdateableFields = function() {
-	return [ 'currency', 'name', 'interval' ];
+	return [ 'currency', 'name', 'interval', 'payment' ];
 };
 
 /**
@@ -2140,7 +2170,8 @@ Subscription.Filter.prototype.created_at = function(from, to) {
 /**
  * The {@link Subscription} object.
  */
-exports.Subscription = Subscription; 
+exports.Subscription = Subscription;
+
 /**
  *
  * Creates a new SubscriptionCount.
@@ -2300,6 +2331,37 @@ Transaction.prototype.fees = null;
  * @memberof Transaction.prototype
  */
 Transaction.prototype.app_id = null;
+
+/**
+ * Whether or not this transaction is refundable
+ * @type {boolean}
+ * @memberof Transaction.prototype
+ */
+Transaction.prototype.is_refundable = null;
+
+/**
+ * Whether or not this transaction can be marked as fraud
+ * @type {boolean}
+ * @memberof Transaction.prototype
+ */
+Transaction.prototype.is_markable_as_fraud = null;
+
+
+/**
+ * SEPA mandate reference, can be optionally specified for direct debit transactions.
+ * If specified for other payment methods, it has no effect but must still be valid.
+ * If specified, the string must not be empty, can be up to 35 characters long and may contain:<br />
+ * <p>
+ * <ul>
+ * <li>digits 0-9
+ * <li>letters a-z A-Z
+ * <li>special characters: ‘ , . : + - / ( ) ?
+ * <ul>
+ * @type {string}
+ * @memberof Transaction.prototype
+ */
+Transaction.prototype.mandate_reference = null;
+
 
 /**
  * Status of a Transaction.
@@ -3360,13 +3422,14 @@ SubscriptionService.prototype.fromParams = function(payment, amount, currency, i
  * @param {(string)} currency ISO 4217 formatted currency code startAt
  * @param {(string|Interval)} interval define how often the client should be charged.
  * @param {(string|Interval)} periodOfValidity limits the validity of the subscription
+ * @param {string} mandate_reference a mandate reference
  * @param {(string)} name name of the subscription
  * @param {Object} [cb] a callback.
  * @return {Promise} a promise, which will be fulfilled with a Subscription or rejected with a PMError.
  * @memberOf SubscriptionService
  */
 SubscriptionService.prototype.createWithAll = function(payment, client, offer, amount, currency, interval, startAt,
-    name,periodOfValidity, cb) {
+    name,periodOfValidity, mandate_reference, cb) {
 	try {
 		var map = {};
         map.payment = getIdFromObject(payment, Payment);
@@ -3391,6 +3454,9 @@ SubscriptionService.prototype.createWithAll = function(payment, client, offer, a
         if (!__.isEmpty(name)) {
             map.name = name;
         }
+				if (!__.isEmpty(mandate_reference)) {
+						map.mandate_reference = mandate_reference;
+				}
         if (!__.isEmpty(periodOfValidity)) {
             map.period_of_validity = periodOfValidity.toString();
         }
@@ -3678,6 +3744,7 @@ SubscriptionService.prototype.detail = function(obj, cb) {
  * <li>interval (note, that nextCaptureAt will not change.)
  * <li>currency
  * <li>name
+ * <li>payment
  * <ul>
  * <p>
  * To update further properties of a subscription use following methods:<br />
@@ -3723,6 +3790,8 @@ SubscriptionService.Creator.prototype.interval = null;
 SubscriptionService.Creator.prototype.startAt = null;
 SubscriptionService.Creator.prototype.name = null;
 SubscriptionService.Creator.prototype.periodOfValidity = null;
+SubscriptionService.Creator.prototype.mandate_reference = null;
+
 
 SubscriptionService.Creator.prototype.create = function(cb) {
  return this.service.createWithAll(this.payment,this.client,this.offer,this.amount,this.currency,this.interval,this.startAt,this.name,this.periodOfValidity,cb);
@@ -3765,6 +3834,17 @@ SubscriptionService.Creator.prototype.withPeriodOfValidity = function(periodOfVa
 
 SubscriptionService.Creator.prototype.withStartDate = function(startAt) {
     this.startAt = startAt;
+    return this;
+};
+
+/**
+ * Add a mandate reference
+ * @param {string} mandate_reference
+ * @return {SubscriptionService.Creator} the same creator
+ * @memberOf SubscriptionService.Creator
+ */
+SubscriptionService.Creator.prototype.withMandateReference = function(mandate_reference) {
+    this.mandate_reference = mandate_reference;
     return this;
 };
 
@@ -3964,6 +4044,162 @@ TransactionService.prototype.detail = function(obj, cb) {
 	return this._detail(obj, cb);
 };
 
+
+/**
+ * Create a transaction with a token. Chain further values by calling withXXX()
+ * functions and finish by calling create().
+ * @param {string} token the payment token, generated by the PAYMILL bridge.
+ * @param {(string|number)} amount amount (in cents) which will be charged.
+ * @param {string} currency ISO 4217 formatted currency code.
+ * @return {TransactionService.Creator} a creator. when configured, please call create()
+ * @memberOf TransactionService
+ */
+TransactionService.prototype.fromToken = function(token, amount, currency) {
+    var creator = new TransactionService.Creator(this);
+		validateString(token,"token",false);
+		creator.map.token = token;
+
+		validateNumber(amount,"amount",false);
+		validateString(currency,"currency",false);
+		creator.map.amount = amount;
+		creator.map.currency = currency;
+		creator.map.description = "";
+
+    return creator;
+};
+
+/**
+ * Create a transaction with a preauthorization. Chain further values by calling withXXX()
+ * functions and finish by calling create().
+ * @param {(string|Preauthorization)} preauth the preauthroization object for the transaction or its id.
+ * @param {(string|number)} amount amount (in cents) which will be charged.
+ * @param {string} currency ISO 4217 formatted currency code.
+ * @return {TransactionService.Creator} a creator. when configured, please call create()
+ * @memberOf TransactionService
+ */
+TransactionService.prototype.fromPreauth = function(preauth, amount, currency) {
+    var creator = new TransactionService.Creator(this);
+		creator.map.preauthorization = getIdFromObject(preauth,Preauthorization);
+
+		validateNumber(amount,"amount",false);
+		validateString(currency,"currency",false);
+		creator.map.amount = amount;
+		creator.map.currency = currency;
+		creator.map.description = "";
+
+    return creator;
+};
+
+/**
+ * Create a transaction with a preauthorization. Chain further values by calling withXXX()
+ * functions and finish by calling create().
+ * @param {(string|Payment)} payment the payment object for the transaction or its id
+ * @param {(string|number)} amount amount (in cents) which will be charged.
+ * @param {string} currency ISO 4217 formatted currency code.
+ * @return {TransactionService.Creator} a creator. when configured, please call create()
+ * @memberOf TransactionService
+ */
+TransactionService.prototype.fromPayment = function(payment, amount, currency) {
+    var creator = new TransactionService.Creator(this);
+		creator.map.payment = getIdFromObject(payment, Payment);
+
+		validateNumber(amount,"amount",false);
+		validateString(currency,"currency",false);
+		creator.map.amount = amount;
+		creator.map.currency = currency;
+		creator.map.description = "";
+
+    return creator;
+};
+
+/**
+ * A helper for the complex creation method
+ * @class TransactionService.Creator
+ * @memberof TransactionService
+ */
+TransactionService.Creator = function(service) {
+    this.service = service;
+		this.map = {};
+};
+
+/**
+ * Create a transaction with this creator.
+ * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError.
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.create = function(cb) {
+	return this.service._create(this.map, Transaction, cb);
+};
+
+/**
+ * Add a description
+ * @param {string} description
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withDescription = function(description) {
+		validateString(description);
+    this.map.description = description;
+    return this;
+};
+
+/**
+ * Add a client
+ * @param {(string|Client)} client
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withClient = function(client) {
+    this.map.client = getIdFromObject(client);
+    return this;
+};
+
+/**
+ * Add a fee amount
+ * @param {(string|Client)} fee_amount
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withFeeAmount = function(fee_amount) {
+		validateNumber(fee_amount);
+    this.map.fee_amount = fee_amount;
+    return this;
+};
+
+/**
+ * Add a fee payment
+ * @param {(string|Client)} client
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withFeePayment = function(fee_payment) {
+    this.map.fee_payment = getIdFromObject(fee_payment);
+    return this;
+};
+
+/**
+ * Add a fee currency
+ * @param {string} fee_currency
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withFeeCurrency = function(fee_currency) {
+    validateString(fee_currency,"fee_currency",false);
+    this.map.fee_currency = fee_currency;
+    return this;
+};
+
+/**
+ * Add a mandate reference
+ * @param {string} mandate_reference
+ * @return {TransactionService.Creator} the same creator
+ * @memberOf TransactionService.Creator
+ */
+TransactionService.Creator.prototype.withMandateReference = function(mandate_reference) {
+    validateString(mandate_reference,"mandate_reference",false);
+    this.map.mandate_reference = mandate_reference;
+    return this;
+};
 
 /**
  *

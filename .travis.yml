@@ -1,12 +1,14 @@
-env: 
-  global: 
-  - secure: "lJk+s4zbGqYfunvmzeARy0zMgjToJ5j/1mVGQmszRdNrm9QzP/h4Ke+F4Xp5pdn4R2JXtyxUswmAK4O3rSAidaZmZExmkuGf7iQ0SdapBFc+4ZQ5HpMr5pfWNWmTs5ouC03MZ/AVJtr79TL+tcFyopQnAEpZUuj6Mw5hCDPm7PQ="
+env:
+  global:
+  - secure: FBMxHjYY/MSH0/pqiYWix/YZgmKcpA77+G1Mg2eYqdBA50ZVIJ0O+tEavF2q0E+K0SP3J26//3XGsDS4KnS5MkhZoGydyi8Vx3BAOPvLwBABPB6wHHk2FlIKzFh2t4Pj2/PLSz8XN5S0NiyKjhDdbmOxKmpsaAu8UqeWK0fhQh4=
+  - secure: M5bpQ9ZGkyHQ/ols4qOMWnj0p/dJYzEQUPsze0r/m9jGvHFraAALL/wkh+Ih5trt2OtBaX0X2cZKg7M1/VRdTKUUFX5UH3gQW7zVOI9jiLA9CVkcj8+XKxe0GDul/GgcveK2GhDYYgS0ytf6LB9vbwhkIsN/WXpADcyBewteLKs=
+  secure: hQSwJo3JsIS/JOP6kkI+7dMTsWI/hMESQrwbwrKTQ2LzTg6A7+dS/IOAtQWdrlcc80rzxyeye9Q4Zmfh9sGTk1XqZow/GLytMrz71lFAlkVcmq+hXnQTZSdllhFBWLSFOA9rCS3LOECrcF2S7RgUV6S0Ymw7JHUVsWmI7y0XnsA=
 language: node_js
 node_js:
-  - "0.10"
+- '0.10'
 after_script:
-  - cat coverage/lcov.info | codeclimate
+- cat coverage/lcov.info | codeclimate
 addons:
   code_climate:
     repo_token:
-      secure: "kN7pnVC5Mbq5LmTfXbnjAfCoGdU2ykUj0DF/FUUXO3/bnUXEA0ResH/XfY471xhNlCq3oMyPYQnDmYB55B9V1oFql4i/dQ5FW49kPZzDfLxhiz9meLBtITx1kB17hLUXAKS1ThtQaE8urHLcE2Lk+Rf3I1ILcm5Q88oSAZ/553g=" 
+      secure: kN7pnVC5Mbq5LmTfXbnjAfCoGdU2ykUj0DF/FUUXO3/bnUXEA0ResH/XfY471xhNlCq3oMyPYQnDmYB55B9V1oFql4i/dQ5FW49kPZzDfLxhiz9meLBtITx1kB17hLUXAKS1ThtQaE8urHLcE2Lk+Rf3I1ILcm5Q88oSAZ/553g=

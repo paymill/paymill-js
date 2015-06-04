@@ -113,6 +113,27 @@ describe('SubscriptionService', function() {
                 done(err);
             });
         });
+
+        it('normal update of payment', function(done) {
+          var subscription;
+          var newpayment ;
+          shared.createSubscription().then(function(result) {
+              subscription = result;
+              return shared.createPayment(subscription.client.id);
+          }).then(function(payment) {
+              newpayment = payment;
+              subscription.payment = newpayment.id;
+              return pmc.subscriptions.update(subscription);
+          }).then(function(updated) {
+              expect(updated.payment.id).to.be(newpayment.id);
+          }).then(function() {
+              done();
+          }, function(err) {
+              done(err);
+          });
+
+        });
+
         it('normal update of interval', function(done) {
             var some;
             var newInterval = new pm.Interval(3, pm.Interval.Unit.MONTH, pm.Interval.Weekday.FRIDAY);
