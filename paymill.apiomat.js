@@ -135,6 +135,8 @@ function PaymillContext(apiKey) {
     this.transactions.setHandler(this.handler);
     this.webhooks = new WebhookService();
     this.webhooks.setHandler(this.handler);
+    this.checksums = new ChecksumService();
+    this.checksums.setHandler(this.handler);
 }
 
 PaymillContext.prototype.constructor = PaymillContext;
@@ -176,6 +178,11 @@ PaymillContext.prototype.subscriptions = null;
  * The {@link WebhookService} service.
  */
 PaymillContext.prototype.webhooks = null;
+
+/**
+ * The {@link ChecksumService} service.
+ */
+PaymillContext.prototype.checksums = null;
 
 exports.PaymillContext = PaymillContext;
 exports.getContext = function(apiKey) {
@@ -414,6 +421,40 @@ function validateString(field, fieldname, optional) {
     },field,fieldname,optional);
 }
 
+function validateList(field, fieldname, fieldtype, optional) {
+  // check empty and mandatory
+	if (__.isEmpty(field)) {
+		if (optional) {
+			return;
+		} else {
+			throw new PMError(PMError.Type.WRONG_PARAMS, fieldname + " is mandatory.");
+		}
+	}
+	// check array
+	if (!__.isArray(field)) {
+		throw new PMError(PMError.Type.WRONG_PARAMS, fieldname + " must be an array of type " + fieldtype);
+	}
+	for (var i=0; i<field.length; i++) {
+		if (!(field[i] instanceof fieldtype)) {
+			throw new PMError(PMError.Type.WRONG_PARAMS, fieldname + "[" + i + "] is not " + fieldtype);
+		}
+	}
+}
+
+function validateObject(field, fieldname, fieldtype, optional) {
+  // check empty and mandatory
+	if (__.isEmpty(field)) {
+		if (optional) {
+			return;
+		} else {
+			throw new PMError(PMError.Type.WRONG_PARAMS, fieldname + " is mandatory.");
+		}
+	}
+	if (!(field instanceof fieldtype)) {
+		throw new PMError(PMError.Type.WRONG_PARAMS, fieldname + " is not " + fieldtype);
+	}
+}
+
 function getTimeFilter(from, to) {
     return getTimeFromObject(from) + "-" + getTimeFromObject(to);
 }
@@ -469,6 +510,142 @@ function getUnixTimeFromParam(param, paramName) {
         throw new PMError(PMError.Type.WRONG_PARAMS, "parameter " + paramName + " must be a Date, number or string");
     }
 }
+/**
+ *
+ * Creates a new Address.
+ * @class Address
+ * @extends PaymillObject
+ * @classdesc An address object belongs to exactly one transaction and can represent either its shipping address or billing address. Note, that state and postal_code are mandatory for PayPal transactions in certain countries, please consult PayPal documentation for more details.
+ */
+function Address() {
+
+}
+
+Address.prototype = new PaymillObject();
+Address.prototype.constructor = Address;
+
+/**
+ * Street address (incl. street number), max. 100 characters.
+ * @type {string}
+ * @memberof Address.prototype
+ */
+Address.prototype.street_address = null;
+
+/**
+ * Addition to street address (e.g. building, floor, or c/o), max. 100 characters.
+ * @type {string}
+ * @memberof Address.prototype
+ */
+Address.prototype.street_address_addition = null;
+
+/**
+ * City, max. 40 characters.
+ * @type {string}
+ * @memberof Address.prototype
+ */
+Address.prototype.city = null;
+
+/**
+ * State or province, max. 40 characters.
+ * @type {string}
+ * @memberof Address.prototype
+ */
+Address.prototype.state = null;
+
+/**
+ * Country-specific postal code, max. 20 characters.
+ * @type {string}
+ * @memberof Address.prototype
+ */
+Address.prototype.postal_code = null;
+
+/**
+ * 2-letter country code according to ISO 3166-1 alpha-2
+ * @type {string}
+ * @memberof Address.prototype
+ */
+Address.prototype.country = null;
+
+/**
+ * Contact phone number, max. 20 characters
+ * @type {string}
+ * @memberof Address.prototype
+ */
+Address.prototype.phone = null;
+
+/**
+ * The {@link Address} object.
+ */
+exports.Address = Address;
+
+/**
+ *
+ * Creates a new payment. Generally you should never create a PAYMILL object on your own.
+ * @class Checksum
+ * @classdesc Checksum validation is a simple method to ensure the integrity of transferred data. Basically, we generate a hash out of the given parameters and your private API key. If you send us a request with transaction data and the generated checksum, we can easily validate the data. To make the checksum computation as easy as possible we provide this endpoint for you. For transactions that are started client-side, e.g. PayPal checkout, it is required to first create a checksum on your server and then provide that checksum when starting the transaction in the browser. The checksum needs to contain all data required to subsequently create the actual transaction.
+ */
+function Checksum() {
+
+}
+
+Checksum.prototype = new PaymillObject();
+Checksum.prototype.constructor = Checksum;
+
+/**
+ * Unique identifier for this checksum.
+ * @type {string}
+ * @memberof Checksum.prototype
+ */
+Checksum.prototype.id = null;
+
+/**
+ * The type of the checksum. Currently only 'paypal'
+ * @type {string}
+ * @memberof Checksum.prototype
+ */
+Checksum.prototype.type = null;
+
+/**
+ * The actual checksum.
+ * @type {string}
+ * @memberof Checksum.prototype
+ */
+Checksum.prototype.checksum = null;
+
+/**
+ * Transaction data.
+ * @type {string}
+ * @memberof Checksum.prototype
+ */
+Checksum.prototype.data = null;
+
+Checksum.prototype.created_at = null;
+/**
+ * Unix-Timestamp for the last update.
+ * @type {Date}
+ * @memberof Checksum.prototype
+ */
+Checksum.prototype.updated_at = null;
+
+/**
+ * App (ID) that created this checksum or null if created by yourself.
+ * @type {string}
+ * @memberof Checksum.prototype
+ */
+Checksum.prototype.app_id = null;
+
+/*
+ * special fields
+ */
+Checksum.prototype.getFieldDefinitions = function() {
+	return {
+		created_at : deserializeDate,
+		updated_at : deserializeDate
+	};
+};
+
+exports.Checksum = Checksum;
+
 /**
  *
  * Creates a new Client. Generally you should never create a PAYMILL object on your own.
@@ -1865,6 +2042,66 @@ Refund.Filter.prototype.created_at = function(from, to) {
  */
 exports.Refund = Refund;
 /**
+ * Creates a new ShoppingCartItem.
+ * @class ShoppingCartItem
+ * @extends PaymillObject
+ * @classdesc A shopping cart item object belongs to exactly one transaction. It represents the merchants item which will be given to paypal.
+ */
+function ShoppingCartItem() {
+
+}
+
+ShoppingCartItem.prototype = new PaymillObject();
+ShoppingCartItem.prototype.constructor = ShoppingCartItem;
+
+/**
+ * Item name, max. 127 characters.
+ * @type {string}
+ * @memberof ShoppingCartItem.prototype
+ */
+ShoppingCartItem.prototype.name = null;
+
+/**
+ * Additional description, max. 127 characters.
+ * @type {string}
+ * @memberof ShoppingCartItem.prototype
+ */
+ShoppingCartItem.prototype.description = null;
+
+/**
+ * Price > 0 for a single item, including tax. Can also be negative to act as a discount.
+ * @type {number}
+ * @memberof ShoppingCartItem.prototype
+ */
+ShoppingCartItem.prototype.amount = null;
+
+/**
+ * Quantity of this item.
+ * @type {number}
+ * @memberof ShoppingCartItem.prototype
+ */
+ShoppingCartItem.prototype.quantity = null;
+
+/**
+ * Item number or other identifier (SKU/EAN), max. 127 characters
+ * @type {string}
+ * @memberof ShoppingCartItem.prototype
+ */
+ShoppingCartItem.prototype.item_number = null;
+
+/**
+ * URL of the item in your store, max. 2000 characters.
+ * @type {string}
+ * @memberof ShoppingCartItem.prototype
+ */
+ShoppingCartItem.prototype.url = null;
+
+/**
+ * The {@link ShoppingCartItem} object.
+ */
+exports.ShoppingCartItem = ShoppingCartItem;
+
+/**
  *
  * Creates a new Subscription. Generally you should never create a PAYMILL object on your own.
  * @class Subscription
@@ -2947,6 +3184,223 @@ PaymillService.prototype._reject = function(error, cb) {
 	promise = this.handler.includeCallbackInPromise(promise, cb);
 	defer.reject(error);
 	return promise;
+};
+
+/**
+ *
+ * Creates a new ChecksumService. Generally you should never create a PAYMILL service on your own. Instead use the exported "transactions".
+ * @class ChecksumService
+ */
+function ChecksumService() {
+
+}
+
+ChecksumService.prototype = new PaymillService();
+ChecksumService.prototype.constructor = ChecksumService;
+ChecksumService.prototype.getPaymillObject = function() {
+	return Checksum;
+};
+ChecksumService.prototype.getEndpointPath = function() {
+	return "/checksums";
+};
+
+/**
+ * Create a checksum
+ * @param {string} checksum_type currently only 'paypal'
+ * @param {(string|number)} amount amount (in cents) which will be charged.
+ * @param {string} currency ISO 4217 formatted currency code.
+ * @param {string} return_url URL to redirect customers to after checkout has completed.
+ * @param {string} cancel_url URL to redirect customers to after they have canceled the checkout. As a result, there will be no transaction.
+ * @param {(number|string)} fee_amount Fee included in the transaction amount (set by a connected app). Mandatory if fee_payment is set.
+ * @param {string} fee_payment the identifier of the payment from which the fee will be charged (creditcard-object or directdebit-object). Mandatory if fee_amount is set.
+ * @param {string} fee_currency ISO 4217 formatted currency code for the fee.
+ * @param {ShoppingCartItem[]} items list of items.
+ * @param {Address[]} shipping_address list of shipping addresses.
+ * @param {Address[]} billing_address list of billing addresses.
+ * @param {string} appId App (ID) that created this refund or null if created by yourself.
+ * @param {Object} [cb] a callback.
+ * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError.
+ * @memberOf TransactionService
+ */
+
+ChecksumService.prototype.create = function(checksum_type, amount, currency, return_url, cancel_url, fee_amount, fee_payment, fee_currency, description, items, shipping_address, billing_address, app_id, cb) {
+	var map = {};
+  validateString(checksum_type,"checksum_type",false);
+	validateNumber(amount,"amount",false);
+  validateString(currency,"currency",false);
+  validateString(return_url,"return_url",false);
+  validateString(cancel_url,"cancel_url",false);
+	map.amount = amount;
+	map.currency = currency;
+	map.return_url = return_url;
+	map.cancel_url = cancel_url;
+
+	if (fee_amount) {
+		map.fee_amount = fee_amount;
+	}
+	if (fee_payment) {
+		map.fee_payment = fee_payment;
+	}
+	if (fee_currency) {
+		map.fee_currency = fee_currency;
+	}
+	if (fee_currency) {
+		map.fee_currency = fee_currency;
+	}
+	if (description) {
+		map.description = description;
+	}
+	if (app_id) {
+		map.app_id = app_id;
+	}
+
+	if (items) {
+		validateList(items,'items', ShoppingCartItem, false);
+		map.items = JSON.stringify(items);
+	}
+
+	if (shipping_address) {
+		validateObject(shipping_address,'shipping_address', Address, false);
+		map.shipping_address = shipping_address;
+	}
+	if (billing_address) {
+		validateObject(billing_address,'billing_address', Address, false);
+		map.billing_address = billing_address;
+	}
+	return this._create(map, Transaction, cb);
+};
+
+ChecksumService.prototype.createChecksumForPayPal = function(amount, currency, return_url, cancel_url, fee_amount, fee_payment, fee_currency, description, items, shipping_address, billing_address, app_id, cb) {
+	return this._createChecksum('paypal', amount, currency, return_url, cancel_url, fee_amount, fee_payment, fee_currency, description, items, shipping, billing, app_id, cb);
+};
+
+/**
+ * Create a checksum for PayPal. Chain further values by calling withXXX()
+ * functions and finish by calling create().
+ * @param {(string|number)} amount amount (in cents) which will be charged.
+ * @param {string} currency ISO 4217 formatted currency code.
+ * @param {string} return_url URL to redirect customers to after checkout has completed.
+ * @param {string} cancel_url URL to redirect customers to after they have canceled the checkout. As a result, there will be no transaction.
+ * @return {ChecksumService.Creator} a creator. when configured, please call create()
+ * @memberOf ChecksumService
+ */
+ChecksumService.prototype.forPaypal = function(amount, currency, return_url, cancel_url) {
+    var creator = new ChecksumService.Creator(this);
+		validateNumber(amount,"amount",false);
+	  validateString(currency,"currency",false);
+	  validateString(return_url,"return_url",false);
+	  validateString(cancel_url,"cancel_url",false);
+
+		creator.map.checksum_type = 'paypal';
+		creator.map.amount = amount;
+		creator.map.currency = currency;
+		creator.map.return_url = return_url;
+		creator.map.cancel_url = cancel_url;
+
+    return creator;
+};
+
+/**
+ * A helper for the complex creation method
+ * @class ChecksumService.Creator
+ * @memberof ChecksumService
+ */
+ChecksumService.Creator = function(service) {
+    this.service = service;
+		this.map = {};
+};
+
+/**
+ * Create a checksum with this creator.
+ * @return {Promise} a promise, which will be fulfilled with a Transaction or rejected with a PMError.
+ * @memberOf ChecksumService.Creator
+ */
+ChecksumService.Creator.prototype.create = function(cb) {
+	return this.service._create(this.map, Checksum, cb);
+};
+
+/**
+ * Add a fee amount
+ * @param {(string|Client)} fee_amount
+ * @return {ChecksumService.Creator} the same creator
+ * @memberOf ChecksumService.Creator
+ */
+ChecksumService.Creator.prototype.withFeeAmount = function(fee_amount) {
+		validateNumber(fee_amount);
+    this.map.fee_amount = fee_amount;
+    return this;
+};
+
+/**
+ * Add a fee payment
+ * @param {(string|Client)} client
+ * @return {ChecksumService.Creator} the same creator
+ * @memberOf ChecksumService.Creator
+ */
+ChecksumService.Creator.prototype.withFeePayment = function(fee_payment) {
+    this.map.fee_payment = getIdFromObject(fee_payment);
+    return this;
+};
+
+/**
+ * Add a fee currency
+ * @param {string} fee_currency
+ * @return {ChecksumService.Creator} the same creator
+ * @memberOf ChecksumService.Creator
+ */
+ChecksumService.Creator.prototype.withFeeCurrency = function(fee_currency) {
+    validateString(fee_currency,"fee_currency",false);
+    this.map.fee_currency = fee_currency;
+    return this;
+};
+
+/**
+ * Add a description
+ * @param {string} description
+ * @return {ChecksumService.Creator} the same creator
+ * @memberOf ChecksumService.Creator
+ */
+ChecksumService.Creator.prototype.withDescription = function(description) {
+		validateString(description);
+    this.map.description = description;
+    return this;
+};
+
+/**
+ * Add items
+ * @param {string} mandate_reference
+ * @return {ChecksumService.Creator} the same creator
+ * @memberOf ChecksumService.Creator
+ */
+ChecksumService.Creator.prototype.withItems = function(items) {
+		validateList(items,'items', ShoppingCartItem, true);
+		this.map.items = JSON.stringify(items);
+    return this;
+};
+
+
+/**
+ * Add a billing adress
+ * @param {string} billing_address
+ * @return {ChecksumService.Creator} the same creator
+ * @memberOf ChecksumService.Creator
+ */
+ChecksumService.Creator.prototype.withBillingAddress = function(billing_address) {
+		validateObject(billing_address,'billing_address', Address, true);
+		this.map.billing_address = billing_address;
+    return this;
+};
+
+/**
+ * Add a shipping adress
+ * @param {string} shipping_address
+ * @return {ChecksumService.Creator} the same creator
+ * @memberOf ChecksumService.Creator
+ */
+ChecksumService.Creator.prototype.withShippingAddress = function(shipping_address) {
+		validateObject(shipping_address,'shipping_address', Address, false);
+		this.map.shipping_address = shipping_address;
+    return this;
 };
 
 /**

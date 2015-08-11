@@ -153,6 +153,11 @@ XXX : {
 
 ## Changelog
 
+### 2.2.0
++ Upgraded objects to latest version
++ Added checksum service for PayPal integration
+* Updated project dependencies
+
 ### 2.1.0
 + Upgraded objects to latest version
 + TransactionService now supports a Creator.
@@ -176,6 +181,6 @@ XXX : {
 
 ## License
 
-Copyright 2013 PAYMILL GmbH.
+Copyright 2015 PAYMILL GmbH.
 
 MIT License (enclosed)
