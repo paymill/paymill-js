@@ -135,6 +135,8 @@ function PaymillContext(apiKey) {
     this.transactions.setHandler(this.handler);
     this.webhooks = new WebhookService();
     this.webhooks.setHandler(this.handler);
+    this.checksums = new ChecksumService();
+    this.checksums.setHandler(this.handler);
 }
 
 PaymillContext.prototype.constructor = PaymillContext;
@@ -176,6 +178,11 @@ PaymillContext.prototype.subscriptions = null;
  * The {@link WebhookService} service.
  */
 PaymillContext.prototype.webhooks = null;
+
+/**
+ * The {@link ChecksumService} service.
+ */
+PaymillContext.prototype.checksums = null;
 
 exports.PaymillContext = PaymillContext;
 exports.getContext = function(apiKey) {
