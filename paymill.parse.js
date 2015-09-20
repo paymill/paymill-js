@@ -3368,6 +3368,53 @@ ChecksumService.Creator.prototype.withShippingAddress = function(shipping_addres
 };
 
 /**
+ * Add a client id
+ * @param {string} client_id
+ * @return {ChecksumService.Creator} the same creator
+ * @memberOf ChecksumService.Creator
+ */
+ChecksumService.Creator.prototype.withClientId = function(client_id) {
+		validateString(client_id,'client_id', false);
+		this.map.client = client_id;
+	return this;
+};
+
+/**
+ * Add a checksum action
+ * @param {string} checksum_action
+ * @return {ChecksumService.Creator} the same creator
+ * @memberOf ChecksumService.Creator
+ */
+ChecksumService.Creator.prototype.withChecksumAction = function(checksum_action) {
+		var possible_values = ['transaction', 'payment'];
+		validateString(checksum_action,'checksum_action', false);
+		if (__.indexOf(possible_values, checksum_action) === -1) {
+			throw new PMError(PMError.Type.WRONG_PARAMS, 'checksum_action must be one of [' + possible_values.toString() + ']');
+		}
+		this.map.checksum_action = checksum_action;
+	return this;
+};
+
+/**
+ * Ask the buyer for a billing agreement and add a description
+ * @param {boolean} require_reusable_payment
+ * @param {string} reusable_payment_description
+ * @return {ChecksumService.Creator} the same creator
+ * @memberOf ChecksumService.Creator
+ */
+ChecksumService.Creator.prototype.withReusablePayment = function(require_reusable_payment, reusable_payment_description) {
+		var descriptionMaxLength = 127;
+		validateBoolean(require_reusable_payment,'require_reusable_payment', false);
+		validateString(reusable_payment_description,'reusable_payment_description', true);
+		if (reusable_payment_description && reusable_payment_description.length > descriptionMaxLength) {
+			throw new PMError(PMError.Type.WRONG_PARAMS, 'Length of reusable_payment_description must be less than ' + descriptionMaxLength + ' characters');
+		}
+		this.map.require_reusable_payment = require_reusable_payment;
+		this.map.reusable_payment_description = reusable_payment_description || null;
+	return this;
+};
+
+/**
  *
  * Creates a new ClientService. Generally you should never create a PAYMILL service on your own. Instead use the exported "clients".
  * @class ClientService
