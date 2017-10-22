@@ -3204,6 +3204,7 @@ ChecksumService.prototype.create = function(checksum_type, amount, currency, ret
   validateString(currency,"currency",false);
   validateString(return_url,"return_url",false);
   validateString(cancel_url,"cancel_url",false);
+	map.checksum_type = checksum_type;
 	map.amount = amount;
 	map.currency = currency;
 	map.return_url = return_url;
